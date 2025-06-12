@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard me Butona</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Header statik */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #1a1a1a;
+      padding: 10px 0;
+      text-align: center;
+      z-index: 1000;
+    }
+
+    header button {
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    header button:hover {
+      background-color: #45a049;
+    }
+
+    /* Pjesa poshtë headerit */
+    .content {
+      margin-top: 80px; /* hapësirë për headerin statik */
+      padding: 20px;
+    }
+
+    .section {
+      display: none;
+      padding: 20px;
+      background-color: #f4f4f4;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button onclick="showSection(1)">IT service</button>
+    <button onclick="showSection(2)">Process</button>
+    <button onclick="showSection(3)">Products</button>
+    <button onclick="showSection(4)">Customer</button>
+    <button onclick="showSection(5)">Sales</button>
+    <button onclick="showSection(6)">Cons</button>
+    <button onclick="showSection(7)">CRM</button>
+    <button onclick="showSection(8)">Proposals</button>
+    <button onclick="showSection(9)">After sale</button>
+    <button onclick="showSection(10)">Reporting</button>
+  </header>
+
+  <div class="content">
+    <div id="section1" class="section active"><figure class="table" style="width:465pt;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:177.5pt;" height="237">
+                <td class="xl65" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:177.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="237" width="619">
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>Shërbimet e IT-së:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Menaxhimi I shërbimeve të IT-së: Menaxhimi i vazhdueshëm i infrastrukturës IT të klientëve, duke përfshirë serverët, rrjetet dhe pikat fundore si PC,printera etj.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Zgjidhjet në Cloud: ruajtja e të dhënave në Cloud, hostimi, , migrimi i të dhënave.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Siguria kibernetike: Vlerësimet e sigurisë, monitorimi i kërcënimeve, kriptimi i të dhënave dhe menaxhimi i cenueshmërisë.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;IT Consulting: Udhëzime ekspertësh mbi strategjinë e IT-së, integrimin e sistemeve dhe transformimin dixhital.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Help Desk and Support: Ofrimi i suportit në distancë ose në vend për çështje të lidhura me IT-në.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Ndertimi i Website- zhvillim I Ëebsite për biznese të ndryshme.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Analize te proceseve te punes dhe sygjerimet per permresim.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>Pse kanë rëndësi shërbimet e IT-së:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Përmirësim I efikasitetit: Përmirësimi i operacioneve me teknologji, përmirësimi I proceseve të punës.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Kosto-Efektiviteti: Reduktimi i kostove të përgjithshme nëpërmjet automatizimit dhe optimizimit.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Siguria: Mbrojtja e bizneseve nga kërcënimet kibernetike</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section2" class="section"><figure class="table" style="width:465pt;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:177.5pt;" height="237">
+                <td class="xl65" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:177.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="237" width="619">
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>Permledhja e procesit te Shitjes</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>1. Gjenerimi i Leads:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Burimet: Referimet, fushatat e marketingut në internet, rrjetet dhe shfaqjet tregtare.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Kualifikimi: Përdorni pyetje kualifikuese për të vlerësuar nevojat e klientëve të mundshëm, buxhetin dhe gatishmërinë për shërbimet e TI-së.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>2. Inicjimi I takimeve:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Objektivi: Kuptoni pikat e dobeta që klientët kanë në proceset e punës, sistemet aktuale dhe qëllimet e biznesit.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Pyetjet kryesore:</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">&nbsp;&nbsp;&nbsp;&nbsp;Çfarë sfidash po përballeni me konfigurimin aktual të IT-së?</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">&nbsp;&nbsp;&nbsp;&nbsp;A po kërkoni të shkallëzoni operacionet tuaja ose të zvogëloni kostot?</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">&nbsp;&nbsp;&nbsp;&nbsp;Çfarë shqetësimesh për sigurinë keni?</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>3. Propozim &amp; Prezantim:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Paraqisni një zgjidhje të përshtatur që adreson nevojat e klientit</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Përdorni raste studimore dhe shembuj për të treguar se si shërbimet tuaja kanë përfituar klientët e tjerë.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>4. Trajtimi i kundërshtimeve:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">•&nbsp;&nbsp;&nbsp;&nbsp;Trajtoni shqetësimet dhe kundërshtimet në mënyrë profesionale, duke përdorur njohuritë e produktit dhe shembuj të botës reale.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>5. Mbyllja e marrëveshjes:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">• Siguroni angazhimin duke përshkruar hapat e ardhshëm dhe duke u siguruar që të gjitha dokumentet janë nënshkruar.</span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><strong>6. Ndjekja pas shitjes:</strong></span><br>
+                    <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;">• Sigurohuni që klienti eshte tashme onboard &nbsp;ne kompani, prezantojeni me ekipin e supportit.</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section3" class="section"><figure class="table" style="width:465pt;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:177.5pt;" height="237">
+                <td class="xl65" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:177.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="237" width="619">
+                    <strong>Njohuri për produktet dhe shërbimet IT</strong><br>
+                    Karakteristikat kryesore të shërbimeve tona:<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Përshtatje: Shërbimet tona të IT-së janë të personalizueshme për t'iu përshtatur nevojave unike të secilit klient.<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Mbështetje: Mbështetje 24/7 e klientit për të siguruar që sistemet të mbeten funksionale pa ndërprerje.<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Besueshmëria: Ne ofrojmë kohë të garantuar dhe monitorim proaktiv të sistemeve.<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Siguria: Zgjidhje gjithëpërfshirëse sigurie për të mbrojtur të dhënat dhe sistemet e ndjeshme nga kërcënimet e jashtme.<br>
+                    Per tu theksuar:<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Rritja e produktivitetit dhe reduktimi i kohës joproduktive.<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Ulja e kostove operacionale duke optimizuar infrastrukturën e IT-së.<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Rritja e sigurisë kibernetike dhe mbrojtja e të dhënave.<br>
+                    •&nbsp;&nbsp;&nbsp;&nbsp;Akses në teknologjinë më të fundit dhe zgjidhjet e IT-së.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section4" class="section"><figure class="table" style="width:465pt;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:177.5pt;" height="237">
+                <td class="xl65" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:177.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="237" width="619">
+                    <p>
+                        <strong>Identifikimi i Nevojave të Klientit</strong><br>
+                        Si të identifikoni nevojat e një klienti të mundshëm:<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Hulumtimi: Njihni industrinë dhe sfidat e klientit përpara se te krijoni kontaktet.<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Pyetje zbulimi: Bëni pyetje të hapura për të zbuluar pikat e dhimbjes, të tilla si:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;"Me çfarë problemesh të IT-së përballeni aktualisht?"<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;"Si po i suportojnë sistemet tuaja IT qëllimet e biznesit tuaj?"<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;"Çfarë do të dëshironit të përmirësonit në mjedisin tuaj aktual të IT?"
+                    </p>
+                    <p>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Dëgjoni në mënyrë aktive: Kushtojini vëmendje sinjaleve të folura dhe të pathëna për të identifikuar shqetësimet e tyre të vërteta.
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section5" class="section"><figure class="table" style="width:465pt;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:177.5pt;" height="237">
+                <td class="xl65" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:177.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="237" width="619">
+                    <p>
+                        <strong>Teknikat dhe Strategjitë e Shitjes</strong>
+                    </p>
+                    <p>
+                        a)&nbsp;&nbsp;&nbsp;&nbsp;Ndërtimi i raportit apo konfidenca me klientin<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Jini të sigurt dhe autentik kur ndërveproni me klientët e mundshëm.<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Kuptoni biznesin e tyre dhe demonstroni sesi shërbimet tuaja të IT-se mund t'i zgjidhin problemet e tyre.
+                    </p>
+                    <p>
+                        b)&nbsp;&nbsp;&nbsp;&nbsp;Shitja me vlerë:<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Në vend që të fokusoheni vetëm te veçoritë, theksoni vlerën që ofrojnë shërbimet tona, të tilla si përmirësimi i efikasitetit, ulja e kostove ose rritja e sigurisë.
+                    </p>
+                    <p>
+                        c)&nbsp;&nbsp;&nbsp;&nbsp;Shitje konsultative:<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Vepro si një këshilltar i besuar. Ofroni zgjidhje që vërtet përfitojnë klientin, jo vetëm shitjen.
+                    </p>
+                    <p>
+                        d)&nbsp;&nbsp;&nbsp;&nbsp;Upsale dhe Cross sale:<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Pasi të keni identifikuar nevojën kryesore të klientit, merrni parasysh ofrimin e shërbimeve plotësuese. Për shembull, nëse një klient është i interesuar për sigurinë kibernetike, ju mund të shisni shërbime rezervë cloud etj.
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section6" class="section"><p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;">
+    <strong>Tejkalimi i Kundërshtimeve</strong>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">Kundërshtimet e zakonshme dhe si t'i trajtoni ato:</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">1. Shqetësimet e çmimit:</span>
+</p>
+<ul style="padding-left:72px;">
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Symbol;"></span>"Unë e kuptoj që çmimi është një shqetësim. Megjithatë, merrni parasysh kursimet afatgjata në kohën e ndërprerjes, shkeljet e sigurisë dhe joefikasitetin që shërbimet tona mund të parandalojnë. Vlera e kalon shumë koston."</span>
+        </p>
+    </li>
+</ul>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">2. Kënaqësia me ofruesin aktual:</span>
+</p>
+<ul style="padding-left:72px;">
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Symbol;"></span>"Kjo është e mrekullueshme të dëgjosh. Shumë nga klientët tanë ishin gjithashtu të kënaqur me ofruesit e tyre të mëparshëm, por ata zbuluan se ne ofrojmë zgjidhje më të përshtatura dhe mbështetje proaktive."</span>
+        </p>
+    </li>
+</ul>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">3. Pasiguria rreth investimit ne IT:</span>
+</p>
+<ul style="padding-left:72px;">
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Symbol;"></span>"Ne mund të ofrojmë raste konkrete dhe të dhëna që tregojnë se si kemi ndihmuar kompani të ngjashme me tuajat të përmirësojnë efikasitetin dhe të ulin kostot me [përqindje specifike]. Ne jemi të sigurt se zgjidhjet tona do të sjellin një kthim të lartë nga investimi."</span>
+        </p>
+    </li>
+</ul>
+<p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;">
+    &nbsp;
+</p>
+<p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;">
+    <span style="font-family:Calibri, sans-serif;font-size:18px;"><strong>Telesales Script</strong></span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;"></span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="color:red;font-family:Calibri, sans-serif;font-size:12pt;">Hapi 1</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">: Hyrje (te jemi konfident dhe miqësor)</span>
+</p>
+<ul style="padding-left:48px;">
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span></span><span style="background-color:aqua;font-family:Calibri, sans-serif;font-size:12pt;">Setup:&nbsp;</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">"Përshëndetje [Emri i Klientit ose kompania], unë quhem Rexhi&nbsp;<span> </span>nga Setup, kompania e cila merret me shërbimet në fushën e<span>&nbsp; </span>Teknologjisë së Informacionit. Shpresoj që je duke ecur mirë! U njoha pak me biznesin<span>&nbsp; </span>tend( nga QKB ose nese eshte I njohur si biznes) dhe doja të dija nëse aktualisht po përballesh me ndonjë sfidë të IT-së me të cilën mund të jemi në gjendje t'ju ndihmojmë?“</span>
+        </p>
+    </li>
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span></span><span style="background-color:yellow;font-family:Calibri, sans-serif;font-size:12pt;">Klienti:&nbsp;</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">Cfarë sherbimesh psh, cfarë sfide?</span>
+        </p>
+    </li>
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span><span>&nbsp;</span></span><span style="background-color:aqua;font-family:Calibri, sans-serif;font-size:12pt;">Setup</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">: Ruajtja e të dhënave që janë nëpër kompjuterat nga viruset duke qënë se kohët e fundit shumë kompani janë hasur me këtë problem, problemet me rrjetin e kompjuterave, me programet që përdorni, me serverat që dispononi nese keni etj etj</span>
+        </p>
+    </li>
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span><span>&nbsp;</span></span><span style="background-color:yellow;font-family:Calibri, sans-serif;font-size:12pt;">Klienti:&nbsp;</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">"Ne e kemi një IT."</span>
+        </p>
+    </li>
+</ul>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;"></span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;"></span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="color:red;font-family:Calibri, sans-serif;font-size:12pt;">Hapi 2</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">: Adresojme kundërshtimet dhe theksojme vlerën</span>
+</p>
+<ul style="padding-left:48px;">
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span></span><span style="background-color:aqua;font-family:Calibri, sans-serif;font-size:12pt;">Setup:&nbsp;</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">"Kjo është e shkëlqyeshme! Ne në fakt punojmë me shumë biznese që tashmë kanë nje IT, por i ndihmojmë ata të përmirësojnë efikasitetin, të reduktojnë kohën e ndërprerjes dhe të shkurtojnë kostot. A përbën interes të dini se si mund ta ndihmojmë ekipin tuaj?"</span>
+        </p>
+    </li>
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span></span><span style="background-color:yellow;font-family:Calibri, sans-serif;font-size:12pt;">Klienti:&nbsp;</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">"Ndoshta, por ne nuk po kërkojmë vërtet tani."</span>
+        </p>
+    </li>
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span></span><span style="background-color:aqua;font-family:Calibri, sans-serif;font-size:12pt;">Setup:&nbsp;</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">"Unë e kuptoj plotësisht. Asnjë problem! Shumë nga klientët tanë u ndjenë në të njëjtën mënyrë, por zbuluan se një telefonatë e shpejtë 15-minutëshe apo nje takim I shkurter i ndihmoi të zbulonin mënyra për të optimizuar proceset ne IT. A do të ishit I gatshem per nje takim te shkurter me eksertet tnaë?"</span>
+        </p>
+    </li>
+    <li>
+        <p style="line-height:115%;margin-bottom:8pt;margin-right:0in;margin-top:0in;tab-stops:list .5in;">
+            <span style="font-family:Calibri, sans-serif;font-size:12pt;"><span style="font-family:Wingdings;"></span></span><span style="background-color:yellow;font-family:Calibri, sans-serif;font-size:12pt;">Klienti:</span><span style="font-family:Calibri, sans-serif;font-size:12pt;"> "Në rregull, sigurisht."</span>
+        </p>
+    </li>
+</ul>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:&quot;Segoe UI Emoji&quot;,sans-serif;font-size:12pt;">✅</span><span style="font-family:Calibri, sans-serif;font-size:12pt;"> First Ëin! Kemi rezervuar një takim. Nëse ata thonë jo, mund ta ndjekim me një email si me poshtë</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;"></span>
+</p>
+<p>
+    &nbsp;
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;"></span>
+</p>
+<p>
+    <br>
+    &nbsp;
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;"><strong>Subjekti</strong><i>: Keni nevojë për ndihmë per ruajtjen e te dhenanve apo për të reduktuar kohën e ndërprerjes së sherbimeve ne<span>&nbsp; </span>IT?</i></span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">Përshëndetje [Emri i Klientit],</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">Pasi u njoha me aktivitetin tuaj si[Emri i Kompanisë së Klientit],mbeta shumë i impresionuar nga ajo që bëni! Doja të kontaktoja sepse ne ndihmojmë bizneset si tuajat me zgjidhje kyçe të IT-së: Sigurinë kibernetike, Ruajtja e te dhenave, support ne cdo fushe te<span>&nbsp; </span>e Teknologjise se Infomacionit, duke siguruar funksionim të sa me te mirë dhe kohë të reduktuar joproduktive.</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">Ja se si mund të ndihmojmë:</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:&quot;Segoe UI Emoji&quot;,sans-serif;font-size:12pt;">✅</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">Mbështetje IT 24/7 për të reduktuar kohën e ndërprerjes me 50% te sherbimeve ne IT)&nbsp;</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:&quot;Segoe UI Emoji&quot;,sans-serif;font-size:12pt;">✅</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">Shmangja e riskut per humbjen e të dhënave të kompanise, të dhënat e janë asset i komanise suaj<span>&nbsp;</span></span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:&quot;Segoe UI Emoji&quot;,sans-serif;font-size:12pt;">✅</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">Siguria kibernetike proaktive për të parandaluar shkeljet e kushtueshme</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:&quot;Segoe UI Emoji&quot;,sans-serif;font-size:12pt;">✅</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">Reduktimi i punëve manual që cdo punonjës kryen gjatë cdo dite&nbsp;</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:&quot;Segoe UI Emoji&quot;,sans-serif;font-size:12pt;">✅</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">Reduktim i kostove operacionale në punët e kompanisë</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:&quot;Segoe UI Emoji&quot;,sans-serif;font-size:12pt;">✅</span><span style="font-family:Calibri, sans-serif;font-size:12pt;">Monitorimi kudo dhe kurdo ne kohë reale I ambjenteve te biznesit me teknologjine e fundit</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">A do të ishit i hapur për një takim te shkurtër ne ditet ne vijim<span>&nbsp; </span>me ekpsertet tanë??</span>
+</p>
+<p style="line-height:115%;margin:0in 0in 8pt;">
+    <span style="font-family:Calibri, sans-serif;font-size:12pt;">Gjithë te mirat</span>
+</p></div>
+    <div id="section7" class="section"><figure class="table" style="width:73.69%;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:255.0pt;" height="340">
+                <td class="xl66" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:255.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="340" width="619">
+                    <p>
+                        <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;text-decoration-line:none;"><strong>Menaxhimi i Marrëdhënieve me Klientin (CRM)</strong></font></span><br>
+                        <br>
+                        <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><font class="font0" style="font-style:normal;font-weight:400;text-decoration-line:none;">• Përdorimi i CRM: Gjurmo të gjitha drejtimet, takimet dhe ndërveprimet përmes CRM-së tonë.</font></span><br>
+                        <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><font class="font0" style="font-style:normal;font-weight:400;text-decoration-line:none;">• Përditësimi i CRM: Sigurohuni që çdo informacion,Leads,<span>&nbsp; </span>të jetë regjistruar siç duhet dhe veprimet pasuese të dokumentohen.</font></span>
+                    </p>
+                    <p>
+                        <br>
+                        <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><font class="font0" style="font-style:normal;font-weight:400;text-decoration-line:none;"><strong>Mjetet e shitjes:</strong></font></span><br>
+                        <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><font class="font0" style="font-style:normal;font-weight:400;text-decoration-line:none;">• Libri i shitjeve: Përdorni librin e shitjeve për udhëzime mbi skriptet, FAQ-të dhe trajtimin e kundërshtimeve.</font></span><br>
+                        <span style="color:black;font-family:&quot;Aptos Narrow&quot;, sans-serif;font-size:11pt;"><font class="font0" style="font-style:normal;font-weight:400;text-decoration-line:none;">• Gjeneruesi i propozimeve: Përdorni shabllonet tona të propozimeve për të krijuar shpejt propozime të personalizuara.</font></span>
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section8" class="section"><figure class="table" style="width:73.69%;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:255.0pt;" height="340">
+                <td class="xl66" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:255.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="340" width="619">
+                    <p>
+                        <strong>Krijimi i Propozimeve</strong>
+                    </p>
+                    <p>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Përdorni modele të standardizuara për çmimet dhe shërbimet, por personalizoni çdo propozim që të përputhet me nevojat e klientit.<br>
+                        <strong>Kontratat:</strong><br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Sigurohuni që klientët të kuptojnë të gjitha kushtet, duke përfshirë fushën e shërbimeve, çmimet dhe afatet kohore.<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Sigurohuni që të gjitha dokumentet të jenë të nënshkruara dhe të regjistruara në CRM.
+                    </p>
+                    <p>
+                        <strong>Shenjat e gatishmërisë:</strong><br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Përkushtimi verbal: Klienti shpreh interes ose kërkon detaje rreth hapave të ardhshëm.<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Pyetje sqaruese: Klienti bën pyetje më specifike në lidhje me zbatimin, kushtet e shërbimit ose mbështetjen.<br>
+                        <strong>Teknikat e mbylljes:</strong><br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Mbyllja supozuese: Supozoni se klienti është gati për të ecur përpara dhe për të paraqitur hapat e ardhshëm.<br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Mbyllja e urgjencës: Theksoni çdo ofertë të ndjeshme ndaj kohës ose përfitime të veprimit të shpejtë.
+                    </p>
+                    <p>
+                        &nbsp;
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section9" class="section"><figure class="table" style="width:73.69%;">
+    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="619">
+        <colgroup><col style="width:100%;" width="619"></colgroup>
+        <tbody>
+            <tr style="height:255.0pt;" height="340">
+                <td class="xl66" style="border:2pt double windowtext;font-style:normal;font-weight:400;height:255.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:465pt;" height="340" width="619">
+                    <p>
+                        <strong>Menaxhimi i Marrëdhënieve pas Shitjes</strong>
+                    </p>
+                    <p>
+                        <br>
+                        <strong>Vazhdimi:</strong><br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Kontrolloni pas shitjes për të siguruar kënaqësinë e klientit dhe për të ofruar mbështetje shtesë.
+                    </p>
+                    <p>
+                        <br>
+                        <strong>Mbajtja e klientit:</strong><br>
+                        •&nbsp;&nbsp;&nbsp;&nbsp;Siguroni kontrolle të rregullta, përditësime shërbimi dhe mundësi për të ofruar shërbime shtesë për të ndihmuar klientët të rriten.
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</figure></div>
+    <div id="section10" class="section">Përmbajtja për Butonin 10</div>
+  </div>
+
+  <script>
+    function showSection(number) {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(section => section.classList.remove('active'));
+      document.getElementById(`section${number}`).classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
+

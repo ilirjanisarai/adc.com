@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <title>Kalkulatori Volton</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h2 {
+      color: #b40000;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .calculator {
+      background: white;
+      border-radius: 10px;
+      padding: 35px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      max-width: 700px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    input {
+      width: 110px;
+      padding: 3px;
+      font-size: 14px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    table {
+      width: auto;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    td {
+      padding: 3px 8px;
+      vertical-align: top;
+    }
+    .result {
+      margin-top: 10px;
+    }
+    .highlight {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <h2>Linja 10kV - 20kV | Konkurrenti: 18.34 lekë/kWh | Volton: 17.3 lekë/kWh</h2>
+    <label>Fatura mujore me TVSH:</label>
+    <input type="number" id="fatura1" placeholder="p.sh. 5000" />
+    <button onclick="llogarit(18.34, 17.3, 'fatura1', 'rezultati1')">Llogarit</button>
+    <div id="rezultati1" class="result"></div>
+  </div>
+
+  <div class="calculator">
+    <h2>Linja 35kV | Konkurrenti: 15.9 lekë/kWh | Volton: 14.6 lekë/kWh</h2>
+    <label>Fatura mujore me TVSH:</label>
+    <input type="number" id="fatura2" placeholder="p.sh. 5000" />
+    <button onclick="llogarit(15.9, 14.6, 'fatura2', 'rezultati2')">Llogarit</button>
+    <div id="rezultati2" class="result"></div>
+  </div>
+
+  <script>
+    function formatNumber(num) {
+      return Math.round(num).toLocaleString('sq-AL');
+    }
+
+    function llogarit(cmimiKonkurrent, cmimiVolton, inputId, outputId) {
+      const vleraFatures = parseFloat(document.getElementById(inputId).value);
+      if (isNaN(vleraFatures) || vleraFatures <= 0) {
+        document.getElementById(outputId).innerText = "Ju lutem vendosni një vlerë të saktë për faturën.";
+        return;
+      }
+
+      const paTVSH = vleraFatures / 1.2;
+      const konsumKWH = paTVSH / cmimiKonkurrent;
+      const faturaVoltonMeTVSH = konsumKWH * cmimiVolton * 1.2;
+      const diferencaMujore = vleraFatures - faturaVoltonMeTVSH;
+      const kursimiVjetor = diferencaMujore * 12;
+
+      document.getElementById(outputId).innerHTML = `
+        <table>
+          <tr><td>Konsumi mujor:</td><td>${formatNumber(konsumKWH)} kWh</td></tr>
+          <tr><td>Fatura me Volton (me TVSH):</td><td>${formatNumber(faturaVoltonMeTVSH)} lekë</td></tr>
+          <tr><td>Kursimi mujor (me TVSH):</td><td>${formatNumber(diferencaMujore)} lekë</td></tr>
+          <tr><td class="highlight">Kursimi vjetor (me TVSH):</td><td class="highlight">${formatNumber(kursimiVjetor)} lekë</td></tr>
+        </table>
+      `;
+    }
+  </script>
+
+</body>
+</html>

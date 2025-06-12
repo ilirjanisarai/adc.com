@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulatori i Shpejtësisë së Internetit WiFi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f3f3f3;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      background-color: #27ae60;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #ecf0f1;
+      border-radius: 5px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kalkulatori i Internetit WiFi</h1>
+  <div class="container">
+    <label for="surface">Sipërfaqja (në m²):</label>
+    <input type="number" id="surface" min="10" required>
+
+    <label for="floors">Numri i kateve:</label>
+    <input type="number" id="floors" min="1" required>
+
+    <label for="devices">Numri i pajisjeve të lidhura:</label>
+    <input type="number" id="devices" min="1" required>
+
+    <label for="usage">Intensiteti i përdorimit:</label>
+    <select id="usage" required>
+      <option value="1">I ulët (e-mail, browsing)</option>
+      <option value="1.3">Mesatar (streaming SD, video call)</option>
+      <option value="1.6">I lartë (4K streaming, gaming)</option>
+    </select>
+
+    <button onclick="calculateSpeed()">Llogarit Shpejtësinë</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculateSpeed() {
+      const surface = parseFloat(document.getElementById('surface').value);
+      const floors = parseInt(document.getElementById('floors').value);
+      const devices = parseInt(document.getElementById('devices').value);
+      const usageFactor = parseFloat(document.getElementById('usage').value);
+
+      if (isNaN(surface) || isNaN(floors) || isNaN(devices)) {
+        document.getElementById('result').innerHTML = "Ju lutem plotësoni të gjitha fushat.";
+        return;
+      }
+
+      let baseSpeed = devices * 10 * usageFactor;
+
+      if (surface > 100) baseSpeed *= 1.2;
+      if (floors > 1) baseSpeed *= (1 + (floors - 1) * 0.1);
+
+      const roundedSpeed = Math.ceil(baseSpeed);
+
+      document.getElementById('result').innerHTML = 
+        `Për një përdorim të kënaqshëm, ju nevojitet një internet me shpejtësi **minimale** prej <strong>${roundedSpeed} Mbps</strong>.`;
+    }
+  </script>
+</body>
+</html>

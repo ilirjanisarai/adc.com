@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    table.custom-table {
+      margin: 0 auto;
+      border-collapse: separate;
+      border-spacing: 0.4cm;
+    }
+
+    table.custom-table th {
+      background-color: red;
+      color: white;
+      font-weight: bold;
+      padding: 10px;
+      text-align: center;
+    }
+
+    table.custom-table td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      vertical-align: top;
+    }
+
+    .expand-list {
+      display: none;
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 0.9em;
+    }
+
+    .show {
+      display: block;
+    }
+
+    button.expand-btn {
+      padding: 5px 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    ul li {
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<table class="custom-table">
+  <tr>
+    <th>Kategoria 1</th>
+    <th>Kategoria 2</th>
+    <th>Kategoria 3</th>
+  </tr>
+  <tr>
+    <td>Përmbajtje A1</td>
+    <td>Përmbajtje B1</td>
+    <td>Përmbajtje C1</td>
+  </tr>
+  <tr>
+    <td>
+      <button class="expand-btn" onclick="toggleList(0)">Shfaq më shumë</button>
+      <div class="expand-list" id="list-0"></div>
+    </td>
+    <td>
+      <button class="expand-btn" onclick="toggleList(1)">Shfaq më shumë</button>
+      <div class="expand-list" id="list-1"></div>
+    </td>
+    <td>
+      <button class="expand-btn" onclick="toggleList(2)">Shfaq më shumë</button>
+      <div class="expand-list" id="list-2"></div>
+    </td>
+  </tr>
+</table>
+
+<script>
+  function toggleList(index) {
+  const listContainer = document.getElementById(`list-${index}`);
+
+  if (listContainer.innerHTML === "") {
+    const ul = document.createElement("ul");
+    data[index].forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+    listContainer.appendChild(ul);
+  }
+
+  listContainer.classList.toggle("show");
+}
+
+      const data = [
+  [ // Për kolonën 1
+    "Kontrata standarde për klientët individualë",
+    "Afati i vlefshmërisë është 12 muaj",
+    "Pagesa bëhet çdo muaj",
+    "Mund të anulohet me 30 ditë njoftim",
+    "Mbështetje teknike pa pagesë",
+    "Tarifa për konsum minimal: 0 Lekë",
+    "Shërbim 24/7 për çdo emergjencë"
+  ],
+  [ // Për kolonën 2
+    "Forma alternative e kontratës për SME",
+    "Afati 24 muaj me zbritje 5%",
+    "Tarifa për shërbime të shtuara",
+    "Mbështetje dedikuar biznesit",
+    "Pagesë me faturë elektronike",
+    "Ndërprerje e shpejtë në rast mos-pagesë",
+    "Shërbim teknik me SLA të garantuar"
+  ],
+  [ // Për kolonën 3
+    "Oferta për klientë të rinj",
+    "Zbritje për 3 muajt e parë",
+    "Aktivizim falas",
+    "Instalim brenda 48 orëve",
+    "Asistencë për kalimin nga një operator tjetër",
+    "Bonuse për rekomandime",
+    "Panel online për monitorim konsumator"
+  ]
+];
+
+
+    listContainer.classList.toggle("show");
+  }
+</script>
+
+</body>
+</html>

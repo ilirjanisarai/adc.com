@@ -111,68 +111,109 @@
     }
 
     .content {
-      flex-grow: 1;
+      flex: 1;
+      background: linear-gradient(135deg, #be0000, #ff5252);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 2s ease-in-out;
+      text-align: center;
+      padding: 20px;
     }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+    .content h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      animation: slideDown 1s ease-out;
+    }
+
+    .content p {
+      font-size: 20px;
+      max-width: 600px;
+      animation: fadeInText 2s ease-in;
+    }
+
+    .btn {
+      margin-top: 30px;
+      background: white;
+      color: #be0000;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #f8dcdc;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes slideDown {
+      from {transform: translateY(-30px); opacity: 0;}
+      to {transform: translateY(0); opacity: 1;}
+    }
+
+    @keyframes fadeInText {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
 <body>
 
-<header onclick="resetToMain()" style="cursor: pointer;">
-  <img src="logo.png" alt="ADC Logo" />
-  <h1>ADC – Albanian Development Company</h1>
-</header>
-
+  <header>
+    <img src="logo.png" alt="ADC Logo" />
+    <h1>ADC – Albanian Development Company</h1>
+  </header>
 
   <div class="main">
     <div class="sidebar">
-      <!-- Vodafone -->
+      <!-- Sidebar content remains unchanged -->
       <div class="menu-title" onclick="toggleMenu('vodafone')">
         <i class="fas fa-mobile-alt"></i> Vodafone
       </div>
       <div class="submenu" id="vodafone">
-        <button onclick="loadPage('vodafone-internet-fiks-individ.html')">Fix Residencial</button>
-        <button onclick="loadPage('Internet-Speed.html')">Internet Calculator</button>
-        <button onclick="loadPage('Planet e reja tarifore.html')">Planet Mobile Business</button>
-        <button onclick="loadPage('Planet-standarde-biznes.html')">Planet Standard</button>
-        <button onclick="loadPage('Kanalet-Televizive.html')">Kanalet Televizive</button>
+        <button onclick="loadPage('Ofertat-Rezidenciale.html')">Fix Residencial</button>
+        <button onclick="loadPage('internet-calculator.html')">Internet Calculator</button>
+        <button onclick="loadPage('planet-mobile-business.html')">Planet Mobile Business</button>
+        <button onclick="loadPage('planet-standard.html')">Planet Standard</button>
+        <button onclick="loadPage('kanalet-televizive.html')">Kanalet Televizive</button>
       </div>
 
-      <!-- Setup -->
       <div class="menu-title" onclick="toggleMenu('setup')">
         <i class="fas fa-cogs"></i> Setup
       </div>
       <div class="submenu" id="setup">
-        <button onclick="loadPage('Setup.html')">Setup service</button>
-        <button onclick="loadPage('Setup-script.html')">Setup script</button>
-        <button onclick="loadPage('Setup-prices.html')">Setup tariffs</button>
-        <button onclick="loadPage('Setup-training.html')">Training manual</button>
+        <button onclick="loadPage('setup-service.html')">Setup service</button>
+        <button onclick="loadPage('setup-script.html')">Setup script</button>
+        <button onclick="loadPage('setup-tariffs.html')">Setup tariffs</button>
+        <button onclick="loadPage('training-manual.html')">Training manual</button>
       </div>
 
-      <!-- Volton -->
       <div class="menu-title" onclick="toggleMenu('volton')">
         <i class="fas fa-bolt"></i> Volton
       </div>
       <div class="submenu" id="volton">
-        <button onclick="loadPage('Calculator-Volton.html')">Volton Calculator</button>
-        <button onclick="loadPage('Volton-FAQ.html')">Volton FAQ</button>
-        <button onclick="window.open('https://volton.al/#services','_blank')">Volton Website</button>
+        <button onclick="loadPage('volton-calculator.html')">Volton Calculator</button>
+        <button onclick="loadPage('volton-faq.html')">Volton FAQ</button>
+        <button onclick="loadPage('volton-website.html')">Volton Website</button>
       </div>
 
-      <!-- Albsig -->
       <div class="menu-title" onclick="toggleMenu('albsig')">
         <i class="fas fa-shield-alt"></i> Albsig
       </div>
       <div class="submenu" id="albsig">
-        <button onclick="loadPage('Albsig.html')">Siguracionet</button>
+        <button onclick="loadPage('siguracionet.html')">Siguracionet</button>
       </div>
 
-      <!-- Procedurat -->
       <div class="menu-title" onclick="toggleMenu('procedurat')">
         <i class="fas fa-file-alt"></i> Procedurat
       </div>
@@ -182,7 +223,6 @@
         <button onclick="loadPage('agent-test-form.html')">Agent test form</button>
       </div>
 
-      <!-- Skripte -->
       <div class="menu-title" onclick="toggleMenu('skripte')">
         <i class="fas fa-scroll"></i> Skripte
       </div>
@@ -198,31 +238,31 @@
         <button onclick="loadPage('vacancies.html')">Vacancies</button>
       </div>
 
-      <!-- B2B -->
+
       <div class="menu-title" onclick="toggleMenu('b2b')">
         <i class="fas fa-briefcase"></i> Business 2 Business
       </div>
       <div class="submenu" id="b2b">
-        <button onclick="loadPage('NCE Microsoft Office 365 Customer Presentation (002).pdf')">Office 365</button>
-        <button onclick="loadPage('Customer Presentation - Vodafone Business Online.html')">Business Online</button>
+        <button onclick="loadPage('office365.html')">Office 365</button>
+        <button onclick="loadPage('business-online.html')">Business Online</button>
       </div>
 
-      <!-- Contracts -->
       <div class="menu-title" onclick="toggleMenu('contracts')">
         <i class="fas fa-folder-open"></i> Contracts & Forms
       </div>
       <div class="submenu" id="contracts">
-        <button onclick="loadPage('Forms&Contracts.html')">Contracts & Forms</button>
+        <button onclick="loadPage('contracts-forms.html')">Contracts & Forms</button>
       </div>
 
-      <!-- Refresh Button -->
       <button class="refresh-btn" onclick="refreshAndCloseMenus()">
         <i class="fas fa-sync-alt"></i> Rifresko & Mbyll Menutë
       </button>
     </div>
 
     <div class="content">
-      <iframe id="content-frame" src="welcome.html"></iframe>
+      <h1>Mirësevini në ADC Portal</h1>
+      <p>Ky është portali juaj për të gjitha informacionet, ofertat dhe dokumentet e nevojshme për punën tuaj të përditshme.</p>
+      <a href="#" class="btn" onclick="refreshAndCloseMenus()">Fillo Tani</a>
     </div>
   </div>
 
@@ -233,52 +273,15 @@
     }
 
     function loadPage(url) {
-      document.getElementById('content-frame').src = url;
+      alert('Faqja ' + url + ' do të ngarkohet këtu në të ardhmen.');
     }
 
     function refreshAndCloseMenus() {
-      // Rifresko iframe
-      const iframe = document.getElementById('content-frame');
-      iframe.src = iframe.src;
-
-      // Mbyll të gjitha menutë
       const allMenus = document.querySelectorAll('.submenu');
       allMenus.forEach(menu => {
         menu.style.display = 'none';
       });
     }
-
-
-  function toggleMenu(id) {
-    const menu = document.getElementById(id);
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-  }
-
-  function loadPage(url) {
-    document.getElementById('content-frame').src = url;
-  }
-
-  function refreshAndCloseMenus() {
-    const iframe = document.getElementById('content-frame');
-    iframe.src = iframe.src;
-
-    closeAllMenus();
-  }
-
-  function resetToMain() {
-    document.getElementById('content-frame').src = 'welcome.html';
-    closeAllMenus();
-  }
-
-  function closeAllMenus() {
-    const allMenus = document.querySelectorAll('.submenu');
-    allMenus.forEach(menu => {
-      menu.style.display = 'none';
-    });
-  }
-
-
-    
   </script>
 
 </body>

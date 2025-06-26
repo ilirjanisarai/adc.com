@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="sq">
 <head>
@@ -23,6 +24,7 @@
       background-color: #d6cece;
       color: white;
       padding: 10px 20px;
+      cursor: pointer;
     }
 
     header img {
@@ -112,167 +114,176 @@
 
     .content {
       flex-grow: 1;
+      padding: 30px;
+      background-color: #f9f9f9;
+      overflow-y: auto;
     }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+    h2 {
+      color: #d32f2f;
     }
 
+    .info-box {
+      background-color: #fff;
+      border-left: 5px solid #d32f2f;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-    
+    ul {
+      padding-left: 20px;
+    }
+
+    ul li a {
+      color: #2196F3;
+      text-decoration: none;
+    }
+
+    ul li a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
 
-<header onclick="resetToMain()" style="cursor: pointer;">
+<header onclick="resetToMain()">
   <img src="logo.png" alt="ADC Logo" />
   <h1>ADC – Albanian Development Company</h1>
 </header>
 
-
-  <div class="main">
-    <div class="sidebar">
-      <!-- Vodafone -->
-      <div class="menu-title" onclick="toggleMenu('vodafone')">
-        <i class="fas fa-mobile-alt"></i> Vodafone
-      </div>
-      <div class="submenu" id="vodafone">
-        <button onclick="loadPage('vodafone-internet-fiks-individ.html')">Fix Residencial</button>
-        <button onclick="loadPage('Internet-Speed.html')">Internet Calculator</button>
-        <button onclick="loadPage('Planet e reja tarifore.html')">Planet Mobile Business</button>
-        <button onclick="loadPage('Planet-standarde-biznes.html')">Planet Standard</button>
-        <button onclick="loadPage('Kanalet-Televizive.html')">Kanalet Televizive</button>
-      </div>
-
-      <!-- Setup -->
-      <div class="menu-title" onclick="toggleMenu('setup')">
-        <i class="fas fa-cogs"></i> Setup
-      </div>
-      <div class="submenu" id="setup">
-        <button onclick="loadPage('Setup.html')">Setup service</button>
-        <button onclick="loadPage('Setup-script.html')">Setup script</button>
-        <button onclick="loadPage('Setup-prices.html')">Setup tariffs</button>
-        <button onclick="loadPage('Setup-training.html')">Training manual</button>
-      </div>
-
-      <!-- Volton -->
-      <div class="menu-title" onclick="toggleMenu('volton')">
-        <i class="fas fa-bolt"></i> Volton
-      </div>
-      <div class="submenu" id="volton">
-        <button onclick="loadPage('Calculator-Volton.html')">Volton Calculator</button>
-        <button onclick="loadPage('Volton-FAQ.html')">Volton FAQ</button>
-        <button onclick="window.open('https://volton.al/#services','_blank')">Volton Website</button>
-      </div>
-
-      <!-- Albsig -->
-      <div class="menu-title" onclick="toggleMenu('albsig')">
-        <i class="fas fa-shield-alt"></i> Albsig
-      </div>
-      <div class="submenu" id="albsig">
-        <button onclick="loadPage('Albsig.html')">Siguracionet</button>
-      </div>
-
-      <!-- Procedurat -->
-      <div class="menu-title" onclick="toggleMenu('procedurat')">
-        <i class="fas fa-file-alt"></i> Procedurat
-      </div>
-      <div class="submenu" id="procedurat">
-        <button onclick="loadPage('documentation.html')">Documentation</button>
-        <button onclick="loadPage('tlm-processes.html')">TLM processes</button>
-        <button onclick="loadPage('agent-test-form.html')">Agent test form</button>
-      </div>
-
-      <!-- Skripte -->
-      <div class="menu-title" onclick="toggleMenu('skripte')">
-        <i class="fas fa-scroll"></i> Skripte
-      </div>
-      <div class="submenu" id="skripte">
-        <button onclick="loadPage('scripte-shitje.html')">Scripte per shitje</button>
-      </div>
-
-      <!-- HR -->
-      <div class="menu-title" onclick="toggleMenu('hr')">
-        <i class="fas fa-users"></i> Burimet Njerezore
-      </div>
-      <div class="submenu" id="hr">
-        <button onclick="loadPage('vacancies.html')">Vacancies</button>
-      </div>
-
-      <!-- B2B -->
-      <div class="menu-title" onclick="toggleMenu('b2b')">
-        <i class="fas fa-briefcase"></i> Business 2 Business
-      </div>
-      <div class="submenu" id="b2b">
-        <button onclick="loadPage('NCE Microsoft Office 365 Customer Presentation (002).pdf')">Office 365</button>
-        <button onclick="loadPage('Customer Presentation - Vodafone Business Online.html')">Business Online</button>
-      </div>
-
-      <!-- Contracts -->
-      <div class="menu-title" onclick="toggleMenu('contracts')">
-        <i class="fas fa-folder-open"></i> Contracts & Forms
-      </div>
-      <div class="submenu" id="contracts">
-        <button onclick="loadPage('Forms&Contracts.html')">Contracts & Forms</button>
-      </div>
-
-      <!-- Refresh Button -->
-      <button class="refresh-btn" onclick="refreshAndCloseMenus()">
-        <i class="fas fa-sync-alt"></i> Rifresko & Mbyll Menutë
-      </button>
+<div class="main">
+  <div class="sidebar">
+    <div class="menu-title" onclick="toggleMenu('vodafone')">
+      <i class="fas fa-mobile-alt"></i> Vodafone
+    </div>
+    <div class="submenu" id="vodafone">
+      <button onclick="loadPage('vodafone-internet-fiks-individ.html')">Fix Residencial</button>
+      <button onclick="loadPage('Internet-Speed.html')">Internet Calculator</button>
+      <button onclick="loadPage('Planet e reja tarifore.html')">Planet Mobile Business</button>
+      <button onclick="loadPage('Planet-standarde-biznes.html')">Planet Standard</button>
+      <button onclick="loadPage('Kanalet-Televizive.html')">Kanalet Televizive</button>
     </div>
 
-  <div class="content">
-      <iframe id="content-frame" src="welcome.html"></iframe>
+    <div class="menu-title" onclick="toggleMenu('setup')">
+      <i class="fas fa-cogs"></i> Setup
+    </div>
+    <div class="submenu" id="setup">
+      <button onclick="loadPage('Setup.html')">Setup service</button>
+      <button onclick="loadPage('Setup-script.html')">Setup script</button>
+      <button onclick="loadPage('Setup-prices.html')">Setup tariffs</button>
+      <button onclick="loadPage('Setup-training.html')">Training manual</button>
     </div>
 
+    <div class="menu-title" onclick="toggleMenu('volton')">
+      <i class="fas fa-bolt"></i> Volton
+    </div>
+    <div class="submenu" id="volton">
+      <button onclick="loadPage('Calculator-Volton.html')">Volton Calculator</button>
+      <button onclick="loadPage('Volton-FAQ.html')">Volton FAQ</button>
+      <button onclick="window.open('https://volton.al/#services','_blank')">Volton Website</button>
+    </div>
 
-    
+    <div class="menu-title" onclick="toggleMenu('albsig')">
+      <i class="fas fa-shield-alt"></i> Albsig
+    </div>
+    <div class="submenu" id="albsig">
+      <button onclick="loadPage('Albsig.html')">Siguracionet</button>
+    </div>
+
+    <div class="menu-title" onclick="toggleMenu('procedurat')">
+      <i class="fas fa-file-alt"></i> Procedurat
+    </div>
+    <div class="submenu" id="procedurat">
+      <button onclick="loadPage('documentation.html')">Documentation</button>
+      <button onclick="loadPage('tlm-processes.html')">TLM processes</button>
+      <button onclick="loadPage('agent-test-form.html')">Agent test form</button>
+    </div>
+
+    <div class="menu-title" onclick="toggleMenu('skripte')">
+      <i class="fas fa-scroll"></i> Skripte
+    </div>
+    <div class="submenu" id="skripte">
+      <button onclick="loadPage('scripte-shitje.html')">Scripte per shitje</button>
+    </div>
+
+    <div class="menu-title" onclick="toggleMenu('hr')">
+      <i class="fas fa-users"></i> Burimet Njerezore
+    </div>
+    <div class="submenu" id="hr">
+      <button onclick="loadPage('vacancies.html')">Vacancies</button>
+    </div>
+
+    <div class="menu-title" onclick="toggleMenu('b2b')">
+      <i class="fas fa-briefcase"></i> Business 2 Business
+    </div>
+    <div class="submenu" id="b2b">
+      <button onclick="loadPage('NCE Microsoft Office 365 Customer Presentation (002).pdf')">Office 365</button>
+      <button onclick="loadPage('Customer Presentation - Vodafone Business Online.html')">Business Online</button>
+    </div>
+
+    <div class="menu-title" onclick="toggleMenu('contracts')">
+      <i class="fas fa-folder-open"></i> Contracts & Forms
+    </div>
+    <div class="submenu" id="contracts">
+      <button onclick="loadPage('Forms&Contracts.html')">Contracts & Forms</button>
+    </div>
+
+    <button class="refresh-btn" onclick="refreshAndCloseMenus()">
+      <i class="fas fa-sync-alt"></i> Rifresko & Mbyll Menutë
+    </button>
   </div>
 
-  <script>
-    function toggleMenu(id) {
-      const menu = document.getElementById(id);
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
+  <div class="content" id="content-frame">
+    <h2>Mirë se vini në ADC Portal</h2>
+    <div class="info-box">
+      <p>Këtu mund të gjeni të gjitha informacionet dhe mjetet që ju nevojiten për punën tuaj të përditshme.</p>
+    </div>
+    <div class="info-box">
+      <strong>Lidhje të shpejta:</strong>
+      <ul>
+        <li><a href="Setup.html" target="_self">Manuali i Setup</a></li>
+        <li><a href="documentation.html" target="_self">Procedurat</a></li>
+        <li><a href="vacancies.html" target="_self">Pozicione të lira</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-    function loadPage(url) {
-      document.getElementById('content-frame').src = url;
-    }
-
-    function refreshAndCloseMenus() {
-      // Rifresko iframe
-      const iframe = document.getElementById('content-frame');
-      iframe.src = iframe.src;
-
-      // Mbyll të gjitha menutë
-      const allMenus = document.querySelectorAll('.submenu');
-      allMenus.forEach(menu => {
-        menu.style.display = 'none';
-      });
-    }
-
-
+<script>
   function toggleMenu(id) {
     const menu = document.getElementById(id);
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
   }
 
   function loadPage(url) {
-    document.getElementById('content-frame').src = url;
+    const content = document.getElementById('content-frame');
+    content.innerHTML = '<iframe src="' + url + '" style="width:100%; height:100%; border:none;"></iframe>';
   }
 
   function refreshAndCloseMenus() {
-    const iframe = document.getElementById('content-frame');
-    iframe.src = iframe.src;
+    const content = document.getElementById('content-frame');
+    content.innerHTML = content.innerHTML;
 
     closeAllMenus();
   }
 
   function resetToMain() {
-    document.getElementById('content-frame').src = 'welcome.html';
+    const content = document.getElementById('content-frame');
+    content.innerHTML = `
+      <h2>Mirë se vini në ADC Portal</h2>
+      <div class="info-box">
+        <p>Këtu mund të gjeni të gjitha informacionet dhe mjetet që ju nevojiten për punën tuaj të përditshme.</p>
+      </div>
+      <div class="info-box">
+        <strong>Lidhje të shpejta:</strong>
+        <ul>
+          <li><a href="Setup.html" target="_self">Manuali i Setup</a></li>
+          <li><a href="documentation.html" target="_self">Procedurat</a></li>
+          <li><a href="vacancies.html" target="_self">Pozicione të lira</a></li>
+        </ul>
+      </div>
+    `;
     closeAllMenus();
   }
 
@@ -282,10 +293,7 @@
       menu.style.display = 'none';
     });
   }
-
-
-    
-  </script>
+</script>
 
 </body>
 </html>

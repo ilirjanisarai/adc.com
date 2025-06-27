@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard me Ikona</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #b30000;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 200px;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card i {
+      font-size: 40px;
+      color: #b30000;
+      margin-bottom: 10px;
+    }
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      display: none;
+    }
+    .content.active {
+      display: block;
+    }
+    @media (max-width: 600px) {
+      .grid {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+  <script>
+    function showContent(id) {
+      const contents = document.querySelectorAll('.content');
+      contents.forEach(c => c.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: document.getElementById(id).offsetTop - 20, behavior: 'smooth' });
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <h1>Dashboard i Shërbimeve IT</h1>
+</header>
+
+<div class="grid">
+  <div class="card" onclick="showContent('it')"><i class="fas fa-network-wired"></i><div>IT Services</div></div>
+  <div class="card" onclick="showContent('process')"><i class="fas fa-cogs"></i><div>Process</div></div>
+  <div class="card" onclick="showContent('products')"><i class="fas fa-boxes"></i><div>Products</div></div>
+  <div class="card" onclick="showContent('customer')"><i class="fas fa-user-friends"></i><div>Customer</div></div>
+  <div class="card" onclick="showContent('sales')"><i class="fas fa-chart-line"></i><div>Sales</div></div>
+  <div class="card" onclick="showContent('objections')"><i class="fas fa-exclamation-circle"></i><div>Objections</div></div>
+  <div class="card" onclick="showContent('crm')"><i class="fas fa-address-book"></i><div>CRM</div></div>
+  <div class="card" onclick="showContent('proposals')"><i class="fas fa-file-signature"></i><div>Proposals</div></div>
+</div>
+
+<div id="it" class="content">
+  <h2>IT Services</h2>
+  <p>Shërbimet e IT-së përfshijnë një gamë të gjerë zgjidhjesh teknologjike që ndihmojnë bizneset të funksionojnë në mënyrë më efikase dhe të sigurt. Këto përfshijnë menaxhimin e infrastrukturës, mbështetjen teknike, sigurinë kibernetike, ruajtjen e të dhënave dhe zgjidhjet cloud.</p><p> Një ofrues i mirë i shërbimeve IT ofron monitorim 24/7, ndihmë në distancë dhe në vend, si dhe konsulencë për përmirësimin e proceseve të brendshme. Për më tepër, shërbimet IT ndihmojnë në automatizimin e detyrave të përsëritura, duke ulur kostot dhe duke rritur produktivitetin. Siguria është një komponent kyç, ku përfshihen mbrojtja nga viruset, firewall, backup automatik dhe rikuperimi pas fatkeqësive.</p><p> Zgjidhjet cloud ofrojnë fleksibilitet dhe shkallëzim, duke lejuar bizneset të ruajnë dhe aksesojnë të dhënat nga kudo. Në një botë gjithnjë e më të dixhitalizuar, shërbimet IT janë themelore për suksesin dhe qëndrueshmërinë e çdo organizate.</p>
+</div>
+
+<div id="process" class="content">
+  <h2>Process</h2>
+  <p>Procesi i shitjes dhe ofrimit të shërbimeve IT përfshin disa hapa të strukturuar që sigurojnë një përvojë të suksesshme për klientin. Fillon me gjenerimin e leads përmes marketingut, rrjeteve dhe referimeve. Më pas, bëhet kualifikimi i klientëve potencialë për të kuptuar nevojat dhe buxhetin e tyre. </p><p>Takimet fillestare shërbejnë për të identifikuar sfidat aktuale dhe për të përcaktuar objektivat e biznesit. Pas kësaj, përgatitet një propozim i personalizuar që përfshin zgjidhje të përshtatura, çmime dhe afate kohore.</p><p> Nëse klienti ka kundërshtime, ato trajtohen me profesionalizëm dhe transparencë. Pas miratimit, fillon faza e implementimit, ku ekipi teknik vendos zgjidhjet dhe siguron trajnimin e nevojshëm. Pas dorëzimit, ofrohet mbështetje e vazhdueshme dhe monitorim për të siguruar funksionim optimal. Ky proces i strukturuar ndihmon në ndërtimin e besimit dhe në sigurimin e rezultateve të qëndrueshme për klientin.</p>
+</div>
+
+<div id="products" class="content">
+  <h2>Products</h2>
+  <p>Produktet në fushën e IT-së përfshijnë softuerë, pajisje dhe zgjidhje të integruara që ndihmojnë bizneset të funksionojnë më mirë. Këto përfshijnë sisteme operimi, aplikacione për menaxhimin e burimeve, platforma për komunikim dhe bashkëpunim, si dhe mjete për siguri dhe backup. </p><p>Pajisjet përfshijnë servera, kompjuterë, rrjetëzime dhe pajisje të ruajtjes së të dhënave. Zgjidhjet cloud si Microsoft 365, Google Workspace dhe platforma të tjera ofrojnë fleksibilitet dhe akses të largët. </p><p>Softuerët e menaxhimit të projektit, CRM-të dhe ERP-të ndihmojnë në organizimin dhe analizimin e të dhënave të biznesit. Produktet e sigurisë si antivirusë, firewall dhe sisteme të monitorimit janë thelbësore për mbrojtjen e të dhënave. Zgjedhja e produkteve të duhura ndihmon në rritjen e efikasitetit, uljen e kostove dhe përmirësimin e përvojës së klientit.</p>
+</div>
+
+<div id="customer" class="content">
+  <h2>Customer</h2>
+  <p>Klienti është në qendër të çdo biznesi të suksesshëm. Kuptimi i nevojave të klientit, dëgjimi aktiv dhe ofrimi i zgjidhjeve të personalizuara janë thelbësore për ndërtimin e marrëdhënieve afatgjata. Identifikimi i nevojave fillon me hulumtim dhe pyetje të hapura që ndihmojnë në zbulimin e sfidave dhe objektivave të klientit.</p><p> Pas kësaj, ofrohen zgjidhje të përshtatura që adresojnë këto nevoja. Komunikimi i qartë dhe i vazhdueshëm ndihmon në ndërtimin e besimit. Pas shitjes, është e rëndësishme të ofrohet mbështetje dhe ndjekje për të siguruar kënaqësinë e klientit.</p><p> Klientët e kënaqur janë më të prirur të bëhen ambasadorë të markës dhe të sjellin referime të reja. Ndërtimi i marrëdhënieve të forta me klientët është një investim që sjell përfitime të qëndrueshme për biznesin.</p>
+</div>
+
+<div id="sales" class="content">
+  <h2>Sales</h2>
+  <p>Shitja në fushën e IT-së kërkon një qasje strategjike dhe të personalizuar. Fillon me ndërtimin e raportit me klientin përmes komunikimit të hapur dhe kuptimit të nevojave të tij. Shitja me vlerë fokusohet në përfitimet që sjell zgjidhja, si rritja e efikasitetit, ulja e kostove dhe përmirësimi i sigurisë. </p><p>Shitja konsultative përfshin analizimin e situatës aktuale të klientit dhe ofrimin e zgjidhjeve të përshtatura. Upselling dhe cross-selling janë teknika që ndihmojnë në rritjen e vlerës së marrëveshjes duke ofruar produkte ose shërbime shtesë.</p><p> Mbyllja e marrëveshjes kërkon qartësi në hapat e ardhshëm dhe sigurimin që të gjitha dokumentet janë të nënshkruara. Pas shitjes, ndjekja është e rëndësishme për të siguruar kënaqësinë dhe për të ndërtuar marrëdhënie afatgjata. Një proces shitjeje i strukturuar dhe i orientuar nga klienti është çelësi për suksesin në këtë fushë.</p>
+</div>
+
+<div id="objections" class="content">
+  <h2>Objections</h2>
+  <p>Trajtimi i kundërshtimeve është një pjesë e rëndësishme e procesit të shitjes. Klientët mund të kenë shqetësime për çmimin, nevojën për shërbimin, ose kënaqësinë me ofruesin aktual. Është e rëndësishme të dëgjohet me kujdes dhe të kuptohet arsyeja pas kundërshtimit. </p><p>Për shembull, nëse çmimi është një shqetësim, mund të theksohet vlera afatgjatë që sjell shërbimi, si kursimi i kohës dhe parandalimi i problemeve të mëdha. Nëse klienti është i kënaqur me ofruesin aktual, mund të ofrohen raste konkrete që tregojnë përfitimet e kalimit te një zgjidhje më e avancuar.</p><p> Pasiguria për investimin në IT mund të trajtohet me statistika dhe histori suksesi. Qasja duhet të jetë profesionale, empatike dhe e bazuar në fakte. Trajtimi i suksesshëm i kundërshtimeve ndihmon në ndërtimin e besimit dhe në mbylljen e marrëveshjeve.</p>
+</div>
+
+<div id="crm" class="content">
+  <h2>CRM</h2>
+  <p>Menaxhimi i Marrëdhënieve me Klientin (CRM) është një sistem që ndihmon bizneset të organizojnë, analizojnë dhe përmirësojnë ndërveprimet me klientët. Një CRM i mirë lejon gjurmimin e çdo kontakti, takimi dhe komunikimi me klientin. Ai ndihmon në ndarjen e klientëve sipas fazës së shitjes, interesave dhe historikut të blerjeve. </p><p>Përditësimi i rregullt i të dhënave në CRM siguron që ekipi i shitjes të ketë informacionin më të fundit për të marrë vendime të informuara. CRM-të moderne ofrojnë integrim me email, kalendarë dhe mjete të tjera për automatizimin e detyrave.</p><p> Ato gjithashtu ofrojnë raporte dhe analiza që ndihmojnë në identifikimin e trendeve dhe përmirësimin e strategjive të shitjes. Përdorimi efektiv i CRM-së rrit efikasitetin, përmirëson përvojën e klientit dhe ndihmon në ndërtimin e marrëdhënieve afatgjata.</p>
+</div>
+
+<div id="proposals" class="content">
+  <h2>Proposals</h2>
+  <p>Propozimet janë dokumente të strukturuara që paraqesin zgjidhjet e ofruara për një klient të caktuar. Ato përfshijnë përshkrimin e shërbimeve, çmimet, afatet kohore dhe kushtet e bashkëpunimit. Një propozim i mirë duhet të jetë i qartë, i personalizuar dhe i orientuar drejt vlerës që sjell për klientin. </p><p>Përdorimi i shablloneve standarde ndihmon në ruajtjen e konsistencës, ndërsa personalizimi i përmbajtjes tregon kujdes dhe profesionalizëm. Propozimet duhet të adresojnë nevojat specifike të klientit dhe të përfshijnë raste suksesi ose dëshmi nga klientë të tjerë.</p><p> Pas dërgimit të propozimit, është e rëndësishme të ndiqet me një telefonatë ose takim për të sqaruar çdo paqartësi. Një propozim i mirë strukturuar rrit shanset për mbylljen e marrëveshjes dhe ndihmon në ndërtimin e një marrëdhënieje të fortë me klientin.</p>
+</div>
+
+</body>
+</html>

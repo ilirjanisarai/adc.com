@@ -176,6 +176,15 @@ header {
     ul li a:hover {
       text-decoration: underline;
     }
+
+
+.submenu button.active {
+  background-color: black !important;
+  color: white !important;
+}
+
+
+    
   </style>
 </head>
 <body>
@@ -335,6 +344,21 @@ header {
       menu.style.display = 'none';
     });
   }
+
+
+
+    const submenuButtons = document.querySelectorAll('.submenu button');
+
+  submenuButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Hiq "active" nga të gjithë butonat
+      submenuButtons.forEach(b => b.classList.remove('active'));
+      // Shto "active" vetëm tek butoni i klikuar
+      btn.classList.add('active');
+    });
+  });
+
+  
 </script>
 
 </body>

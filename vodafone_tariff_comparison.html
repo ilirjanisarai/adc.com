@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Vodafone Internet Fix Business Tariff Plans</title>
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: #000;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #e60000;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .buttons {
+      text-align: center;
+      margin: 20px 0;
+    }
+    button {
+      background-color: #e60000;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #cc0000;
+    }
+    .tariffs {
+      display: none;
+      padding: 20px;
+    }
+    .tariffs.active {
+      display: block;
+    }
+    .tariff-category {
+      margin-bottom: 30px;
+    }
+    .tariff-category h3 {
+      color: #e60000;
+      border-bottom: 2px solid #e60000;
+      padding-bottom: 5px;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li {
+      background-color: #f2f2f2;
+      margin: 5px 0;
+      padding: 10px;
+      border-left: 5px solid #e60000;
+    }
+  </style>
+</head>
+<body onload="showTariffs('new')">
+<header>
+<h1>Vodafone Tariff Plans</h1>
+</header>
+<div class="buttons">
+<button onclick="showTariffs('old')">Tarifat e Vjetra Business Fix</button>
+<button onclick="showTariffs('new')">Tarifat e Reja Business Fix</button>
+</div>
+<div class="tariffs" id="old-tariffs">
+<div class="tariff-category">
+<h3>Giga Fibra Old</h3>
+<ul>
+<li>100/30 Mbps – 1,200 ALL</li>
+<li>50/30 Mbps – 1,500 ALL</li>
+<li>20/30 Mbps – 1,800 ALL</li>
+</ul>
+</div>
+<div class="tariff-category">
+<h3>Giga Fibra Static Old</h3>
+<ul>
+<li>Pro 100/40-60 Mbps – 4,000 ALL</li>
+<li>Pro 200/60 Mbps – 5,000 ALL</li>
+<li>Pro 500/60-160 Mbps – 6,500 ALL</li>
+<li>Pro 1000/1200/200 Mbps – 9,000 ALL</li>
+</ul>
+</div>
+<div class="tariff-category">
+<h3>Giga Fibra Protect Old</h3>
+<ul>
+<li>Prime 100/100 Mbps – 40,000 ALL</li>
+<li>Prime 300/300 Mbps – 60,000 ALL</li>
+<li>Prime 500/500 Mbps – 85,000 ALL</li>
+<li>Prime 1Gbps – 170,000 ALL</li>
+</ul>
+</div>
+</div>
+<div class="tariffs active" id="new-tariffs">
+<div class="tariff-category">
+<h3>Giga Fibra New</h3>
+<ul>
+<li>100/30 Mbps – 1,300 ALL</li>
+<li>50/30 Mbps – 1,600 ALL</li>
+<li>20/30 Mbps – 1,900 ALL</li>
+</ul>
+</div>
+<div class="tariff-category">
+<h3>Giga Fibra Static New</h3>
+<ul>
+<li>Pro 100/40-60 Mbps – 4,500 ALL</li>
+<li>Pro 200/60 Mbps – 5,500 ALL</li>
+<li>Pro 500/60-160 Mbps – 7,000 ALL</li>
+<li>Pro 1000/1200/200 Mbps – 10,000 ALL</li>
+</ul>
+</div>
+<div class="tariff-category">
+<h3>Giga Fibra Protect New</h3>
+<ul>
+<li>Prime 100/100 Mbps – 45,000 ALL</li>
+<li>Prime 300/300 Mbps – 66,000 ALL</li>
+<li>Prime 500/500 Mbps – 90,000 ALL</li>
+<li>Prime 1Gbps – 180,000 ALL</li>
+</ul>
+</div>
+</div>
+<script>
+    function showTariffs(type) {
+      document.getElementById('old-tariffs').classList.remove('active');
+      document.getElementById('new-tariffs').classList.remove('active');
+      document.getElementById(type + '-tariffs').classList.add('active');
+    }
+  </script>
+<section style="padding: 20px;"><h2 style="color: #e60000; text-align: center; margin-bottom: 20px;">Tabela Krahasuese</h2><table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;"><thead><tr><th style="background-color: #e60000; color: white; padding: 10px; text-align: left;">Tarifat e Vjetra</th><th style="background-color: #e60000; color: white; padding: 10px; text-align: left;">Tarifat e Reja</th></tr></thead><tbody><tr><td colspan="2" style="background-color: #f2f2f2; font-weight: bold; padding: 8px;">Giga Fibra</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">100/30 Mbps – 1,200 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">100/30 Mbps – 1,300 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">50/30 Mbps – 1,500 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">50/30 Mbps – 1,600 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">20/30 Mbps – 1,800 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">20/30 Mbps – 1,900 ALL</td></tr><tr><td colspan="2" style="background-color: #f2f2f2; font-weight: bold; padding: 8px;">Giga Fibra Static</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 100/40-60 Mbps – 4,000 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 100/40-60 Mbps – 4,500 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 200/60 Mbps – 5,000 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 200/60 Mbps – 5,500 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 500/60-160 Mbps – 6,500 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 500/60-160 Mbps – 7,000 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 1000/1200/200 Mbps – 9,000 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Pro 1000/1200/200 Mbps – 10,000 ALL</td></tr><tr><td colspan="2" style="background-color: #f2f2f2; font-weight: bold; padding: 8px;">Giga Fibra Protect</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 100/100 Mbps – 40,000 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 100/100 Mbps – 45,000 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 300/300 Mbps – 60,000 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 300/300 Mbps – 66,000 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 500/500 Mbps – 85,000 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 500/500 Mbps – 90,000 ALL</td></tr><tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 1Gbps – 170,000 ALL</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">Prime 1Gbps – 180,000 ALL</td></tr></tbody></table></section></body>
+</html>

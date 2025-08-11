@@ -1,412 +1,447 @@
-
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ADC Portal</title>
-  <link rel="icon" type="image/png" href="adc.png"/>
+  <link rel="icon" type="image/png" href="adc.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-
-<div class="social-icons">
-  <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-  <a href="https://www.instagram.com/albanian_development_company?igsh=bXRobW45bmU0NWhm" target="_blank"><i class="fab fa-instagram"></i></a>
-  <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-</div>
-
-
-  
   <style>
+    :root{
+      --brand:#e60000;
+      --bg:#0b0c0f;
+      --surface:#ffffff;
+      --muted:#6b7280;
+      --line:#e6e7eb;
+      --sidebar:#f7f7f8;
+      --shadow:0 10px 30px rgba(2,8,23,0.08);
 
-header {
-  justify-content: space-between; /* për të shtyrë ikonat në të djathtë */
-}
+      /* Seksionet */
+      --vodafone:#d32f2f; --vodafone-h:#a52828;
+      --setup:#912983; --setup-h:#5e1b5c;
+      --volton:#2e7d32; --volton-h:#1b5e20;
 
-.social-icons {
-  display: flex;
-  gap: 12px;
-}
+      /* Albsig & B2B KUQE */
+      --albsig:#d32f2f; --albsig-h:#a52828;
+      --b2b:#d32f2f; --b2b-h:#a52828;
 
-.social-icons a {
-  color: black;
-  font-size: 18px;
-  transition: color 0.3s;
-}
-
-.social-icons a:hover {
-  color: #e6210b; /* mund ta ndryshosh ngjyrën në hover */
-}
-
-
-    
-    * {
-      box-sizing: border-box;
+      --procedurat:#fb8c00; --procedurat-h:#ef6c00;
+      --skripte:#06b6d4; --skripte-h:#0891b2;
+      --hr:#16a34a; --hr-h:#166534;
+      --contracts:#607d8b; --contracts-h:#455a64;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --surface:#111315;
+        --sidebar:#0e1012;
+        --line:#1f232a;
+        --bg:#0b0c0f;
+        --muted:#a3aab8;
+        --shadow:0 12px 30px rgba(0,0,0,0.35);
+      }
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+      background:linear-gradient(180deg, #ffffff 0%, #fafafa 60%, #f5f7fb 100%);
+      color:#111827;
     }
 
-    header {
-      display: flex;
-      align-items: center;
-      background-color: #d6cece;
-      color: white;
-      padding: 10px 20px;
-      cursor: pointer;
+    /* Header */
+    header.appbar{
+      position:sticky; top:0; z-index:50;
+      display:flex; align-items:center; gap:14px;
+      padding:14px 18px;
+      background:linear-gradient(120deg, var(--bg) 0%, #f5f0f0 10%, #1a1f26 60%);
+      color:#fff;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .appbar .brand{display:flex; align-items:center; gap:12px; cursor:pointer}
+    .appbar img{height:36px; width:auto}
+    .appbar h1{font-size:18px; line-height:1; margin:0; font-weight:700; letter-spacing:.2px}
+    .appbar .spacer{flex:1}
+    .social-icons{display:flex; gap:14px; align-items:center}
+    .social-icons a{color:#e5e7eb; font-size:16px; transition:transform .2s ease, color .2s ease}
+    .social-icons a:hover{color:#fff; transform:translateY(-1px)}
+
+    /* Layout */
+    .layout{display:grid; grid-template-columns: 300px 1fr; min-height:calc(100vh - 64px)}
+    aside.sidebar{
+      position:sticky; top:64px;
+      height:calc(100vh - 64px);
+      overflow:auto;
+      background:var(--sidebar);
+      border-right:1px solid var(--line);
+      padding:16px;
+    }
+    main.content{
+      padding:28px; min-height:calc(100vh - 64px);
+      background:transparent;
     }
 
-    header img {
-      height: 40px;
-      margin-right: 15px;
+    /* Sidebar groups */
+    .group{border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden; margin-bottom:14px}
+    .group summary{
+      list-style:none; cursor:pointer; user-select:none;
+      display:flex; align-items:center; gap:10px; padding:12px 14px; font-weight:700;
+      background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
+    }
+    .group summary::-webkit-details-marker{display:none}
+
+    /* Ngjyra e ikonave sipas seksionit */
+    .group[data-color="vodafone"] summary i{color:var(--vodafone)}
+    .group[data-color="setup"] summary i{color:var(--setup)}
+    .group[data-color="volton"] summary i{color:var(--volton)}
+    .group[data-color="albsig"] summary i{color:var(--albsig)} /* KUQE */
+    .group[data-color="b2b"] summary i{color:var(--b2b)} /* KUQE */
+    .group[data-color="procedurat"]summary i{color:var(--procedurat)}
+    .group[data-color="skripte"] summary i{color:var(--skripte)}
+    .group[data-color="hr"] summary i{color:var(--hr)}
+    .group[data-color="contracts"] summary i{color:var(--contracts)}
+
+    .group .menu{
+      padding:10px; display:grid; gap:10px;
+      background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
     }
 
-    header h1 {
-      font-size: 20px;
-      margin: 0;
+    /* Nënopsionet – stil i këndshëm me gradient, hije dhe animacion shigjete */
+    .group .menu button{
+      position:relative;
+      width:100%; text-align:left;
+      padding:12px 44px 12px 14px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      color:#fff; font-weight:700; letter-spacing:.2px;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(2,8,23,.08);
+      transform:translateY(0);
+      transition:
+        transform .12s ease,
+        box-shadow .2s ease,
+        filter .2s ease,
+        background .2s ease;
+      overflow:hidden;
+    }
+    .group .menu button::before{
+      content:"";
+      position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0));
+      pointer-events:none;
+      border-radius:inherit;
+    }
+    .group .menu button::after{
+      content:"›";
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      font-weight:900; opacity:.85;
     }
 
-    .main {
-      display: flex;
-      flex: 1;
-      height: 100%;
+    /* Ngjyra bazuar te seksioni (gradient) */
+    .group[data-color="vodafone"] .menu button{background:linear-gradient(180deg, var(--vodafone), var(--vodafone-h))}
+    .group[data-color="setup"] .menu button{background:linear-gradient(180deg, var(--setup), var(--setup-h))}
+    .group[data-color="volton"] .menu button{background:linear-gradient(180deg, var(--volton), var(--volton-h))}
+    .group[data-color="albsig"] .menu button{background:linear-gradient(180deg, var(--albsig), var(--albsig-h))} /* KUQE */
+    .group[data-color="b2b"] .menu button{background:linear-gradient(180deg, var(--b2b), var(--b2b-h))} /* KUQE */
+    .group[data-color="procedurat"] .menu button{background:linear-gradient(180deg, var(--procedurat), var(--procedurat-h))}
+    .group[data-color="skripte"] .menu button{background:linear-gradient(180deg, var(--skripte), var(--skripte-h))}
+    .group[data-color="hr"] .menu button{background:linear-gradient(180deg, var(--hr), var(--hr-h))}
+    .group[data-color="contracts"] .menu button{background:linear-gradient(180deg, var(--contracts), var(--contracts-h))}
+
+    /* Hover/Active/Focus */
+    .group .menu button:hover{
+      transform:translateY(-1px);
+      box-shadow: 0 10px 24px rgba(2,8,23,.12);
+      filter:brightness(1.02);
     }
-
-    .sidebar {
-      width: 280px;
-      background-color: #f4f4f4;
-      padding: 20px;
-      overflow-y: auto;
-      border-right: 1px solid #ccc;
-      display: flex;
-      flex-direction: column;
+    .group .menu button:active{
+      transform:translateY(1px);
+      box-shadow: 0 4px 14px rgba(2,8,23,.10);
+      filter:brightness(.98);
     }
-
-    .menu-title {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      color: #333;
-      padding: 10px;
-      background-color: #e8e8e8;
-      margin-bottom: 5px;
-      border-radius: 5px;
-      cursor: pointer;
+    .group .menu button:focus{
+      outline:3px solid rgba(255,255,255,.35);
+      outline-offset:2px;
     }
+    .group .menu button:hover::after{transform:translate(2px, -50%);}
+    .menu button.active{filter:brightness(.97)}
+    .group[data-color="vodafone"] .menu button.active{background:var(--vodafone-h) !important}
+    .group[data-color="setup"] .menu button.active{background:var(--setup-h) !important}
+    .group[data-color="volton"] .menu button.active{background:var(--volton-h) !important}
+    .group[data-color="albsig"] .menu button.active{background:var(--albsig-h) !important}
+    .group[data-color="b2b"] .menu button.active{background:var(--b2b-h) !important}
+    .group[data-color="procedurat"] .menu button.active{background:var(--procedurat-h) !important}
+    .group[data-color="skripte"] .menu button.active{background:var(--skripte-h) !important}
+    .group[data-color="hr"] .menu button.active{background:var(--hr-h) !important}
+    .group[data-color="contracts"] .menu button.active{background:var(--contracts-h) !important}
 
-    .menu-title:hover {
-      background-color: #dcdcdc;
+    /* Primary actions */
+    .refresh-btn{
+      margin-top:10px; width:100%;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:12px; border-radius:12px; border:1px solid var(--line);
+      background:linear-gradient(180deg, #0ea5e9, #0284c7); color:#fff; font-weight:700; cursor:pointer;
+      box-shadow:var(--shadow);
     }
+    .refresh-btn:hover{filter:brightness(1.05)}
 
-    .menu-title i {
-      margin-right: 10px;
-      color: #d32f2f;
-      width: 20px;
-      text-align: center;
+    /* Welcome / cards */
+    .portal{max-width:1050px; margin:auto}
+    .hero{
+      background:linear-gradient(135deg, rgba(230,0,0,.06) 0%, rgba(230,0,0,.0) 60%),
+                 radial-gradient(800px 400px at 20% -10%, rgba(230,0,0,.18), transparent 60%),
+                 var(--surface);
+      border:1px solid var(--line);
+      border-radius:18px; padding:28px; box-shadow:var(--shadow);
     }
+    .hero h2{margin:0 0 8px 0; color:var(--brand); font-size:28px}
+    .hero p{margin:0; color:var(--muted)}
 
-    .submenu {
-      display: none;
-      padding-left: 10px;
-      margin-bottom: 10px;
+    .quick{margin-top:18px; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px}
+    .qcard{
+      background:var(--surface); border:1px solid var(--line); border-left:6px solid var(--brand);
+      border-radius:14px; padding:14px 16px; box-shadow:var(--shadow);
     }
+    .qcard a{display:inline-block; text-decoration:none; color:var(--brand); font-weight:700}
+    .qcard a:hover{text-decoration:underline}
 
-    .submenu button {
-      background-color: #d32f2f;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      margin: 4px 0;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-      text-align: left;
+    /* Content frame */
+    .viewer{position:relative; height:90vh; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
+    .viewer iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+    .loader{
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.6));
+      backdrop-filter: blur(6px);
+      font-weight:700; color:#111827;
     }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--brand);animation:bounce .9s infinite alternate}
+    .dot:nth-child(2){animation-delay:.15s}
+    .dot:nth-child(3){animation-delay:.3s}
+    @keyframes bounce{to{transform:translateY(-6px); opacity:.7}}
 
-    .submenu button:hover {
-      background-color: #a52828;
+    /* Mobile */
+    .toggle{display:none}
+    @media (max-width: 1024px){
+      .layout{grid-template-columns: 1fr}
+      aside.sidebar{position:fixed; top:64px; left:0; right:0; height:auto; max-height:65vh; transform:translateY(-120%); transition:transform .2s ease}
+      aside.sidebar.open{transform:translateY(0%)}
+      .toggle{display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; color:#111827; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer}
+      main.content{padding:18px}
     }
-
-
- #volton.submenu button {
-      background-color: #2e7d32;
-    }
-
-    #volton.submenu button:hover {
-      background-color: #1b5e20;
-    }
-
-
-
- #setup.submenu button {
-      background-color: #912983;
-    }
-
-    #setup.submenu button:hover {
-      background-color: #5e1b5c;
-    }
-
-
-    
-    .refresh-btn {
-      margin-top: auto;
-      background-color: #2196F3;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .refresh-btn:hover {
-      background-color: #0b7dda;
-    }
-
-    .content {
-      flex-grow: 1;
-      padding: 30px;
-      background-color: #f9f9f9;
-      overflow-y: auto;
-    }
-
-    h2 {
-      color: #d32f2f;
-    }
-
-    .info-box {
-      background-color: #fff;
-      border-left: 5px solid #d32f2f;
-      padding: 15px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    ul li a {
-      color: #2196F3;
-      text-decoration: none;
-    }
-
-    ul li a:hover {
-      text-decoration: underline;
-    }
-
-
-.submenu button.active {
-  background-color: black !important;
-  color: white !important;
-}
-
-
-    
   </style>
 </head>
 <body>
-
-<header onclick="resetToMain()">
-  <img src="logo.png" alt="ADC Logo" />
-  <h1></h1>
-</header>
-
-<div class="main">
-  <div class="sidebar">
-    <div class="menu-title" onclick="toggleMenu('vodafone')">
-      <i class="fas fa-mobile-alt"></i> Vodafone
+  <!-- Header -->
+  <header class="appbar" role="banner">
+    <div class="brand" onclick="resetToMain()" title="Kthehu në faqen kryesore">
+      <img src="logo.png" alt="ADC Logo" />
+      <h1>     </h1>
     </div>
-    <div class="submenu" id="vodafone">
-      <button onclick="loadPage('vodafone-internet-fiks-individ.html')">Fix Residencial</button>
-      <button onclick="loadPage('vodafone_tariff_comparison.html')">Fix Business</button>
-      <button onclick="loadPage('faqe_vodafone.html')">Ofertat Residencial</button>
-      <button onclick="loadPage('Internet-Speed.html')">Internet Calculator</button>
-      <button onclick="loadPage('planet_tarifore_biznes.html')">Planet Mobile Business</button>
-      <button onclick="loadPage('Planet-standarde-biznes.html')">Planet Mobile Standard</button>
-      <button onclick="loadPage('paketat_vodafone_interaktive_finale.html')">Kanalet Televizive</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('setup')">
-      <i class="fas fa-cogs"></i> Setup
-    </div>
-    <div class="submenu" id="setup">
-      <button onclick="loadPage('sherbimet_dhe_pikat_forta.html')">Set/Up service</button>
-      <button onclick="loadPage('setup_script.html')">Set/Up script</button>
-      <button onclick="loadPage('preventiv_website.html')">Website tariffs</button>
-      <button onclick="loadPage('setup-dashboard.html')">Selling IT service</button>
-      <button onclick="loadPage('https://setup.al/about-us/')">Set/Up web</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('volton')">
-      <i class="fas fa-bolt"></i> Volton
-    </div>
-    <div class="submenu" id="volton">
-      <button onclick="loadPage('Calculator-Volton.html')">Volton Calculator</button>
-      <button onclick="loadPage('faq_volton.html')">Volton FAQ</button>
-      <button onclick="window.open('https://volton.al/#services','_blank')">Volton Website</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('albsig')">
-      <i class="fas fa-shield-alt"></i> Albsig
-    </div>
-    <div class="submenu" id="albsig">
-      <button onclick="loadPage('Albsig.html')">Siguracionet</button>
-      <button onclick="loadPage('sigurime_akomodimi.html')">Cmimet e Siguracioneve</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('procedurat')">
-      <i class="fas fa-file-alt"></i> Procedurat
-    </div>
-    <div class="submenu" id="procedurat">
-      <button onclick="loadPage('Documentation.html')">Documentation</button>
-      <button onclick="loadPage('proceset_agjentit_tlm_final.html')">TLM processes</button>
-      <button onclick="loadPage('https://forms.office.com/e/JdsFWi6MFh')">Agent test form</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('skripte')">
-      <i class="fas fa-scroll"></i> Skripte
-    </div>
-    <div class="submenu" id="skripte">
-      <button onclick="loadPage('skripti_per_shitje.html')">Scripte per shitje</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('hr')">
-      <i class="fas fa-users"></i> Burimet Njerezore
-    </div>
-    <div class="submenu" id="hr">
-      <button onclick="loadPage('https://adc.al/careers')">Vacancies</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('b2b')">
-      <i class="fas fa-briefcase"></i> Business 2 Business
-    </div>
-    <div class="submenu" id="b2b">
-     <button onclick="loadPage('vodafone_operator_csp.html')">Office 365 Special</button>
-      <button onclick="loadPage('NCE Microsoft Office 365 Customer Presentation (002).pdf')">Office 365</button>
-      <button onclick="loadPage('Prezantim Klienti - Vodafone Business Online.pdf')">Business Online</button>
-      <button onclick="loadPage('business_on_the_go_vodafone.html')">BusinessOntheGO</button>
-    </div>
-
-    <div class="menu-title" onclick="toggleMenu('contracts')">
-      <i class="fas fa-folder-open"></i> Contracts & Forms
-    </div>
-    <div class="submenu" id="contracts">
-      <button onclick="loadPage('Forms&Contracts.html')">Contracts & Forms</button>
-    </div>
-
-    <button class="refresh-btn" onclick="refreshAndCloseMenus()">
-      <i class="fas fa-sync-alt"></i> Rifresko & Mbyll Menutë
+    <div class="spacer"></div>
+    <button class="toggle" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar(this)">
+      <i class="fa-solid fa-bars"></i> Menu
     </button>
+    <nav class="social-icons" aria-label="Rrjetet sociale">
+      <a href="https://www.facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/albanian_development_company?igsh=bXRobW45bmU0NWhm" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" aria-label="Navigimi anësor">
+
+      <!-- Të gjithat të mbyllura (pa atributin open) -->
+      <details class="group" data-color="vodafone">
+        <summary><i class="fas fa-mobile-alt"></i> Vodafone</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'vodafone-internet-fiks-individ.html')">Fix Residencial</button>
+          <button onclick="loadPage(this,'vodafone_tariff_comparison.html')">Fix Business</button>
+          <button onclick="loadPage(this,'faqe_vodafone.html')">Ofertat Residencial</button>
+          <button onclick="loadPage(this,'Internet-Speed.html')">Internet Calculator</button>
+          <button onclick="loadPage(this,'planet_tarifore_biznes.html')">Planet Mobile Business</button>
+          <button onclick="loadPage(this,'Planet-standarde-biznes.html')">Planet Mobile Standard</button>
+          <button onclick="loadPage(this,'paketat_vodafone_interaktive_finale.html')">Kanalet Televizive</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="setup">
+        <summary><i class="fas fa-cogs"></i> Setup</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'sherbimet_dhe_pikat_forta.html')">Set/Up service</button>
+          <button onclick="loadPage(this,'setup_script.html')">Set/Up script</button>
+          <button onclick="loadPage(this,'preventiv_website.html')">Website tariffs</button>
+          <button onclick="loadPage(this,'setup-dashboard.html')">Selling IT service</button>
+          <button onclick="loadPageExternal('https://setup.al/about-us/')">Set/Up web</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="volton">
+        <summary><i class="fas fa-bolt"></i> Volton</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'Calculator-Volton.html')">Volton Calculator</button>
+          <button onclick="loadPage(this,'faq_volton.html')">Volton FAQ</button>
+          <button onclick="loadPageExternal('https://volton.al/#services')">Volton Website</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="albsig">
+        <summary><i class="fas fa-shield-alt"></i> Albsig</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'Albsig.html')">Siguracionet</button>
+          <button onclick="loadPage(this,'sigurime_akomodimi.html')">Çmimet e Siguracioneve</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="procedurat">
+        <summary><i class="fas fa-file-alt"></i> Procedurat</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'Documentation.html')">Documentation</button>
+          <button onclick="loadPage(this,'proceset_agjentit_tlm_final.html')">TLM processes</button>
+          <button onclick="loadPageExternal('https://forms.office.com/e/JdsFWi6MFh')">Agent test form</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="skripte">
+        <summary><i class="fas fa-scroll"></i> Skripte</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'skripti_per_shitje.html')">Scripte për shitje</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="hr">
+        <summary><i class="fas fa-users"></i> Burimet Njerezore</summary>
+        <div class="menu">
+          <button onclick="loadPageExternal('https://adc.al/careers')">Vacancies</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="b2b">
+        <summary><i class="fas fa-briefcase"></i> Business 2 Business</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'vodafone_operator_csp.html')">Office 365 Special</button>
+          <button onclick="loadPage(this,'NCE Microsoft Office 365 Customer Presentation (002).pdf')">Office 365</button>
+          <button onclick="loadPage(this,'Prezantim Klienti - Vodafone Business Online.pdf')">Business Online</button>
+          <button onclick="loadPage(this,'business_on_the_go_vodafone.html')">BusinessOntheGO</button>
+        </div>
+      </details>
+
+      <details class="group" data-color="contracts">
+        <summary><i class="fas fa-folder-open"></i> Contracts & Forms</summary>
+        <div class="menu">
+          <button onclick="loadPage(this,'Forms&Contracts.html')">Contracts & Forms</button>
+        </div>
+      </details>
+
+      <button class="refresh-btn" onclick="refreshAndCloseMenus()">
+        <i class="fas fa-sync-alt"></i> Rifresko & Mbyll Menutë
+      </button>
+    </aside>
+
+    <!-- Main content -->
+    <main class="content" id="content">
+      <div class="portal" id="home">
+        <section class="hero" role="region" aria-label="Mirë se vini">
+          <h2>Mirë se vini në ADC Portal</h2>
+          <p>Këtu do të gjeni informacionet dhe mjetet që ju duhen për punën e përditshme.</p>
+        </section>
+        <section class="quick" aria-label="Lidhje të shpejta">
+          <div class="qcard"><a href="#" onclick="loadPage(null,'faqe_vodafone.html')">Ofertat Fix Rezidencial</a></div>
+          <div class="qcard"><a href="#" onclick="loadPage(null,'faq_volton.html')">Volton FAQ</a></div>
+          <div class="qcard"><a href="#" onclick="loadPage(null,'sherbimet_dhe_pikat_forta.html')">Setup Service</a></div>
+          <div class="qcard"><a href="#" onclick="loadPage(null,'proceset_agjentit_tlm_final.html')">Proceset Vodafone</a></div>
+          <div class="qcard"><a href="#" onclick="loadPage(null,'siguracione_albsig.html')">Siguracionet Albsig</a></div>
+          <div class="qcard"><a target="_blank" rel="noopener" href="https://adc.al/careers">Pozicione të lira</a></div>
+        </section>
+      </div>
+
+      <div id="viewer" class="viewer" hidden>
+        <div class="loader" id="loader" aria-live="polite">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span>Po ngarkohet…</span>
+        </div>
+        <iframe id="frame" title="Përmbajtja" src=""></iframe>
+      </div>
+    </main>
   </div>
 
-  <div class="content" id="content-frame">
-    <div class="portal-container" style="max-width:900px; margin:auto; background-color:#fff; border-radius:8px; padding:30px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
-      <h2 style="color:#e60000; font-size:28px;">Mirë se vini në ADC Portal</h2>
-      <div class="description" style="font-size:16px; margin-bottom:25px;">
-        Këtu mund të gjeni të gjitha informacionet dhe mjetet që ju nevojiten për punën tuaj të përditshme.
-      </div>
-      <div class="quick-links" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="faqe_vodafone.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Ofertat Fix Rezidencial</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="faq_volton.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Volton FAQ</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="sherbimet_dhe_pikat_forta.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Setup Service</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="proceset_agjentit_tlm_final.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Proceset Vodafone</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="siguracione_albsig.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Siguracionet Albsig</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="https://adc.al/careers" target="_blank" style="text-decoration:none; color:#e60000; font-weight:bold;">Pozicione të lira</
-      </ul>
-    </div>
-  </div>
-</div>
+  <script>
+    // Sidebar open/close for mobile
+    function toggleSidebar(btn){
+      const sidebar = document.getElementById('sidebar');
+      const open = !sidebar.classList.contains('open');
+      sidebar.classList.toggle('open', open);
+      if(btn){ btn.setAttribute('aria-expanded', String(open)); }
+    }
 
-<script>
-  function toggleMenu(id) {
-    const menu = document.getElementById(id);
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-  }
+    function closeAllMenus(){
+      document.querySelectorAll('aside details').forEach(d=>{ d.open=false; });
+    }
 
-  function loadPage(url) {
-    const content = document.getElementById('content-frame');
-    content.innerHTML = '<iframe src="' + url + '" style="width:100%; height:100%; border:none;"></iframe>';
-  }
+function refreshAndCloseMenus(){
+    // Sillu si resetToMain()
+    setActive(null); // hiq "active" nga butonat
+    showHome(); // shfaq faqen kryesore (fsheh viewer-in)
+    closeAllMenus(); // mbyll të gjitha menutë
 
-  function refreshAndCloseMenus() {
-    const content = document.getElementById('content-frame');
-    content.innerHTML = content.innerHTML;
+    // Pastrim i vogël i viewer-it (që të mos mbetet ngarkuar në sfond)
+    const frame = document.getElementById('frame');
+    const loader = document.getElementById('loader');
+    if (frame) frame.src = '';
+    if (loader) loader.style.display = 'none';
 
-    closeAllMenus();
-  }
-
- function resetToMain() {
-  const content = document.getElementById('content-frame');
-  content.innerHTML = `
-    <div class="portal-container" style="max-width:900px; margin:auto; background-color:#fff; border-radius:8px; padding:30px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
-      <h2 style="color:#e60000; font-size:28px;">Mirë se vini në ADC Portal</h2>
-      <div class="description" style="font-size:16px; margin-bottom:25px;">
-        Këtu mund të gjeni të gjitha informacionet dhe mjetet që ju nevojiten për punën tuaj të përditshme.
-      </div>
-      <div class="quick-links" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="faqe_vodafone.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Ofertat Fix Rezidencial</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="faq_volton.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Volton FAQ</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="sherbimet_dhe_pikat_forta.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Setup Service</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="proceset_agjentit_tlm_final.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Proceset Vodafone</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="siguracione_albsig.html" target="_self" style="text-decoration:none; color:#e60000; font-weight:bold;">Siguracionet Albsig</a>
-        </div>
-        <div class="link-box" style="background-color:#f9f9f9; border-left:5px solid #e60000; padding:15px; border-radius:5px;">
-          <a href="https://adc.al/careers" target="_blank" style="text-decoration:none; color:#e60000; font-weight:bold;">Pozicione të lira</
-        
-        </ul>
-      </div>
-    `;
-    closeAllMenus();
-  }
-
-  function closeAllMenus() {
-    const allMenus = document.querySelectorAll('.submenu');
-    allMenus.forEach(menu => {
-      menu.style.display = 'none';
-    });
+    // kthe scroll-in në krye
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
 
+    function showViewer(){
+      document.getElementById('home').hidden = true;
+      document.getElementById('viewer').hidden = false;
+    }
 
-    const submenuButtons = document.querySelectorAll('.submenu button');
+    function showHome(){
+      document.getElementById('viewer').hidden = true;
+      document.getElementById('home').hidden = false;
+    }
 
-  submenuButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Hiq "active" nga të gjithë butonat
-      submenuButtons.forEach(b => b.classList.remove('active'));
-      // Shto "active" vetëm tek butoni i klikuar
-      btn.classList.add('active');
-    });
-  });
+    function setActive(btn){
+      document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+      if(btn){ btn.classList.add('active'); }
+    }
 
-  
-</script>
+    function loadPage(btn, url){
+      setActive(btn);
+      showViewer();
+      document.getElementById('sidebar').classList.remove('open');
 
+      const frame = document.getElementById('frame');
+      const loader = document.getElementById('loader');
+      loader.style.display = 'flex';
+      requestAnimationFrame(()=>{ frame.src = url; });
+      frame.onload = () => { loader.style.display = 'none'; };
+      frame.onerror = () => { loader.innerHTML = '<span style="font-weight:700;color:#ef4444">Nuk u ngarkua përmbajtja.</span>'; };
+    }
+
+    function loadPageExternal(url){
+      window.open(url, '_blank', 'noopener');
+    }
+
+    function resetToMain(){
+      setActive(null);
+      showHome();
+      closeAllMenus();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    // Siguro që të gjitha menutë janë të mbyllura në ngarkim
+    document.addEventListener('DOMContentLoaded', closeAllMenus);
+  </script>
 </body>
 </html>
-
-

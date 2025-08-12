@@ -21,15 +21,15 @@
       --shadow:0 10px 30px rgba(2,8,23,0.08);
 
       /* Ngjyrat e seksioneve + tone më të errëta për gradient */
-      --vodafone:#d32f2f;   --vodafone-h:#a52828;
-      --setup:#912983;      --setup-h:#5e1b5c;
-      --volton:#2e7d32;     --volton-h:#1b5e20;
-      --albsig:#d32f2f;     --albsig-h:#a52828;   /* KUQE */
-      --b2b:#d32f2f;        --b2b-h:#a52828;      /* KUQE */
+      --vodafone:#d32f2f; --vodafone-h:#a52828;
+      --setup:#912983; --setup-h:#5e1b5c;
+      --volton:#2e7d32; --volton-h:#1b5e20;
+      --albsig:#d32f2f; --albsig-h:#a52828; /* KUQE */
+      --b2b:#d32f2f; --b2b-h:#a52828; /* KUQE */
       --procedurat:#f59e0b; --procedurat-h:#ef6c00;
-      --skripte:#06b6d4;    --skripte-h:#0891b2;
-      --hr:#16a34a;         --hr-h:#166534;
-      --contracts:#ef4444;  --contracts-h:#b91c1c;
+      --skripte:#06b6d4; --skripte-h:#0891b2;
+      --hr:#16a34a; --hr-h:#166534;
+      --contracts:#ef4444; --contracts-h:#b91c1c;
     }
     @media (prefers-color-scheme: dark){
       :root{
@@ -117,17 +117,17 @@
     .group[open] summary::after{ transform:translateY(-50%) rotate(45deg); border-color:#6b7280; }
 
     /* NGJYRAT E IKONAVE – Albsig & B2B në të kuqe */
-    .group[data-color="vodafone"]  summary i{color:#d32f2f}
-    .group[data-color="setup"]     summary i{color:#912983}
-    .group[data-color="volton"]    summary i{color:#2e7d32}
-    .group[data-color="albsig"]    summary i{color:#d32f2f} /* KUQE */
+    .group[data-color="vodafone"] summary i{color:#d32f2f}
+    .group[data-color="setup"] summary i{color:#912983}
+    .group[data-color="volton"] summary i{color:#2e7d32}
+    .group[data-color="albsig"] summary i{color:#d32f2f} /* KUQE */
     .group[data-color="procedurat"] summary i{color:#f59e0b}
-    .group[data-color="skripte"]   summary i{color:#06b6d4}
-    .group[data-color="hr"]        summary i{color:#16a34a}
-    .group[data-color="b2b"]       summary i{color:#d32f2f} /* KUQE */
+    .group[data-color="skripte"] summary i{color:#06b6d4}
+    .group[data-color="hr"] summary i{color:#16a34a}
+    .group[data-color="b2b"] summary i{color:#d32f2f} /* KUQE */
     .group[data-color="contracts"] summary i{color:#ef4444}
 
-    /* Nënopsionet – MODERNE dhe me NGJYRA sipas seksionit */
+    /* Nënopsionet – moderne dhe me ngjyrat e seksionit */
     .group .menu{
       padding:10px; display:grid; gap:10px;
       background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
@@ -156,15 +156,15 @@
     .menu button.active{filter:brightness(.97)}
 
     /* APLIKO NGJYRAT sipas grupit */
-    .group[data-color="vodafone"]   .menu button{background:linear-gradient(180deg, var(--vodafone),   var(--vodafone-h))}
-    .group[data-color="setup"]      .menu button{background:linear-gradient(180deg, var(--setup),      var(--setup-h))}
-    .group[data-color="volton"]     .menu button{background:linear-gradient(180deg, var(--volton),     var(--volton-h))}
-    .group[data-color="albsig"]     .menu button{background:linear-gradient(180deg, var(--albsig),     var(--albsig-h))}
-    .group[data-color="b2b"]        .menu button{background:linear-gradient(180deg, var(--b2b),        var(--b2b-h))}
+    .group[data-color="vodafone"] .menu button{background:linear-gradient(180deg, var(--vodafone), var(--vodafone-h))}
+    .group[data-color="setup"] .menu button{background:linear-gradient(180deg, var(--setup), var(--setup-h))}
+    .group[data-color="volton"] .menu button{background:linear-gradient(180deg, var(--volton), var(--volton-h))}
+    .group[data-color="albsig"] .menu button{background:linear-gradient(180deg, var(--albsig), var(--albsig-h))}
+    .group[data-color="b2b"] .menu button{background:linear-gradient(180deg, var(--b2b), var(--b2b-h))}
     .group[data-color="procedurat"] .menu button{background:linear-gradient(180deg, var(--procedurat), var(--procedurat-h))}
-    .group[data-color="skripte"]    .menu button{background:linear-gradient(180deg, var(--skripte),    var(--skripte-h))}
-    .group[data-color="hr"]         .menu button{background:linear-gradient(180deg, var(--hr),         var(--hr-h))}
-    .group[data-color="contracts"]  .menu button{background:linear-gradient(180deg, var(--contracts),  var(--contracts-h))}
+    .group[data-color="skripte"] .menu button{background:linear-gradient(180deg, var(--skripte), var(--skripte-h))}
+    .group[data-color="hr"] .menu button{background:linear-gradient(180deg, var(--hr), var(--hr-h))}
+    .group[data-color="contracts"] .menu button{background:linear-gradient(180deg, var(--contracts), var(--contracts-h))}
 
     /* Primary actions */
     .refresh-btn{
@@ -248,7 +248,7 @@
   <header class="appbar" role="banner">
     <div class="brand" onclick="resetToMain()" title="Kthehu në faqen kryesore">
       <img src="logo.png" alt="ADC Logo" />
-      <h1>      </h1>
+      <h1>ADC Portal</h1>
     </div>
     <div class="spacer"></div>
     <button class="toggle" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar(this)">
@@ -369,14 +369,14 @@
           <div id="results" class="results"></div>
         </section>
 
-        <!-- Lidhje të shpejta -->
+        <!-- Lidhje të shpejta (tani hapen në viewer) -->
         <section class="quick" aria-label="Lidhje të shpejta">
-          <div class="qcard"><a href="faqe_vodafone.html" onclick="loadPage(null,'faqe_vodafone.html')">Ofertat Fix Rezidencial</a></div>
-          <div class="qcard"><a href="faq_volton.html" onclick="loadPage(null,'faq_volton.html')">Volton FAQ</a></div>
-          <div class="qcard"><a href="sherbimet_dhe_pikat_forta.html" onclick="loadPage(null,'sherbimet_dhe_pikat_forta.html')">Setup Service</a></div>
-          <div class="qcard"><a href="proceset_agjentit_tlm_final.html" onclick="loadPage(null,'proceset_agjentit_tlm_final.html')">Proceset Vodafone</a></div>
-          <div class="qcard"><a href="siguracione_albsig.html" onclick="loadPage(null,'siguracione_albsig.html')">Siguracionet Albsig</a></div>
-          <div class="qcard"><a target="_blank" rel="noopener" href="https://adc.al/careers">Pozicione të lira</a></div>
+          <div class="qcard"><a href="#" onclick="return openHome(event,'faqe_vodafone.html')">Ofertat Fix Rezidencial</a></div>
+          <div class="qcard"><a href="#" onclick="return openHome(event,'faq_volton.html')">Volton FAQ</a></div>
+          <div class="qcard"><a href="#" onclick="return openHome(event,'sherbimet_dhe_pikat_forta.html')">Setup Service</a></div>
+          <div class="qcard"><a href="#" onclick="return openHome(event,'proceset_agjentit_tlm_final.html')">Proceset Vodafone</a></div>
+          <div class="qcard"><a href="#" onclick="return openHome(event,'siguracione_albsig.html')">Siguracionet Albsig</a></div>
+          <div class="qcard"><a href="#" onclick="return openHome(event,'https://adc.al/careers')">Pozicione të lira</a></div>
         </section>
 
         <!-- Updates & Njoftime -->
@@ -436,7 +436,11 @@
         loader.style.display = 'flex';
         requestAnimationFrame(()=>{ frame.src = state.url; });
         frame.onload = ()=> loader.style.display = 'none';
-        frame.onerror = ()=> loader.innerHTML = '<span style="font-weight:700;color:#ef4444">Nuk u ngarkua përmbajtja.</span>';
+        frame.onerror = ()=> {
+          loader.style.display = 'none';
+          // Fallback: nëse s’lejohet embed, hape në tab të ri
+          window.open(state.url, '_blank', 'noopener');
+        };
         document.getElementById('sidebar')?.classList.remove('open');
       }
     }
@@ -459,7 +463,7 @@
       });
     }
 
-    // Navigimi i brendshëm me pushState
+    // Navigimi i brendshëm me pushState (me fallback për external)
     function loadPage(btn, url){
       setActive(btn);
       showViewer();
@@ -469,9 +473,13 @@
       loader.style.display = 'flex';
       requestAnimationFrame(()=>{ frame.src = url; });
       frame.onload = () => { loader.style.display = 'none'; };
-      frame.onerror = () => { loader.innerHTML = '<span style="font-weight:700;color:#ef4444">Nuk u ngarkua përmbajtja.</span>'; };
+      frame.onerror = () => {
+        loader.style.display = 'none';
+        window.open(url, '_blank', 'noopener'); // fallback në tab të ri
+      };
       pushRoute({view:'page', url});
     }
+
     function refreshAndCloseMenus(){ resetToMain(); }
     function loadPageExternal(url){ window.open(url, '_blank', 'noopener'); }
     function resetToMain(){
@@ -481,6 +489,18 @@
       if(frame) frame.src = '';
       if(loader) loader.style.display = 'none';
       pushRoute({view:'home'});
+    }
+
+    /* ======= Helpers që hapin NGA FAQJA KRYESORE në viewer ======= */
+    function openHome(e, url){
+      if(e) e.preventDefault();
+      loadPage(null, url);
+      return false;
+    }
+    function openUpdate(e, url){
+      if(e) e.preventDefault();
+      loadPage(null, url);
+      return false;
     }
 
     /* ======= SEARCH: indeksim & rezultate ======= */
@@ -594,11 +614,11 @@
 
     /* ======= Updates & Njoftime ======= */
     const UPDATES = [
-      {date:"2025-08-11", type:"Update",  title:"Ofertat Vodafone (Residencial) u përditësuan", link:"faqe_vodafone.html"},
+      {date:"2025-08-11", type:"Update", title:"Ofertat Vodafone (Residencial) u përditësuan", link:"faqe_vodafone.html"},
       {date:"2025-08-07", type:"Release", title:"Volton FAQ i rifreskuar", link:"faq_volton.html"},
-      {date:"2025-08-03", type:"Tool",    title:"Volton Calculator v1.2", link:"Calculator-Volton.html"},
-      {date:"2025-07-20", type:"Update",  title:"Fix Business tarifat: krahasimi i ri", link:"vodafone_tariff_comparison.html"},
-      {date:"2025-07-10", type:"Notice",  title:"Set/Up Service: përditësime në paketat", link:"sherbimet_dhe_pikat_forta.html"}
+      {date:"2025-08-03", type:"Tool", title:"Volton Calculator v1.2", link:"Calculator-Volton.html"},
+      {date:"2025-07-20", type:"Update", title:"Fix Business tarifat: krahasimi i ri", link:"vodafone_tariff_comparison.html"},
+      {date:"2025-07-10", type:"Notice", title:"Set/Up Service: përditësime në paketat", link:"sherbimet_dhe_pikat_forta.html"}
     ];
     function renderUpdates(){
       const wrap = document.getElementById('updates');
@@ -609,7 +629,9 @@
           <div class="meta" style="color:var(--muted);font-size:12px">${u.date}</div>
           <div style="margin:6px 0"><span class="tag">${u.type}</span></div>
           <div style="font-weight:800">${u.title}</div>
-          ${u.link ? `<div style="margin-top:8px"><a href="#" onclick="loadPage(null,'${u.link}')" style="font-weight:700;color:var(--brand)">Hap</a></div>` : ''}
+          ${u.link ? `<div style="margin-top:8px">
+            <a href="#" onclick="return openUpdate(event,'${u.link}')" style="font-weight:700;color:var(--brand)">Hap</a>
+          </div>` : ''}
         </div>
       `).join('');
     }
@@ -643,5 +665,3 @@
   </script>
 </body>
 </html>
-
-

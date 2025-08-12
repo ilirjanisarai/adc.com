@@ -20,19 +20,16 @@
       --sidebar:#f7f7f8;
       --shadow:0 10px 30px rgba(2,8,23,0.08);
 
-      /* Seksionet */
-      --vodafone:#d32f2f; --vodafone-h:#a52828;
-      --setup:#912983; --setup-h:#5e1b5c;
-      --volton:#2e7d32; --volton-h:#1b5e20;
-
-      /* Albsig & B2B KUQE */
-      --albsig:#d32f2f; --albsig-h:#a52828;
-      --b2b:#d32f2f; --b2b-h:#a52828;
-
-      --procedurat:#fb8c00; --procedurat-h:#ef6c00;
-      --skripte:#06b6d4; --skripte-h:#0891b2;
-      --hr:#16a34a; --hr-h:#166534;
-      --contracts:#607d8b; --contracts-h:#455a64;
+      /* Ngjyrat e seksioneve + tone më të errëta për gradient */
+      --vodafone:#d32f2f;   --vodafone-h:#a52828;
+      --setup:#912983;      --setup-h:#5e1b5c;
+      --volton:#2e7d32;     --volton-h:#1b5e20;
+      --albsig:#d32f2f;     --albsig-h:#a52828;   /* KUQE */
+      --b2b:#d32f2f;        --b2b-h:#a52828;      /* KUQE */
+      --procedurat:#f59e0b; --procedurat-h:#ef6c00;
+      --skripte:#06b6d4;    --skripte-h:#0891b2;
+      --hr:#16a34a;         --hr-h:#166534;
+      --contracts:#ef4444;  --contracts-h:#b91c1c;
     }
     @media (prefers-color-scheme: dark){
       :root{
@@ -49,7 +46,7 @@
     html,body{height:100%}
     body{
       margin:0;
-      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
       background:linear-gradient(180deg, #ffffff 0%, #fafafa 60%, #f5f7fb 100%);
       color:#111827;
     }
@@ -60,8 +57,7 @@
       display:flex; align-items:center; gap:14px;
       padding:14px 18px;
       background:linear-gradient(120deg, var(--bg) 0%, #f5f0f0 10%, #1a1f26 60%);
-      color:#fff;
-      border-bottom:1px solid rgba(255,255,255,0.06);
+      color:#fff; border-bottom:1px solid rgba(255,255,255,0.06);
     }
     .appbar .brand{display:flex; align-items:center; gap:12px; cursor:pointer}
     .appbar img{height:36px; width:auto}
@@ -86,99 +82,89 @@
       background:transparent;
     }
 
-    /* Sidebar groups */
-    .group{border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden; margin-bottom:14px}
+    /* Grupi i menuseve */
+    .group{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:var(--surface);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      margin-bottom:14px;
+      transition:box-shadow .25s ease, border-color .25s ease;
+    }
+
+    /* OPSIONET KRYESORE – neutral, modern */
     .group summary{
       list-style:none; cursor:pointer; user-select:none;
-      display:flex; align-items:center; gap:10px; padding:12px 14px; font-weight:700;
-      background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
+      display:flex; align-items:center; gap:10px;
+      padding:12px 14px; font-weight:800;
+      background:#fff; border:1px solid var(--line); border-radius:12px;
+      position:relative;
+      transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
     }
     .group summary::-webkit-details-marker{display:none}
+    .group summary:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 24px rgba(2,8,23,0.10);
+      border-color:#dcdfe4;
+      background:#fff;
+    }
+    .group summary::after{
+      content:""; position:absolute; right:12px; top:50%; transform:translateY(-50%) rotate(0deg);
+      width:10px; height:10px; border-right:2px solid #9aa1ad; border-bottom:2px solid #9aa1ad; border-radius:1px;
+      transition:transform .25s ease, border-color .2s ease;
+    }
+    .group[open] summary::after{ transform:translateY(-50%) rotate(45deg); border-color:#6b7280; }
 
-    /* Ngjyra e ikonave sipas seksionit */
-    .group[data-color="vodafone"] summary i{color:var(--vodafone)}
-    .group[data-color="setup"] summary i{color:var(--setup)}
-    .group[data-color="volton"] summary i{color:var(--volton)}
-    .group[data-color="albsig"] summary i{color:var(--albsig)} /* KUQE */
-    .group[data-color="b2b"] summary i{color:var(--b2b)} /* KUQE */
-    .group[data-color="procedurat"]summary i{color:var(--procedurat)}
-    .group[data-color="skripte"] summary i{color:var(--skripte)}
-    .group[data-color="hr"] summary i{color:var(--hr)}
-    .group[data-color="contracts"] summary i{color:var(--contracts)}
+    /* NGJYRAT E IKONAVE – Albsig & B2B në të kuqe */
+    .group[data-color="vodafone"]  summary i{color:#d32f2f}
+    .group[data-color="setup"]     summary i{color:#912983}
+    .group[data-color="volton"]    summary i{color:#2e7d32}
+    .group[data-color="albsig"]    summary i{color:#d32f2f} /* KUQE */
+    .group[data-color="procedurat"] summary i{color:#f59e0b}
+    .group[data-color="skripte"]   summary i{color:#06b6d4}
+    .group[data-color="hr"]        summary i{color:#16a34a}
+    .group[data-color="b2b"]       summary i{color:#d32f2f} /* KUQE */
+    .group[data-color="contracts"] summary i{color:#ef4444}
 
+    /* Nënopsionet – MODERNE dhe me NGJYRA sipas seksionit */
     .group .menu{
       padding:10px; display:grid; gap:10px;
       background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
     }
-
-    /* Nënopsionet – stil i këndshëm me gradient, hije dhe animacion shigjete */
     .group .menu button{
-      position:relative;
-      width:100%; text-align:left;
-      padding:12px 44px 12px 14px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      color:#fff; font-weight:700; letter-spacing:.2px;
-      cursor:pointer;
+      position:relative; width:100%; text-align:left;
+      padding:12px 44px 12px 14px; border-radius:12px; border:1px solid var(--line);
+      color:#fff; font-weight:700; letter-spacing:.2px; cursor:pointer;
       box-shadow: 0 6px 18px rgba(2,8,23,.08);
       transform:translateY(0);
-      transition:
-        transform .12s ease,
-        box-shadow .2s ease,
-        filter .2s ease,
-        background .2s ease;
+      transition:transform .12s ease, box-shadow .2s ease, filter .2s ease, background .2s ease, color .2s ease;
       overflow:hidden;
     }
     .group .menu button::before{
-      content:"";
-      position:absolute; inset:0;
+      content:""; position:absolute; inset:0;
       background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0));
-      pointer-events:none;
-      border-radius:inherit;
+      pointer-events:none; border-radius:inherit;
     }
     .group .menu button::after{
-      content:"›";
-      position:absolute; right:14px; top:50%; transform:translateY(-50%);
-      font-weight:900; opacity:.85;
+      content:"›"; position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      font-weight:900; opacity:.9;
     }
-
-    /* Ngjyra bazuar te seksioni (gradient) */
-    .group[data-color="vodafone"] .menu button{background:linear-gradient(180deg, var(--vodafone), var(--vodafone-h))}
-    .group[data-color="setup"] .menu button{background:linear-gradient(180deg, var(--setup), var(--setup-h))}
-    .group[data-color="volton"] .menu button{background:linear-gradient(180deg, var(--volton), var(--volton-h))}
-    .group[data-color="albsig"] .menu button{background:linear-gradient(180deg, var(--albsig), var(--albsig-h))} /* KUQE */
-    .group[data-color="b2b"] .menu button{background:linear-gradient(180deg, var(--b2b), var(--b2b-h))} /* KUQE */
-    .group[data-color="procedurat"] .menu button{background:linear-gradient(180deg, var(--procedurat), var(--procedurat-h))}
-    .group[data-color="skripte"] .menu button{background:linear-gradient(180deg, var(--skripte), var(--skripte-h))}
-    .group[data-color="hr"] .menu button{background:linear-gradient(180deg, var(--hr), var(--hr-h))}
-    .group[data-color="contracts"] .menu button{background:linear-gradient(180deg, var(--contracts), var(--contracts-h))}
-
-    /* Hover/Active/Focus */
-    .group .menu button:hover{
-      transform:translateY(-1px);
-      box-shadow: 0 10px 24px rgba(2,8,23,.12);
-      filter:brightness(1.02);
-    }
-    .group .menu button:active{
-      transform:translateY(1px);
-      box-shadow: 0 4px 14px rgba(2,8,23,.10);
-      filter:brightness(.98);
-    }
-    .group .menu button:focus{
-      outline:3px solid rgba(255,255,255,.35);
-      outline-offset:2px;
-    }
-    .group .menu button:hover::after{transform:translate(2px, -50%);}
+    .group .menu button:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(2,8,23,.12); filter:brightness(1.02)}
+    .group .menu button:active{transform:translateY(1px); box-shadow:0 4px 14px rgba(2,8,23,.10); filter:brightness(.98)}
+    .group .menu button:focus{outline:3px solid rgba(255,255,255,.35); outline-offset:2px}
     .menu button.active{filter:brightness(.97)}
-    .group[data-color="vodafone"] .menu button.active{background:var(--vodafone-h) !important}
-    .group[data-color="setup"] .menu button.active{background:var(--setup-h) !important}
-    .group[data-color="volton"] .menu button.active{background:var(--volton-h) !important}
-    .group[data-color="albsig"] .menu button.active{background:var(--albsig-h) !important}
-    .group[data-color="b2b"] .menu button.active{background:var(--b2b-h) !important}
-    .group[data-color="procedurat"] .menu button.active{background:var(--procedurat-h) !important}
-    .group[data-color="skripte"] .menu button.active{background:var(--skripte-h) !important}
-    .group[data-color="hr"] .menu button.active{background:var(--hr-h) !important}
-    .group[data-color="contracts"] .menu button.active{background:var(--contracts-h) !important}
+
+    /* APLIKO NGJYRAT sipas grupit */
+    .group[data-color="vodafone"]   .menu button{background:linear-gradient(180deg, var(--vodafone),   var(--vodafone-h))}
+    .group[data-color="setup"]      .menu button{background:linear-gradient(180deg, var(--setup),      var(--setup-h))}
+    .group[data-color="volton"]     .menu button{background:linear-gradient(180deg, var(--volton),     var(--volton-h))}
+    .group[data-color="albsig"]     .menu button{background:linear-gradient(180deg, var(--albsig),     var(--albsig-h))}
+    .group[data-color="b2b"]        .menu button{background:linear-gradient(180deg, var(--b2b),        var(--b2b-h))}
+    .group[data-color="procedurat"] .menu button{background:linear-gradient(180deg, var(--procedurat), var(--procedurat-h))}
+    .group[data-color="skripte"]    .menu button{background:linear-gradient(180deg, var(--skripte),    var(--skripte-h))}
+    .group[data-color="hr"]         .menu button{background:linear-gradient(180deg, var(--hr),         var(--hr-h))}
+    .group[data-color="contracts"]  .menu button{background:linear-gradient(180deg, var(--contracts),  var(--contracts-h))}
 
     /* Primary actions */
     .refresh-btn{
@@ -196,11 +182,27 @@
       background:linear-gradient(135deg, rgba(230,0,0,.06) 0%, rgba(230,0,0,.0) 60%),
                  radial-gradient(800px 400px at 20% -10%, rgba(230,0,0,.18), transparent 60%),
                  var(--surface);
-      border:1px solid var(--line);
-      border-radius:18px; padding:28px; box-shadow:var(--shadow);
+      border:1px solid var(--line); border-radius:18px; padding:28px; box-shadow:var(--shadow);
     }
     .hero h2{margin:0 0 8px 0; color:var(--brand); font-size:28px}
     .hero p{margin:0; color:var(--muted)}
+
+    /* Search module */
+    .search-wrap{margin-top:16px; display:grid; gap:10px}
+    .search-bar{display:flex; gap:8px}
+    .search-bar input{
+      flex:1; padding:12px 14px; border:1px solid var(--line); border-radius:12px; outline:none; font-weight:600;
+    }
+    .search-bar button{
+      padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:#fff; cursor:pointer; font-weight:700;
+    }
+    .results{display:grid; gap:10px}
+    .result{
+      background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px; box-shadow:var(--shadow);
+    }
+    .result h4{margin:0 0 6px 0}
+    .result .meta{color:var(--muted); font-size:12px}
+    .hl{background: #fff3cd; padding:0 3px; border-radius:4px}
 
     .quick{margin-top:18px; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px}
     .qcard{
@@ -210,14 +212,20 @@
     .qcard a{display:inline-block; text-decoration:none; color:var(--brand); font-weight:700}
     .qcard a:hover{text-decoration:underline}
 
+    /* Updates */
+    .updates-grid{margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px}
+    .update-card{
+      background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; box-shadow:var(--shadow);
+    }
+    .tag{display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; border:1px solid var(--line); margin-right:6px}
+
     /* Content frame */
     .viewer{position:relative; height:90vh; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
     .viewer iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
     .loader{
       position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:12px;
       background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.6));
-      backdrop-filter: blur(6px);
-      font-weight:700; color:#111827;
+      backdrop-filter: blur(6px); font-weight:700; color:#111827;
     }
     .dot{width:8px;height:8px;border-radius:999px;background:var(--brand);animation:bounce .9s infinite alternate}
     .dot:nth-child(2){animation-delay:.15s}
@@ -240,7 +248,7 @@
   <header class="appbar" role="banner">
     <div class="brand" onclick="resetToMain()" title="Kthehu në faqen kryesore">
       <img src="logo.png" alt="ADC Logo" />
-      <h1>     </h1>
+      <h1>      </h1>
     </div>
     <div class="spacer"></div>
     <button class="toggle" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar(this)">
@@ -257,8 +265,7 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar" aria-label="Navigimi anësor">
 
-      <!-- Të gjithat të mbyllura (pa atributin open) -->
-      <details class="group" data-color="vodafone">
+      <details class="group" data-color="vodafone" open>
         <summary><i class="fas fa-mobile-alt"></i> Vodafone</summary>
         <div class="menu">
           <button onclick="loadPage(this,'vodafone-internet-fiks-individ.html')">Fix Residencial</button>
@@ -340,7 +347,7 @@
       </details>
 
       <button class="refresh-btn" onclick="refreshAndCloseMenus()">
-        <i class="fas fa-sync-alt"></i> Rifresko & Mbyll Menutë
+        <i class="fas fa-sync-alt"></i> Rifresko &amp; Mbyll Menutë
       </button>
     </aside>
 
@@ -351,6 +358,18 @@
           <h2>Mirë se vini në ADC Portal</h2>
           <p>Këtu do të gjeni informacionet dhe mjetet që ju duhen për punën e përditshme.</p>
         </section>
+
+        <!-- SEARCH në faqen kryesore -->
+        <section class="search-wrap" aria-label="Kërko në përmbajtje">
+          <div class="search-bar">
+            <input id="q" type="search" placeholder="Kërko në të gjitha faqet (p.sh. 'Planet Business', 'Volton', 'kontratë'…)" />
+            <button onclick="runSearch()">Kërko</button>
+          </div>
+          <div id="search-stats" class="meta" style="color:var(--muted)"></div>
+          <div id="results" class="results"></div>
+        </section>
+
+        <!-- Lidhje të shpejta -->
         <section class="quick" aria-label="Lidhje të shpejta">
           <div class="qcard"><a href="#" onclick="loadPage(null,'faqe_vodafone.html')">Ofertat Fix Rezidencial</a></div>
           <div class="qcard"><a href="#" onclick="loadPage(null,'faq_volton.html')">Volton FAQ</a></div>
@@ -358,6 +377,12 @@
           <div class="qcard"><a href="#" onclick="loadPage(null,'proceset_agjentit_tlm_final.html')">Proceset Vodafone</a></div>
           <div class="qcard"><a href="#" onclick="loadPage(null,'siguracione_albsig.html')">Siguracionet Albsig</a></div>
           <div class="qcard"><a target="_blank" rel="noopener" href="https://adc.al/careers">Pozicione të lira</a></div>
+        </section>
+
+        <!-- Updates & Njoftime -->
+        <section aria-label="Updates & Njoftime">
+          <h3 style="margin:18px 0 8px 0;">Updates & Njoftime</h3>
+          <div id="updates" class="updates-grid"></div>
         </section>
       </div>
 
@@ -372,76 +397,249 @@
   </div>
 
   <script>
-    // Sidebar open/close for mobile
+    /* ======= Sidebar & Viewer ======= */
     function toggleSidebar(btn){
       const sidebar = document.getElementById('sidebar');
       const open = !sidebar.classList.contains('open');
       sidebar.classList.toggle('open', open);
       if(btn){ btn.setAttribute('aria-expanded', String(open)); }
     }
+    function closeAllMenus(){ document.querySelectorAll('aside details').forEach(d=>{ d.open=false; }); }
 
-    function closeAllMenus(){
-      document.querySelectorAll('aside details').forEach(d=>{ d.open=false; });
-    }
-
-function refreshAndCloseMenus(){
-    // Sillu si resetToMain()
-    setActive(null); // hiq "active" nga butonat
-    showHome(); // shfaq faqen kryesore (fsheh viewer-in)
-    closeAllMenus(); // mbyll të gjitha menutë
-
-    // Pastrim i vogël i viewer-it (që të mos mbetet ngarkuar në sfond)
-    const frame = document.getElementById('frame');
-    const loader = document.getElementById('loader');
-    if (frame) frame.src = '';
-    if (loader) loader.style.display = 'none';
-
-    // kthe scroll-in në krye
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-
-    function showViewer(){
-      document.getElementById('home').hidden = true;
-      document.getElementById('viewer').hidden = false;
-    }
-
-    function showHome(){
-      document.getElementById('viewer').hidden = true;
-      document.getElementById('home').hidden = false;
-    }
-
+    function showViewer(){ document.getElementById('home').hidden = true; document.getElementById('viewer').hidden = false; }
+    function showHome(){ document.getElementById('viewer').hidden = true; document.getElementById('home').hidden = false; }
     function setActive(btn){
       document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
       if(btn){ btn.classList.add('active'); }
     }
 
+    /* ---------------- Router helpers (Back/Forward) ---------------- */
+    let _suppressPush = false;
+    function pushRoute(state){
+      if(_suppressPush) return;
+      const urlPart = state.view === 'home' ? '#/home' : '#/page/' + encodeURIComponent(state.url);
+      history.pushState(state, '', urlPart);
+    }
+    function applyState(state){
+      if(!state || state.view === 'home'){
+        setActive(null); showHome(); closeAllMenus();
+        const frame = document.getElementById('frame');
+        const loader = document.getElementById('loader');
+        if(frame) frame.src = '';
+        if(loader) loader.style.display = 'none';
+        return;
+      }
+      if(state.view === 'page' && state.url){
+        showViewer();
+        const frame = document.getElementById('frame');
+        const loader = document.getElementById('loader');
+        loader.style.display = 'flex';
+        requestAnimationFrame(()=>{ frame.src = state.url; });
+        frame.onload = ()=> loader.style.display = 'none';
+        frame.onerror = ()=> loader.innerHTML = '<span style="font-weight:700;color:#ef4444">Nuk u ngarkua përmbajtja.</span>';
+        document.getElementById('sidebar')?.classList.remove('open');
+      }
+    }
+    function parseHashToState(){
+      const h = location.hash || '';
+      if(h.startsWith('#/page/')){
+        const url = decodeURIComponent(h.slice('#/page/'.length));
+        return {view:'page', url};
+      }
+      return {view:'home'};
+    }
+    function initRouter(){
+      const initial = parseHashToState();
+      history.replaceState(initial, '', location.href);
+      applyState(initial);
+      window.addEventListener('popstate', (e)=>{
+        _suppressPush = true;
+        applyState(e.state || parseHashToState());
+        _suppressPush = false;
+      });
+    }
+
+    // Navigimi i brendshëm me pushState
     function loadPage(btn, url){
       setActive(btn);
       showViewer();
-      document.getElementById('sidebar').classList.remove('open');
-
+      document.getElementById('sidebar')?.classList.remove('open');
       const frame = document.getElementById('frame');
       const loader = document.getElementById('loader');
       loader.style.display = 'flex';
       requestAnimationFrame(()=>{ frame.src = url; });
       frame.onload = () => { loader.style.display = 'none'; };
       frame.onerror = () => { loader.innerHTML = '<span style="font-weight:700;color:#ef4444">Nuk u ngarkua përmbajtja.</span>'; };
+      pushRoute({view:'page', url});
     }
-
-    function loadPageExternal(url){
-      window.open(url, '_blank', 'noopener');
-    }
-
+    function refreshAndCloseMenus(){ resetToMain(); }
+    function loadPageExternal(url){ window.open(url, '_blank', 'noopener'); }
     function resetToMain(){
-      setActive(null);
-      showHome();
-      closeAllMenus();
+      setActive(null); showHome(); closeAllMenus();
       window.scrollTo({top:0, behavior:'smooth'});
+      const frame = document.getElementById('frame'); const loader = document.getElementById('loader');
+      if(frame) frame.src = '';
+      if(loader) loader.style.display = 'none';
+      pushRoute({view:'home'});
     }
 
-    // Siguro që të gjitha menutë janë të mbyllura në ngarkim
-    document.addEventListener('DOMContentLoaded', closeAllMenus);
+    /* ======= SEARCH: indeksim & rezultate ======= */
+    const PAGES = [
+      {title:"Vodafone · Fix Residencial", url:"vodafone-internet-fiks-individ.html", updated:"2025-08-01"},
+      {title:"Vodafone · Fix Business", url:"vodafone_tariff_comparison.html", updated:"2025-07-20"},
+      {title:"Vodafone · Ofertat Residencial", url:"faqe_vodafone.html", updated:"2025-08-11"},
+      {title:"Internet Calculator", url:"Internet-Speed.html", updated:"2025-06-15"},
+      {title:"Planet Mobile Business", url:"planet_tarifore_biznes.html", updated:"2025-05-30"},
+      {title:"Planet Mobile Standard", url:"Planet-standarde-biznes.html", updated:"2025-05-30"},
+      {title:"Kanalet Televizive", url:"paketat_vodafone_interaktive_finale.html", updated:"2025-04-12"},
+      {title:"Setup · Service", url:"sherbimet_dhe_pikat_forta.html", updated:"2025-07-10"},
+      {title:"Setup · Script", url:"setup_script.html", updated:"2025-07-01"},
+      {title:"Website tariffs", url:"preventiv_website.html", updated:"2025-06-10"},
+      {title:"Selling IT service", url:"setup-dashboard.html", updated:"2025-06-22"},
+      {title:"Albsig · Siguracionet", url:"Albsig.html", updated:"2025-03-02"},
+      {title:"Albsig · Çmimet e Siguracioneve", url:"sigurime_akomodimi.html", updated:"2025-05-05"},
+      {title:"Procedurat · Documentation", url:"Documentation.html", updated:"2025-02-15"},
+      {title:"Procedurat · TLM processes", url:"proceset_agjentit_tlm_final.html", updated:"2025-08-05"},
+      {title:"B2B · Office 365 Special", url:"vodafone_operator_csp.html", updated:"2025-02-01"},
+      {title:"B2B · Office 365 (PDF)", url:"NCE Microsoft Office 365 Customer Presentation (002).pdf", updated:"2024-12-01", pdf:true},
+      {title:"B2B · Business Online (PDF)", url:"Prezantim Klienti - Vodafone Business Online.pdf", updated:"2024-12-01", pdf:true},
+      {title:"BusinessOnTheGO", url:"business_on_the_go_vodafone.html", updated:"2025-01-12"},
+      {title:"Contracts & Forms", url:"Forms&Contracts.html", updated:"2025-03-18"},
+      {title:"Volton · FAQ", url:"faq_volton.html", updated:"2025-08-07"},
+      {title:"Volton · Calculator", url:"Calculator-Volton.html", updated:"2025-08-03"}
+    ];
+
+    const INDEX = new Map();
+    let indexing = false;
+
+    async function buildIndex(){
+      if(indexing || INDEX.size === PAGES.length) return;
+      indexing = true;
+      for(const p of PAGES){
+        try{
+          if(p.pdf){ INDEX.set(p.url, {title:p.title, text:"", updated:p.updated, pdf:true}); continue; }
+          const res = await fetch(p.url, {cache:'no-store'});
+          const html = await res.text();
+          const text = extractPlainText(html);
+          INDEX.set(p.url, {title:p.title, text, updated:p.updated, pdf:false});
+        }catch(e){
+          INDEX.set(p.url, {title:p.title, text:"", updated:p.updated, pdf: !!p.pdf});
+        }
+      }
+      indexing = false;
+    }
+    function extractPlainText(html){
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'');
+      const text = tmp.textContent || tmp.innerText || "";
+      return text.replace(/\s+/g,' ').trim();
+    }
+    function highlight(text, q){
+      const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return text.replace(new RegExp(esc,'gi'), m=>`<span class="hl">${m}</span>`);
+    }
+    function snippet(text, q, len=140){
+      const i = text.toLowerCase().indexOf(q.toLowerCase());
+      if(i===-1) return text.slice(0, len) + (text.length>len?'…':'');
+      const start = Math.max(0, i - Math.floor(len/2));
+      const end = Math.min(text.length, start + len);
+      const slice = text.slice(start, end);
+      return (start>0?'…':'') + highlight(slice, q) + (end<text.length?'…':'');
+    }
+
+    let searchDebounce;
+    document.getElementById('q').addEventListener('input', ()=>{
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(()=> runSearch(), 200);
+    });
+
+    async function runSearch(){
+      const q = document.getElementById('q').value.trim();
+      const statsEl = document.getElementById('search-stats');
+      const resEl = document.getElementById('results');
+
+      if(!q){ statsEl.textContent = ""; resEl.innerHTML = ""; return; }
+
+      buildIndex(); // background
+
+      const results = [];
+      for(const p of PAGES){
+        const item = INDEX.get(p.url);
+        if(!item) continue;
+        const hay = (p.title + " " + item.text).toLowerCase();
+        if(hay.includes(q.toLowerCase())){
+          const sn = item.text ? snippet(item.text, q) : '(PDF / pa tekst të disponueshëm)';
+          results.push({ title:p.title, url:p.url, updated:p.updated, snippet:sn, pdf:!!p.pdf });
+        }
+      }
+
+      if(!results.length && INDEX.size===0){
+        statsEl.textContent = "Po përgatitet indeksi… provo sërish pas pak sekondash.";
+        resEl.innerHTML = ""; return;
+      }
+
+      results.sort((a,b)=> b.updated.replace(/-/g,'').localeCompare(a.updated.replace(/-/g,'')));
+      statsEl.textContent = `${results.length} rezultat(e)`;
+      resEl.innerHTML = results.map(r=>`
+        <div class="result">
+          <h4>${r.title} ${r.pdf?'<span class="tag">PDF</span>':''}</h4>
+          <div class="meta">Përditësuar: ${r.updated || '-'}</div>
+          <div style="margin-top:6px; color:#374151">${r.snippet}</div>
+          <div style="margin-top:10px">
+            <button onclick="loadPage(null,'${r.url}')" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:700">Hap</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* ======= Updates & Njoftime ======= */
+    const UPDATES = [
+      {date:"2025-08-11", type:"Update",  title:"Ofertat Vodafone (Residencial) u përditësuan", link:"faqe_vodafone.html"},
+      {date:"2025-08-07", type:"Release", title:"Volton FAQ i rifreskuar", link:"faq_volton.html"},
+      {date:"2025-08-03", type:"Tool",    title:"Volton Calculator v1.2", link:"Calculator-Volton.html"},
+      {date:"2025-07-20", type:"Update",  title:"Fix Business tarifat: krahasimi i ri", link:"vodafone_tariff_comparison.html"},
+      {date:"2025-07-10", type:"Notice",  title:"Set/Up Service: përditësime në paketat", link:"sherbimet_dhe_pikat_forta.html"}
+    ];
+    function renderUpdates(){
+      const wrap = document.getElementById('updates');
+      if(!wrap) return;
+      const items = [...UPDATES].sort((a,b)=> b.date.localeCompare(a.date));
+      wrap.innerHTML = items.map(u=>`
+        <div class="update-card">
+          <div class="meta" style="color:var(--muted);font-size:12px">${u.date}</div>
+          <div style="margin:6px 0"><span class="tag">${u.type}</span></div>
+          <div style="font-weight:800">${u.title}</div>
+          ${u.link ? `<div style="margin-top:8px"><a href="#" onclick="loadPage(null,'${u.link}')" style="font-weight:700;color:var(--brand)">Hap</a></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // Init
+    function initRouter(){
+      const initial = parseHashToState();
+      history.replaceState(initial, '', location.href);
+      applyState(initial);
+      window.addEventListener('popstate', (e)=>{
+        _suppressPush = true;
+        applyState(e.state || parseHashToState());
+        _suppressPush = false;
+      });
+    }
+    document.addEventListener('DOMContentLoaded', ()=>{
+      initRouter();
+      buildIndex();
+      renderUpdates();
+    });
+
+    // Helpers për router
+    function parseHashToState(){
+      const h = location.hash || '';
+      if(h.startsWith('#/page/')){
+        const url = decodeURIComponent(h.slice('#/page/'.length));
+        return {view:'page', url};
+      }
+      return {view:'home'};
+    }
   </script>
 </body>
 </html>

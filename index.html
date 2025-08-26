@@ -403,6 +403,7 @@
   </div>
 
   <script>
+
     /* ======= Sidebar & Viewer ======= */
     function toggleSidebar(btn){
       const sidebar = document.getElementById('sidebar');
@@ -668,9 +669,29 @@
       }
       return {view:'home'};
     }
+
+
+
+
+
+
+function loadPageExternal(url){
+  showViewer();
+  document.getElementById('sidebar')?.classList.remove('open');
+  const f = document.getElementById('frame');
+  const l = document.getElementById('loader');
+  l.style.display='flex';
+  requestAnimationFrame(()=>{ f.src = url; });
+  f.onload = ()=> l.style.display='none';
+  f.onerror = ()=> l.innerHTML = '<span style="font-weight:800;color:#ef4444">Nuk u ngarkua.</span>';
+  pushRoute({view:'page', url});
+}
+
+    
   </script>
 </body>
 </html>
+
 
 
 

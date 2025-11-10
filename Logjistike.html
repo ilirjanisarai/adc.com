@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flota Automjete – Menaxhim & Raporte</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{ --bg:#ffffff; --card:#ffffff; --muted:#f1f5f9; --txt:#0f172a; --sub:#475569; --acc:#16a34a; --acc2:#0ea5e9; --warn:#f59e0b; --bad:#ef4444; --line:#e2e8f0 }
+    [data-theme="dark"]{ --bg:#0f172a; --card:#111827; --muted:#1f2937; --txt:#e5e7eb; --sub:#9ca3af; --acc:#22c55e; --acc2:#38bdf8; --warn:#f59e0b; --bad:#ef4444; --line:#1f2937 }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--txt)}
+    header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.85);backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid var(--line)}
+    [data-theme="dark"] header{background:rgba(15,23,42,.85)}
+    .wrap{max-width:1200px;margin:auto;padding:18px}
+    h1{margin:0;font-weight:700;font-size:clamp(20px,2.2vw,28px)}
+    .sub{color:var(--sub);font-size:14px}
+    .grid{display:grid;gap:16px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1.1fr .9fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 1px 0 #00000008}
+    label{font-size:12px;color:var(--sub);display:block;margin-bottom:6px}
+    .field{display:flex;flex-direction:column}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--txt);outline:none}
+    [data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{background:#0b1020;border-color:#283142;color:#e5e7eb}
+    input:focus,select:focus,textarea:focus{border-color:#94a3b8;box-shadow:0 0 0 3px #94a3b844}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .col-6{grid-column:span 6} .col-4{grid-column:span 4} .col-3{grid-column:span 3} .col-2{grid-column:span 2} .col-12{grid-column:span 12}
+    button{cursor:pointer;border:none;border-radius:12px;padding:10px 14px;font-weight:600}
+    .btn{background:var(--muted);color:var(--txt)} .btn:hover{filter:brightness(1.03)}
+    .btn-acc{background:var(--acc);color:#ffffff} .btn-acc2{background:var(--acc2);color:#ffffff}
+    .btn-warn{background:var(--warn);color:#0b1020} .btn-bad{background:var(--bad);color:#fff}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .tab{padding:8px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);cursor:pointer;color:var(--sub)}
+    [data-theme="dark"] .tab{background:#0b1020;border-color:#223}
+    .tab.active{background:var(--acc2);color:#fff;border-color:transparent}
+    .table-wrap{overflow:auto;border-radius:12px;border:1px solid var(--line)}
+    table{border-collapse:collapse;width:100%;min-width:1300px;background:#fff}
+    [data-theme="dark"] table{background:#0b1020}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+    th{position:sticky;top:0;background:#f8fafc;color:#0f172a;text-align:left;font-size:12px;letter-spacing:.02em}
+    [data-theme="dark"] th{background:#0e152b;color:#cbd5e1}
+    tr:hover td{background:#f8fafc}
+    [data-theme="dark"] tr:hover td{background:#0d1327}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px}
+    .ok{background:#e8f7ef;color:#166534} .warn{background:#fff4e5;color:#92400e} .bad{background:#fee2e2;color:#991b1b}
+    .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .kpi .card{display:flex;flex-direction:column;gap:6px}
+    .muted{color:var(--sub)}
+    .footer{color:#64748b;font-size:12px;margin-top:12px}
+
+    /* Filtrat – layout i qartë */
+    .srch{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .srch .toolbar{grid-column:1/-1}
+
+    .hide{display:none}
+    .hint{font-size:12px;color:#94a3b8}
+    .mini{font-size:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand img{height:34px;width:34px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+    .notice{border:1px dashed var(--line); padding:8px 12px; border-radius:10px; background:var(--muted)}
+    @media print{ header,.tabs,.toolbar,.srch,#tab-importexport,#tab-rreth,#tab-data .card:first-of-type{display:none!important} body{background:#fff;color:#000} .card{border:none;box-shadow:none} table{min-width:unset} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:center">
+        <div class="brand">
+          <img id="logoPreview" alt="logo" src="" onerror="this.style.display='none'">
+          <div>
+            <h1 id="brandName">Flota Automjete – Menaxhim & Raporte</h1>
+            <div class="sub">Shto, filtro dhe eksportoni të dhënat. Ruajtja bëhet lokalisht (LocalStorage). Gjithashtu: backup .json + File System Access.</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="themeBtn" type="button" title="Ndrysho temën">Light/Dark</button>
+          <button class="btn" onclick="window.print()" type="button">Print / PDF</button>
+        </div>
+      </div>
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-tab="data">Të dhënat</div>
+        <div class="tab" data-tab="raporte">Raporte</div>
+        <div class="tab" data-tab="importexport">Import / Export & Backup</div>
+        <div class="tab" data-tab="rreth">Rreth & Branding</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- DATA TAB -->
+    <section id="tab-data">
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Shto / Përditëso të dhëna</h3>
+          <form id="frm" onsubmit="event.preventDefault(); addOrUpdate();">
+            <input type="hidden" id="rowId" />
+            <div class="row">
+              <div class="col-4 field"><label>Qyteti *</label><select id="Qyteti" required></select></div>
+              <div class="col-4 field"><label>Targa * (unikale)</label><input id="Targa" required placeholder="AA 123 BB" /></div>
+              <div class="col-4 field"><label>Nr. Shasie</label><input id="NrShasie" /></div>
+              <div class="col-3 field"><label>Marka</label><select id="Marka"></select></div>
+              <div class="col-3 field"><label>Modeli</label>
+                <select id="Modeli"></select>
+                <input id="ModeliCustom" class="hide" placeholder="Shkruaj modelin" />
+              </div>
+              <div class="col-3 field"><label>Drejtues</label><input id="Drejtues" /></div>
+              <div class="col-3 field"><label>Kompania</label><input id="Kompania" placeholder="p.sh. ADC" /></div>
+              <div class="col-3 field"><label>Viti prodhimit</label><input id="VitiProdhimit" type="number" min="1970" max="2100" /></div>
+              <div class="col-3 field"><label>Kilometrazhi</label><input id="Kilometrazhi" type="number" min="0" step="1" /></div>
+              <div class="col-3 field"><label>Kategoria</label>
+                <select id="Kategoria">
+                  <option value="">(pazgjedhur)</option>
+                  <option>SEDAN</option><option>SUV</option><option>FURGON</option><option>HATCHBACK</option><option>TRUCK</option><option>MPV</option>
+                </select>
+              </div>
+              <div class="col-3 field"><label>Siguracion (skadenca)</label><input id="Siguracione" type="date" /></div>
+              <div class="col-3 field"><label>Kolaudim (skadenca)</label><input id="Kolaudimet" type="date" /></div>
+              <div class="col-3 field"><label>Data e shërbimit</label><input id="DtSherbimit" type="date" /></div>
+              <div class="col-12 field"><label>Serviset</label><input id="Serviset" placeholder="p.sh. Ndërrim vaji, filtra..." /></div>
+              <div class="col-12 field"><label>Përshkrimi</label><textarea id="Pershkrimi" rows="2" placeholder="Shënime të tjera"></textarea></div>
+              <div class="col-3 field"><label>GPS i instaluar?</label><select id="GPS"><option value="">(pazgjedhur)</option><option>Po</option><option>Jo</option></select></div>
+              <div class="col-3 field"><label>Sensorë shtesë?</label><select id="Sensore"><option value="">(pazgjedhur)</option><option>Po</option><option>Jo</option></select></div>
+            </div>
+            <div class="toolbar" style="margin-top:12px">
+              <button class="btn-acc" type="submit">Ruaj</button>
+              <button class="btn" type="button" onclick="resetForm()">Pastro</button>
+              <button class="btn-warn" type="button" onclick="demoFill()">Mbush shembull</button>
+            </div>
+            <div class="hint" id="valMsg" style="margin-top:8px">* Fushat e detyrueshme: Qyteti, Targa. Targa duhet të jetë unike.</div>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Filtra & kërkim</h3>
+          <div class="srch">
+            <div class="field"><label>Kërko (çdo fushë)</label><input id="q" placeholder="p.sh. Tiranë, AA123, Touran..." oninput="render()" /></div>
+            <div class="field"><label>Qyteti</label><select id="fQyteti" onchange="render()"></select></div>
+            <div class="field"><label>Marka</label><select id="fMarka" onchange="render()"></select></div>
+            <div class="field"><label>Modeli</label><select id="fModeli" onchange="render()"></select></div>
+            <div class="field"><label>Drejtues</label><select id="fDrejtues" onchange="render()"></select></div>
+            <div class="field"><label>Vetëm me GPS</label><select id="fGPS" onchange="render()"><option value="">Jo</option><option value="Po">Po</option></select></div>
+            <div class="field"><label>Siguracion që skadon deri më</label><input type="date" id="fSigMax" onchange="render()" /></div>
+            <div class="field"><label>Kolaudim që skadon deri më</label><input type="date" id="fKolMax" onchange="render()" /></div>
+            <div class="toolbar">
+              <button class="btn-acc2" onclick="exportCSV()" type="button">Eksport CSV</button>
+              <button class="btn-acc2" onclick="exportXLSX()" type="button">Eksport Excel (.xlsx)</button>
+              <button class="btn" onclick="clearFilters()" type="button">Hiq filtrat</button>
+              <span class="hint">Kliko titujt e kolonave për renditje ↑↓</span>
+            </div>
+          </div>
+          <div class="notice" id="alertsBox" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="table-wrap">
+          <table id="tbl">
+            <thead><tr id="theadRow"></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="footer" id="count"></div>
+      </div>
+    </section>
+
+    <!-- REPORTS TAB -->
+    <section id="tab-raporte" class="hide">
+      <div class="kpi">
+        <div class="card"><div class="muted mini"># Automjete</div><div id="kpiTotal" style="font-size:28px;font-weight:800">0</div></div>
+        <div class="card"><div class="muted mini"># Me GPS</div><div id="kpiGPS" style="font-size:28px;font-weight:800">0</div></div>
+        <div class="card"><div class="muted mini">Siguracion<br/>që skadon (30 ditë)</div><div id="kpiSigSoon" style="font-size:28px;font-weight:800">0</div></div>
+        <div class="card"><div class="muted mini">Kolaudim<br/>që skadon (30 ditë)</div><div id="kpiKolSoon" style="font-size:28px;font-weight:800">0</div></div>
+      </div>
+
+      <div class="grid" style="margin-top:16px">
+        <div class="card">
+          <h3 style="margin-top:0">Numri sipas Qytetit</h3>
+          <div class="table-wrap"><table><thead><tr><th>Qyteti</th><th>Numri</th></tr></thead><tbody id="rptCity"></tbody></table></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Numri sipas Markës</h3>
+          <div class="table-wrap"><table><thead><tr><th>Marka</th><th>Numri</th></tr></thead><tbody id="rptBrand"></tbody></table></div>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:16px">
+        <div class="card">
+          <h3 style="margin-top:0">Numri sipas Drejtuesit</h3>
+          <div class="table-wrap"><table><thead><tr><th>Drejtues</th><th>Numri</th></tr></thead><tbody id="rptDriver"></tbody></table></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Numri sipas Muajit të Shërbimit</h3>
+          <div class="table-wrap"><table><thead><tr><th>Muaji</th><th>Numri</th></tr></thead><tbody id="rptServiceMonth"></tbody></table></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <h3 style="margin:0">Shërbime të vonuara &gt; <input id="overdueDays" type="number" min="1" step="1" value="90" style="width:80px"> ditë</h3>
+          <div class="toolbar"><button class="btn" onclick="buildReports()" type="button">Rifresko</button></div>
+        </div>
+        <div class="table-wrap"><table><thead id="overdueHead"></thead><tbody id="overdueBody"></tbody></table></div>
+      </div>
+
+      <div class="grid" style="margin-top:16px">
+        <div class="card">
+          <h3 style="margin-top:0">Siguracion që skadon brenda 30 ditëve</h3>
+          <div class="table-wrap"><table><thead id="soonSigHead"></thead><tbody id="soonSig"></tbody></table></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Kolaudim që skadon brenda 30 ditëve</h3>
+          <div class="table-wrap"><table><thead id="soonKolHead"></thead><tbody id="soonKol"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMPORT/EXPORT TAB -->
+    <section id="tab-importexport" class="hide">
+      <div class="card">
+        <h3 style="margin-top:0">Eksport / Import</h3>
+        <div class="toolbar" style="margin-bottom:8px;flex-wrap:wrap">
+          <button class="btn-acc2" onclick="exportCSV()" type="button">Eksport CSV</button>
+          <button class="btn-acc2" onclick="exportXLSX()" type="button">Eksport Excel (.xlsx)</button>
+          <button class="btn" onclick="exportJSON()" type="button">Eksport JSON</button>
+          <button class="btn" onclick="saveJsonNow()" type="button">Ruaj .json tani</button>
+          <label class="btn" style="display:inline-block">Import JSON <input id="fileInJSON" type="file" accept="application/json" style="display:none" onchange="importJSON(event)" /></label>
+          <label class="btn" style="display:inline-block">Import Excel (.xlsx) <input id="fileInXLSX" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display:none" onchange="importXLSX(event)" /></label>
+          <button class="btn-warn" onclick="if(confirm('Do të fshini të gjitha të dhënat?')){localStorage.removeItem(KEY);data=[];render();alert('U fshinë.')}" type="button">Fshi të gjitha</button>
+        </div>
+        <div class="hint">
+          <label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="autoBackupChk"> Auto-shkarko backup JSON pas çdo ruajtjeje</label>
+          <div style="margin-top:6px">
+            <button class="btn" type="button" onclick="connectFile()">Lidhu me skedar (.json) – eksperimental</button>
+            <button class="btn" type="button" id="saveToFileBtn" onclick="saveToConnectedFile()" disabled>Ruaj te skedari i lidhur</button>
+            <span class="hint" id="fileStatus"></span>
+          </div>
+        </div>
+        <div class="hint">CSV/Excel hapen në Excel. JSON shërben për kopje rezervë / migrim.</div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Backup & Sync</h3>
+        <p class="muted mini">Mund të shkarkoni JSON dhe ta ruani në Google Drive manualisht. Ose përdorni një URL API për sinkronizim.</p>
+        <div class="row">
+          <div class="col-6 field"><label>Webhook / API URL</label><input id="apiUrl" placeholder="https://example.com/fleet-sync" /></div>
+          <div class="col-6 field"><label>API Key (opsionale)</label><input id="apiKey" placeholder="Bearer ..." /></div>
+          <div class="col-12 toolbar" style="margin-top:8px">
+            <button class="btn" onclick="syncPush()" type="button">Dërgo dataset-in (POST)</button>
+            <button class="btn" onclick="syncPull()" type="button">Njëso nga API (GET)</button>
+          </div>
+          <div class="col-12"><div id="syncLog" class="hint"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT / BRANDING TAB -->
+    <section id="tab-rreth" class="hide">
+      <div class="card">
+        <h3 style="margin-top:0">Branding</h3>
+        <div class="row">
+          <div class="col-6 field"><label>Emri i kompanisë</label><input id="inpBrand" placeholder="p.sh. ADC" /></div>
+          <div class="col-6 field"><label>Logo URL</label><input id="inpLogo" placeholder="https://.../logo.png" /></div>
+          <div class="col-12 toolbar" style="margin-top:8px"><button class="btn" onclick="applyBrand()">Apliko</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Si funksionon</h3>
+        <ul>
+          <li>Klikoni një rresht në tabelë për ta ngarkuar në formë dhe ta përditësoni.</li>
+          <li>Eksportoni datasetin aktual (të filtruar ose jo) në CSV/XLSX/JSON ose ruajeni si .json.</li>
+          <li>Raportet: totalet sipas qytetit/markës/drejtuesit, sipas muajit të shërbimit, paralajmërime skadencash, dhe shërbime të vonuara &gt; N ditë.</li>
+          <li>Të dhënat ruhen në LocalStorage (<span class="mini">kyç: <code>fleetDataV3</code></span>); mundëso "Auto-backup" për shkarkim .json pas çdo ruajtjeje.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const KEY = 'fleetDataV3';
+    let data = JSON.parse(localStorage.getItem(KEY) || '[]');
+    const state = { sortKey:'_ts', sortDir:'desc' };
+
+    // ===== Lista e QYTETEVE (Shqipëri)
+    const CITY_LIST = [
+      'Tiranë','Kamëz','Vorë','Durrës','Shijak','Kavajë','Rrogozhinë','Elbasan','Cërrik','Peqin','Belsh','Gramsh','Librazhd','Prrenjas',
+      'Fier','Patos','Ballsh','Divjakë','Lushnjë','Roskovec','Vlorë','Himarë','Selenicë','Orikum','Sarandë','Delvinë','Konispol',
+      'Gjirokastër','Tepelenë','Memaliaj','Përmet','Këlcyrë','Berat','Kuçovë','Skrapar (Çorovodë)','Ura Vajgurore','Poliçan',
+      'Korçë','Maliq','Pogradec','Bilisht (Devoll)','Ersekë (Kolonjë)','Dibër (Peshkopi)','Bulqizë','Klos','Mat (Burrel)',
+      'Kukës','Has (Krumë)','Tropojë (Bajram Curri)','Lezhë','Laç (Kurbin)','Rrëshen (Mirditë)','Shkodër','Vau i Dejës','Pukë','Fushë-Arrëz'
+    ];
+
+    // ===== Marka & Modele (kryesoret)
+    const BRAND_MODELS = {
+      'Volkswagen':['Golf','Passat','Polo','Tiguan','T-Roc','Touran','Caddy','Transporter'],
+      'Toyota':['Corolla','Yaris','RAV4','Auris','Avensis','Hilux','Land Cruiser','Proace'],
+      'Mercedes-Benz':['C-Class','E-Class','S-Class','A-Class','GLC','GLE','Sprinter','Vito'],
+      'BMW':['1 Series','3 Series','5 Series','X1','X3','X5'],
+      'Audi':['A3','A4','A6','Q3','Q5','Q7'],
+      'Ford':['Fiesta','Focus','Mondeo','Kuga','Transit','Custom'],
+      'Opel':['Corsa','Astra','Insignia','Zafira','Vivaro'],
+      'Renault':['Clio','Megane','Talisman','Captur','Kadjar','Trafic','Master'],
+      'Peugeot':['208','308','508','2008','3008','Partner','Boxer'],
+      'Fiat':['Panda','500','Tipo','Doblo','Ducato'],
+      'Škoda':['Fabia','Octavia','Superb','Karoq','Kodiaq'],
+      'Hyundai':['i20','i30','Elantra','Tucson','Santa Fe'],
+      'Kia':['Rio','Ceed','Sportage','Sorento'],
+      'Nissan':['Micra','Qashqai','Juke','X-Trail','Navara'],
+      'Seat':['Ibiza','Leon','Ateca','Arona'],
+      'Dacia':['Logan','Sandero','Duster','Dokker'],
+      'Mazda':['2','3','6','CX-3','CX-5'],
+      'Honda':['Jazz','Civic','CR-V'],
+      'Citroën':['C3','C4','C5','Berlingo','Jumpy'],
+      'Volvo':['V40','S60','XC60','XC90'],
+      'Mitsubishi':['ASX','Outlander','L200'],
+      'Jeep':['Renegade','Compass','Cherokee','Grand Cherokee'],
+      'Alfa Romeo':['Giulietta','Giulia','Stelvio'],
+      'Porsche':['Macan','Cayenne','Panamera'],
+      'Land Rover':['Discovery','Range Rover Evoque','Range Rover Sport'],
+      'Suzuki':['Swift','Vitara','S-Cross'],
+      'Mini':['Cooper','Countryman'],
+      'Tesla':['Model 3','Model Y','Model S','Model X']
+    };
+
+    const OTHER_BRANDS = ['Iveco','MAN','Scania','DAF','Isuzu'];
+
+    const columns = [
+      {key:'Qyteti', label:'Qyteti'},
+      {key:'Targa', label:'Targa'},
+      {key:'Marka', label:'Marka'},
+      {key:'Modeli', label:'Modeli'},
+      {key:'Drejtues', label:'Drejtues'},
+      {key:'Kompania', label:'Kompania'},
+      {key:'Kategoria', label:'Kategoria'},
+      {key:'VitiProdhimit', label:'Viti'},
+      {key:'Kilometrazhi', label:'KM'},
+      {key:'Siguracione', label:'Siguracion'},
+      {key:'Kolaudimet', label:'Kolaudim'},
+      {key:'NrShasie', label:'Nr. Shasie'},
+      {key:'Serviset', label:'Serviset'},
+      {key:'DtSherbimit', label:'Dt/Sherbimit'},
+      {key:'Pershkrimi', label:'Përshkrimi'},
+      {key:'GPS', label:'GPS'},
+      {key:'Sensore', label:'Sensorë shtesë'}
+    ];
+
+    // THEME
+    const themeBtn = document.getElementById('themeBtn');
+    const LS_THEME = 'fleetTheme';
+    function setTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem(LS_THEME,t); }
+    (function(){ setTheme(localStorage.getItem(LS_THEME)||'light'); })();
+    themeBtn.addEventListener('click',()=> setTheme( (localStorage.getItem(LS_THEME)==='dark')?'light':'dark'));
+
+    // TABS
+    document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const id = t.dataset.tab;
+      document.querySelectorAll('main section').forEach(s=>s.classList.add('hide'));
+      document.getElementById('tab-'+id).classList.remove('hide');
+      if(id==='raporte') buildReports();
+    }));
+
+    function save(){
+      try {
+        localStorage.setItem(KEY, JSON.stringify(data));
+      } catch(err){
+        console.error('LocalStorage error:', err);
+        alert('Nuk po arrij të ruaj të dhënat në LocalStorage. Në GitHub Pages duhet të funksionojë; nëse jo, përdor opsionet e rezervës te Import/Export.');
+      }
+      if(localStorage.getItem('fleetAutoBackup')==='1'){
+        try{ saveJsonNow(true); }catch(e){ console.warn('Auto-backup dështoi:', e); }
+      }
+      buildAlerts();
+    }
+    function resetForm(){ document.getElementById('frm').reset(); document.getElementById('rowId').value=''; document.getElementById('valMsg').textContent='* Fushat e detyrueshme: Qyteti, Targa. Targa duhet të jetë unike.'; document.getElementById('ModeliCustom').classList.add('hide'); }
+    function getVal(id){ return document.getElementById(id).value.trim(); }
+    function setVal(id,v){ const el=document.getElementById(id); if(el) el.value = v ?? '' }
+
+    // Popullimi i dropdown-eve master
+    function populateCitySelect(sel){ sel.innerHTML = '<option value="">(zgjidh)</option>' + CITY_LIST.map(c=>`<option>${escapeHTML(c)}</option>`).join(''); }
+    function populateBrandSelect(){
+      const sel = document.getElementById('Marka');
+      const brands = Object.keys(BRAND_MODELS).concat(OTHER_BRANDS).sort((a,b)=>a.localeCompare(b,'sq'));
+      sel.innerHTML = '<option value="">(zgjidh)</option>' + brands.map(b=>`<option>${escapeHTML(b)}</option>`).join('') + '<option value="__OTHER__">(Tjetër...)</option>';
+    }
+    function populateModelSelect(){
+      const brand = getVal('Marka');
+      const sel = document.getElementById('Modeli');
+      let models = BRAND_MODELS[brand] || [];
+      sel.innerHTML = '<option value="">(zgjidh)</option>' + models.map(m=>`<option>${escapeHTML(m)}</option>`).join('') + '<option value="__CUSTOM__">(Shkruaj vetë)</option>';
+      document.getElementById('ModeliCustom').classList.add('hide');
+      document.getElementById('ModeliCustom').value='';
+    }
+
+    // Event për model custom
+    document.addEventListener('change', (e)=>{
+      if(e.target.id==='Marka'){ populateModelSelect(); }
+      if(e.target.id==='Modeli'){
+        if(e.target.value==='__CUSTOM__'){
+          document.getElementById('ModeliCustom').classList.remove('hide');
+          document.getElementById('ModeliCustom').focus();
+        } else {
+          document.getElementById('ModeliCustom').classList.add('hide');
+        }
+      }
+    });
+
+    // VALIDIMET + CREATE/UPDATE
+    function addOrUpdate(){
+      const req = ['Qyteti','Targa'];
+      for(const r of req){ if(!getVal(r)){ return showValMsg('Ju lutem plotësoni fushën: '+r); } }
+      const targa = getVal('Targa');
+      const id = document.getElementById('rowId').value;
+      const dup = data.findIndex((r,idx)=> r.Targa?.toLowerCase()===targa.toLowerCase() && idx != (id===''?-1:Number(id)) );
+      if(dup>-1) return showValMsg('Targa duhet të jetë unike. Ekziston tashmë: '+targa);
+
+      // model i përfundimtar
+      let modeli = getVal('Modeli');
+      if(modeli==='__CUSTOM__' || !modeli){ modeli = document.getElementById('ModeliCustom').value.trim(); }
+
+      const row = {
+        Qyteti:getVal('Qyteti'), Targa:targa, Marka:getVal('Marka'), Modeli:modeli, Drejtues:getVal('Drejtues'),
+        Kompania:getVal('Kompania'), Kategoria:getVal('Kategoria'), VitiProdhimit:getVal('VitiProdhimit'), Kilometrazhi:getVal('Kilometrazhi'),
+        Siguracione:getVal('Siguracione'), Kolaudimet:getVal('Kolaudimet'), NrShasie:getVal('NrShasie'), Serviset:getVal('Serviset'),
+        DtSherbimit:getVal('DtSherbimit'), Pershkrimi:getVal('Pershkrimi'), GPS:getVal('GPS'), Sensore:getVal('Sensore'),
+        _ts: Date.now()
+      };
+      if(id){ data[Number(id)] = row; }
+      else { data.push(row); }
+      save(); render(); resetForm();
+    }
+
+    function showValMsg(msg){ document.getElementById('valMsg').textContent = msg; return false }
+
+    function demoFill(){
+      const demo=[
+        {Qyteti:'Tiranë',Targa:'AA 123 ZZ',Marka:'Volkswagen',Modeli:'Touran',Drejtues:'Ardi P.',Kompania:'ADC',Kategoria:'MPV',VitiProdhimit:'2014',Kilometrazhi:185000,Siguracione:addDays(25),Kolaudimet:addDays(120),NrShasie:'WVZZZ1TZ9X123456',Serviset:'Ndërrim vaji',DtSherbimit:addDays(-140),Pershkrimi:'Familjar 7 vende',GPS:'Po',Sensore:'Po'},
+        {Qyteti:'Durrës',Targa:'DR 456 AB',Marka:'Toyota',Modeli:'Corolla',Drejtues:'Ela K.',Kompania:'ADC',Kategoria:'SEDAN',VitiProdhimit:'2018',Kilometrazhi:99000,Siguracione:addDays(5),Kolaudimet:addDays(20),NrShasie:'JTDBR32E720123456',Serviset:'Frena, filtra',DtSherbimit:addDays(-200),Pershkrimi:'Kursyer',GPS:'Jo',Sensore:''},
+        {Qyteti:'Fier',Targa:'FR 789 CD',Marka:'Mercedes-Benz',Modeli:'Sprinter',Drejtues:'Ilir D.',Kompania:'ADC',Kategoria:'FURGON',VitiProdhimit:'2016',Kilometrazhi:240000,Siguracione:addDays(200),Kolaudimet:addDays(15),NrShasie:'WDB9066571S123456',Serviset:'Goma',DtSherbimit:addDays(-20),Pershkrimi:'Furgon pune',GPS:'Po',Sensore:'Jo'}
+      ];
+      data = demo.concat(data); save(); render(); alert('U shtuan 3 rreshta shembull.');
+    }
+
+    function addDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10) }
+
+    // FILTER helpers
+    function unique(arr, key){ return [...new Set(arr.map(x=>x[key]).filter(Boolean))].sort((a,b)=>(''+a).localeCompare(''+b,'sq')) }
+    function bindFilter(id, items, addAll=true){ const el = document.getElementById(id); const v = el.value; el.innerHTML = (addAll?'<option value="">(të gjitha)</option>':'') + items.map(x=>`<option>${escapeHTML(x)}</option>`).join(''); if([...el.options].some(o=>o.value===v)) el.value=v; }
+    function clearFilters(){ ['q','fQyteti','fMarka','fModeli','fDrejtues','fSigMax','fKolMax','fGPS'].forEach(id=>document.getElementById(id).value=''); render(); }
+
+    // TABLE rendering & sorting
+    function render(){
+      // dropdownet e filtrave: union i listave master + vlera në dataset
+      bindFilter('fQyteti', union(CITY_LIST, unique(data,'Qyteti')));
+      bindFilter('fMarka', union(Object.keys(BRAND_MODELS).concat(OTHER_BRANDS), unique(data,'Marka')));
+      const allModels = new Set(); Object.values(BRAND_MODELS).forEach(list=>list.forEach(m=>allModels.add(m))); bindFilter('fModeli', union([...allModels], unique(data,'Modeli')));
+      bindFilter('fDrejtues', unique(data,'Drejtues'));
+
+      let rows = filterRows();
+      rows.sort(sorter);
+
+      const thead = document.getElementById('theadRow');
+      thead.innerHTML = columns.map(c=>`<th data-k="${c.key}">${c.label} ${state.sortKey===c.key?(state.sortDir==='asc'?'↑':'↓'):''}</th>`).join('') + '<th>Veprime</th>';
+      [...thead.children].forEach(th=> th.addEventListener('click', (e)=>{ const k=e.currentTarget.dataset.k; if(!k) return; if(state.sortKey===k){state.sortDir=state.sortDir==='asc'?'desc':'asc'} else {state.sortKey=k; state.sortDir='asc'}; render(); }));
+
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = rows.map((r)=>{ const idx=data.indexOf(r); return `<tr data-i="${idx}">` + columns.map(c=>`<td>${formatCell(c.key, r[c.key])}</td>`).join('') + `<td><button class=\"btn mini\" onclick=\"editRow(${idx})\">Përditëso</button> <button class=\"btn-bad mini\" onclick=\"delRow(${idx})\">Fshi</button></td></tr>` }).join('');
+      document.getElementById('count').textContent = `${rows.length} / ${data.length} rreshta`;
+      buildAlerts();
+    }
+
+    function union(a,b){ const set=new Set(a); (b||[]).forEach(x=>set.add(x)); return [...set].filter(Boolean).sort((x,y)=>(''+x).localeCompare(''+y,'sq')); }
+
+    function filterRows(){
+      const q = document.getElementById('q').value.toLowerCase();
+      const fQ = document.getElementById('fQyteti').value;
+      const fM = document.getElementById('fMarka').value;
+      const fMo = document.getElementById('fModeli').value;
+      const fD = document.getElementById('fDrejtues').value;
+      const fSigMax = document.getElementById('fSigMax').value;
+      const fKolMax = document.getElementById('fKolMax').value;
+      const fGPS = document.getElementById('fGPS').value;
+      return data.filter(r=>{
+        const qhit = !q || Object.values(r).some(v=>(''+(v??'')).toLowerCase().includes(q));
+        const city = !fQ || r.Qyteti===fQ;
+        const brand = !fM || r.Marka===fM;
+        const model = !fMo || r.Modeli===fMo;
+        const driver = !fD || r.Drejtues===fD;
+        const gpsOk = !fGPS || r.GPS===fGPS;
+        const sigOk = !fSigMax || (r.Siguracione && r.Siguracione <= fSigMax);
+        const kolOk = !fKolMax || (r.Kolaudimet && r.Kolaudimet <= fKolMax);
+        return qhit && city && brand && model && driver && gpsOk && sigOk && kolOk;
+      });
+    }
+
+    function sorter(a,b){
+      let A=a[state.sortKey]??'' , B=b[state.sortKey]??'';
+      if(/[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(A)&&/[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(B)){ A = new Date(A).getTime(); B = new Date(B).getTime(); }
+      if(typeof A==='string' && typeof B==='string'){ A=A.toLowerCase(); B=B.toLowerCase(); }
+      const cmp = A>B?1:A<B?-1:0; return state.sortDir==='asc'?cmp:-cmp;
+    }
+
+    function formatCell(key,val){
+      if(val==null||val==='') return '';
+      if(key==='Siguracione' || key==='Kolaudimet'){
+        const d = new Date(val); const days = Math.ceil((d - new Date())/86400000);
+        let cls='ok', txt=`${val}`;
+        if(!isNaN(days)){
+          if(days<0){ cls='bad'; txt+=` · skaduar ${Math.abs(days)}d`; }
+          else if(days<=7){ cls='bad'; txt+=` · ${days}d`; }
+          else if(days<=15){ cls='warn'; txt+=` · ${days}d`; }
+          else if(days<=30){ cls='warn'; txt+=` · ${days}d`; }
+        }
+        return `<span class="pill ${cls}">${txt}</span>`
+      }
+      return escapeHTML(val);
+    }
+
+    function editRow(i){ const r = data[i]; setVal('rowId', i); Object.keys(r).forEach(k=>{ if(document.getElementById(k)) setVal(k, r[k]) }); if(r.Marka){ document.getElementById('Marka').value=r.Marka; populateModelSelect(); } if(r.Modeli && BRAND_MODELS[r.Marka] && !BRAND_MODELS[r.Marka].includes(r.Modeli)){ document.getElementById('Modeli').value='__CUSTOM__'; document.getElementById('ModeliCustom').classList.remove('hide'); document.getElementById('ModeliCustom').value=r.Modeli; } window.scrollTo({top:0,behavior:'smooth'}); }
+    function delRow(i){ if(!confirm('Fshini këtë rresht?')) return; data.splice(i,1); save(); render(); }
+    function escapeHTML(s){ return (''+s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])) }
+    // Helper: shkarko skedar lokalisht
+    function download(filename, content, mime){
+      const blob = new Blob([content], { type: mime || 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.style.display='none';
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
+    }
+
+    // EXPORTS
+    function exportCSV(){ const rows = currentView(); const header = columns.map(c=>c.label).join(','); const csv = [header].concat(rows.map(r=>columns.map(c=>csvCell(r[c.key])).join(','))).join('\n'); download('flota.csv', csv, 'text/csv'); }
+    function csvCell(v){ if(v==null) return ''; const s = (''+v).replace(/"/g,'""'); return '"'+s+'"'; }
+    function exportJSON(){ download('flota.json', JSON.stringify(data, null, 2), 'application/json'); }
+
+    function exportXLSX(){ const rows = currentView(); const aoa = [columns.map(c=>c.label)]; rows.forEach(r=> aoa.push(columns.map(c=> r[c.key] ?? ''))); const ws = XLSX.utils.aoa_to_sheet(aoa); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Flota'); XLSX.writeFile(wb, 'flota.xlsx'); }
+
+    // IMPORTS
+    function importJSON(ev){ const file = ev.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { try{ const arr = JSON.parse(e.target.result); if(!Array.isArray(arr)) throw new Error('Formati pritet të jetë listë (array) e rreshtave'); data = arr; save(); render(); alert('Importi u krye.'); }catch(err){ alert('Gabim në import: '+err.message) } }; reader.readAsText(file); }
+
+    function importXLSX(ev){ const file = ev.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { const dataBin = new Uint8Array(e.target.result); const wb = XLSX.read(dataBin, {type:'array'}); const ws = wb.Sheets[wb.SheetNames[0]]; const aoa = XLSX.utils.sheet_to_json(ws, {header:1, defval:''}); if(!aoa.length) return alert('Skeda është bosh'); const hdr = aoa[0]; const labelToKey = Object.fromEntries(columns.map(c=>[c.label, c.key])); const rows=[]; for(let i=1;i<aoa.length;i++){ const line = aoa[i]; if(line.every(x=>(''+x).trim()==='')) continue; const r={}; hdr.forEach((lab,idx)=>{ const k = labelToKey[lab]; if(k) r[k]= line[idx]; }); r._ts = Date.now(); if(!r.Targa){ r.Targa = 'XLSX-'+i+ '-' + Math.random().toString(36).slice(2,6) } rows.push(r); } data = rows; save(); render(); alert('U importua Excel-i.'); }; reader.readAsArrayBuffer(file); }
+
+    // CURRENT VIEW helper
+    function currentView(){ let rows = filterRows(); rows.sort(sorter); return rows; }
+
+    // REPORTS
+    function buildReports(){
+      const rows = data.slice();
+      document.getElementById('kpiTotal').textContent = rows.length;
+      document.getElementById('kpiGPS').textContent = rows.filter(r=>r.GPS==='Po').length;
+      const soon = (key)=> rows.filter(r=>{ if(!r[key]) return false; const days = Math.ceil((new Date(r[key]) - new Date())/86400000); return !isNaN(days) && days>=0 && days<=30; }).length;
+      document.getElementById('kpiSigSoon').textContent = soon('Siguracione');
+      document.getElementById('kpiKolSoon').textContent = soon('Kolaudimet');
+
+      bindSimpleTable('rptCity', groupCount(rows,'Qyteti'));
+      bindSimpleTable('rptBrand', groupCount(rows,'Marka'));
+      bindSimpleTable('rptDriver', groupCount(rows,'Drejtues'));
+      bindSimpleTable('rptServiceMonth', groupCountByMonth(rows,'DtSherbimit'));
+
+      bindSoon('Siguracione','soonSigHead','soonSig');
+      bindSoon('Kolaudimet','soonKolHead','soonKol');
+
+      const n = Math.max(1, Number(document.getElementById('overdueDays').value||90));
+      const hdr = document.getElementById('overdueHead');
+      hdr.innerHTML = `<tr>${columns.map(c=>`<th>${c.label}</th>`).join('')}</tr>`;
+      const tb = document.getElementById('overdueBody');
+      const over = rows.filter(r=>{ if(!r.DtSherbimit) return false; const days = Math.ceil((new Date() - new Date(r.DtSherbimit))/86400000); return !isNaN(days) && days>n; }).sort((a,b)=> new Date(a.DtSherbimit) - new Date(b.DtSherbimit));
+      tb.innerHTML = over.map(r=>`<tr>${columns.map(c=>`<td>${formatCell(c.key, r[c.key])}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${columns.length}">Nuk ka shërbime të vonuara &gt; ${n} ditë.</td></tr>`;
+    }
+
+    function groupCount(rows,key){ const map = new Map(); rows.forEach(r=>{ const k=r[key]||'(pa caktuar)'; map.set(k,(map.get(k)||0)+1) }); return [...map.entries()].sort((a,b)=>b[1]-a[1]); }
+    function groupCountByMonth(rows,key){ const map=new Map(); rows.forEach(r=>{ const d=r[key]; if(!d) return; const dt=new Date(d); if(isNaN(dt)) return; const m = dt.toLocaleString('sq-AL',{year:'numeric',month:'2-digit'}); map.set(m,(map.get(m)||0)+1) }); return [...map.entries()].sort((a,b)=>b[1]-a[1]); }
+    function bindSimpleTable(id, entries){ const tb=document.getElementById(id); tb.innerHTML = entries.map(([k,v])=>`<tr><td>${escapeHTML(k)}</td><td>${v}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">S\'ka të dhëna</td></tr>'; }
+    function bindSoon(key, headId, bodyId){ const hdr = document.getElementById(headId); hdr.innerHTML = `<tr>${columns.map(c=>`<th>${c.label}</th>`).join('')}</tr>`; const rows = data.filter(r=>{ const d = r[key]; if(!d) return false; const days = Math.ceil((new Date(d)-new Date())/86400000); return !isNaN(days) && days>=0 && days<=30; }).sort((a,b)=> new Date(a[key]) - new Date(b[key])); const tb = document.getElementById(bodyId); tb.innerHTML = rows.map(r=>`<tr>${columns.map(c=>`<td>${formatCell(c.key, r[c.key])}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${columns.length}">Nuk ka skadenca brenda 30 ditëve.</td></tr>`; }
+
+    // ALERTS in-app
+    function buildAlerts(){ const box = document.getElementById('alertsBox'); if(!box) return; const soonList = (key,days)=> data.filter(r=>{ if(!r[key]) return false; const d=Math.ceil((new Date(r[key]) - new Date())/86400000); return !isNaN(d)&&d>=0 && d<=days; }).length; const s7 = soonList('Siguracione',7), s15=soonList('Siguracione',15), s30=soonList('Siguracione',30); const k7 = soonList('Kolaudimet',7), k15=soonList('Kolaudimet',15), k30=soonList('Kolaudimet',30); box.innerHTML = `<div><strong>Paralajmërime:</strong> Siguracion ≤7d: <span class="pill bad">${s7}</span>, ≤15d: <span class="pill warn">${s15}</span>, ≤30d: <span class="pill warn">${s30}</span> · Kolaudim ≤7d: <span class="pill bad">${k7}</span>, ≤15d: <span class="pill warn">${k15}</span>, ≤30d: <span class="pill warn">${k30}</span></div>`; }
+
+    // SYNC & BRANDING
+    function syncPush(){ const url = document.getElementById('apiUrl').value.trim(); if(!url) return logSync('Vendosni një URL API.'); const key = document.getElementById('apiKey').value.trim(); fetch(url,{method:'POST', headers:{'Content-Type':'application/json', ...(key?{'Authorization':key}:{})}, body:JSON.stringify({data, updatedAt:new Date().toISOString()})}).then(r=>r.text()).then(t=>logSync('OK (POST): '+t)).catch(e=>logSync('Gabim: '+e.message)); }
+    function syncPull(){ const url = document.getElementById('apiUrl').value.trim(); if(!url) return logSync('Vendosni një URL API.'); const key = document.getElementById('apiKey').value.trim(); fetch(url,{headers:{...(key?{'Authorization':key}:{})}}).then(r=>r.json()).then(json=>{ if(Array.isArray(json)) data=json; else if(Array.isArray(json.data)) data=json.data; else throw new Error('Pritet një listë rreshtash'); save(); render(); logSync('OK (GET): u sinkronizua.'); }).catch(e=>logSync('Gabim: '+e.message)); }
+    function logSync(msg){ document.getElementById('syncLog').textContent = `[${new Date().toLocaleString()}] ${msg}` }
+
+    // Backup i thjeshtë: shkarko .json
+    function saveJsonNow(silent){
+      const stamp = new Date().toISOString().replace(/[:T]/g,'-').slice(0,19);
+      const name = `flota-${stamp}.json`;
+      download(name, JSON.stringify(data, null, 2), 'application/json');
+      if(!silent && typeof logSync==='function') logSync('Shkarkova '+name);
+    }
+
+    // File System Access API (Chromium, HTTPS)
+    let fileHandle = null;
+    async function connectFile(){
+      if(!('showSaveFilePicker' in window)){
+        const el = document.getElementById('fileStatus'); if(el) el.textContent = ' Shfletuesi nuk e mbështet (provo Chrome/Edge).';
+        return;
+      }
+      try{
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: 'flota.json',
+          types: [{ description:'JSON', accept:{ 'application/json':['.json'] } }]
+        });
+        const btn = document.getElementById('saveToFileBtn'); if(btn) btn.disabled = false;
+        const el = document.getElementById('fileStatus'); if(el) el.textContent = ' U lidh me skedarin.';
+      }catch(e){ const el = document.getElementById('fileStatus'); if(el) el.textContent = ' Nuk u lidh.'; }
+    }
+    async function saveToConnectedFile(){
+      if(!fileHandle) return;
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(data, null, 2));
+      await writable.close();
+      const el = document.getElementById('fileStatus'); if(el) el.textContent = ' U ruajt te skedari.';
+    }
+
+    function applyBrand(){ const name = document.getElementById('inpBrand').value.trim(); const logo = document.getElementById('inpLogo').value.trim(); if(name) document.getElementById('brandName').textContent = name + ' – Menaxhim & Raporte'; const img = document.getElementById('logoPreview'); if(logo){ img.src=logo; img.style.display='block' } else { img.removeAttribute('src'); img.style.display='none' } localStorage.setItem('fleetBrand', JSON.stringify({name,logo})); }
+    (function(){ const b=JSON.parse(localStorage.getItem('fleetBrand')||'{}'); if(b.name){ document.getElementById('brandName').textContent = b.name + ' – Menaxhim & Raporte'; } if(b.logo){ const img=document.getElementById('logoPreview'); img.src=b.logo; img.style.display='block' } })();
+
+    // INIT
+    function init(){
+      // popullo dropdown-et master
+      populateCitySelect(document.getElementById('Qyteti'));
+      populateBrandSelect();
+      populateModelSelect();
+
+      // filtra: seto placeholder
+      bindFilter('fQyteti', CITY_LIST);
+      bindFilter('fMarka', Object.keys(BRAND_MODELS).concat(OTHER_BRANDS));
+      const allModels = new Set(); Object.values(BRAND_MODELS).forEach(list=>list.forEach(m=>allModels.add(m))); bindFilter('fModeli', [...allModels]);
+
+      // auto-backup checkbox
+      const auto = localStorage.getItem('fleetAutoBackup')==='1';
+      const chk = document.getElementById('autoBackupChk'); if(chk){ chk.checked = auto; chk.addEventListener('change',()=>{ localStorage.setItem('fleetAutoBackup', chk.checked?'1':'0'); }); }
+
+      render();
+      document.getElementById('theadRow').innerHTML = columns.map(c=>`<th data-k="${c.key}">${c.label}</th>`).join('') + '<th>Veprime</th>';
+    }
+
+    init();
+  </script>
+</body>
+</html>

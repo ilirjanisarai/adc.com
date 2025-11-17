@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8" />
+  <title>ADC – Raport Kontratash (Final me BSE & Agjentë)</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --adc-red: #c8102e;
+      --adc-red-dark: #9d0822;
+      --adc-bg: #f4f4f7;
+      --adc-card: #ffffff;
+      --adc-text: #222222;
+      --adc-muted: #777777;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+      background: radial-gradient(circle at top left, #ffe6eb 0, #f4f4f7 45%, #f4f4f7 100%);
+      color: var(--adc-text);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 26px;
+      color: var(--adc-red);
+      letter-spacing: 0.03em;
+    }
+
+    .page-header .tagline {
+      font-size: 12px;
+      color: var(--adc-muted);
+      margin-top: 4px;
+    }
+
+    .logo-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(200,16,46,0.07);
+      font-size: 11px;
+      color: var(--adc-red-dark);
+      font-weight: 600;
+      border: 1px solid rgba(200,16,46,0.2);
+    }
+
+    .card {
+      background: var(--adc-card);
+      border-radius: 14px;
+      padding: 18px 18px 20px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--adc-muted);
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    input[type="file"] {
+      margin-top: 6px;
+      font-size: 13px;
+    }
+
+    select {
+      padding: 6px 8px;
+      font-size: 13px;
+      border-radius: 7px;
+      border: 1px solid #ccc;
+      min-width: 190px;
+      background: #fafafa;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 8px 15px;
+      background: var(--adc-red);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 8px 18px rgba(200,16,46,0.35);
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    }
+
+    .btn span.icon {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .btn:hover {
+      background: var(--adc-red-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(200,16,46,0.45);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 5px 14px rgba(200,16,46,0.3);
+    }
+
+    .btn-secondary {
+      background: #ececec;
+      color: #333;
+      box-shadow: none;
+      margin-left: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: #dedede;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .error {
+      color: var(--adc-red-dark);
+      margin-top: 8px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .sheet-info {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--adc-muted);
+    }
+
+    .filters-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 12px;
+    }
+
+    .filters-row > div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 190px;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--adc-muted);
+      margin-top: 4px;
+    }
+
+    .divider-label {
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: var(--adc-muted);
+      font-weight: 500;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    thead {
+      background: #f5f5f7;
+    }
+
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 6px 8px;
+      text-align: right;
+    }
+
+    th:first-child, td:first-child {
+      text-align: left;
+    }
+
+    th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #555;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .badge-red {
+      background: #ffe5ea;
+      color: var(--adc-red-dark);
+    }
+
+    .badge-green {
+      background: #e6f6ea;
+      color: #196b3b;
+    }
+
+    .badge-blue {
+      background: #e6f0ff;
+      color: #1d4f91;
+    }
+
+    .badge-gray {
+      background: #f0f0f0;
+      color: #555;
+    }
+
+    .log {
+      font-size: 11px;
+      color: #666;
+      max-height: 150px;
+      overflow-y: auto;
+      background: #fafafa;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px dashed #ccc;
+      white-space: pre-line;
+    }
+
+    .footer {
+      font-size: 11px;
+      text-align: right;
+      margin-top: 8px;
+      color: #888;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .kpi-card {
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 8px 9px;
+      border: 1px solid #eee;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--adc-muted);
+    }
+
+    .kpi-value {
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: #999;
+      margin-top: 1px;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div>
+      <h1>ADC Contract Analytics</h1>
+      <div class="tagline">Inflow · Outflow · In-Base Movement · Renewals · Numra & Accounts</div>
+    </div>
+    <div class="logo-pill">ADC · Albanian Development Company</div>
+  </header>
+
+  <!-- 1. Upload & Filtra -->
+  <section class="card">
+    <h2>1. Ngarko Excel &amp; zgjidh filtrat</h2>
+    <div class="card-subtitle">
+      Workbook me 4 sheets: <strong>inflow</strong>, <strong>outflow</strong>, <strong>In base movement</strong>, <strong>renewals</strong>.
+    </div>
+
+    <div>
+      <label for="fileInput">File Excel (.xlsx / .xls)</label><br/>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" />
+    </div>
+
+    <button class="btn" onclick="loadWorkbook()">
+      <span class="icon">📂</span>
+      Lexo Excel-in &amp; përgatis filtrat
+    </button>
+    <button class="btn btn-secondary" type="button" onclick="clearFilters()">
+      Pastro filtrat
+    </button>
+
+    <div id="error" class="error"></div>
+    <div id="sheetInfo" class="sheet-info"></div>
+
+    <div class="divider-label">Filtrat kryesorë</div>
+    <div class="filters-row">
+      <div>
+        <span class="filters-title">Inflow – REASON</span>
+        <select id="inflowReasonFilter" multiple size="4" disabled></select>
+        <div class="hint">Mbaj Ctrl/Cmd për të zgjedhur disa. Zero zgjedhje = të gjitha.</div>
+      </div>
+
+      <div>
+        <span class="filters-title">Outflow – REASON</span>
+        <select id="outflowReasonFilter" multiple size="4" disabled></select>
+      </div>
+
+      <div>
+        <span class="filters-title">Outflow – TARIFF_PLAN</span>
+        <select id="outflowTariffFilter" multiple size="4" disabled></select>
+      </div>
+
+      <div>
+        <span class="filters-title">Outflow – ORD_POS</span>
+        <select id="outflowOrdPosFilter" multiple size="4" disabled></select>
+      </div>
+    </div>
+
+    <div class="divider-label">Grupimi i rinovimeve &amp; in-base movement</div>
+    <div class="filters-row">
+      <div>
+        <span class="filters-title">Raport sipas:</span>
+        <select id="agentGrouping" disabled>
+          <option value="bse">BSE</option>
+          <option value="sales">Sales Person</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn" style="margin-top:12px;" onclick="recomputeStats()">
+      <span class="icon">📊</span>
+      Përpuno &amp; Nxirr Raportin
+    </button>
+  </section>
+
+  <!-- 2. Përmbledhje & KPI -->
+  <section class="card">
+    <h2>2. Përmbledhje &amp; KPI kryesore</h2>
+    <div class="card-subtitle">
+      Transaksione vs accounts (CUSTOMER_ID) · Vlerat mujore (MRR) &amp; delta · Humbjet nga outflow.
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Inflow · Transaksione</div>
+        <div class="kpi-value" id="kpiInflowTx">0</div>
+        <div class="kpi-sub">Accounts: <span id="kpiInflowAcc">0</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Outflow · Transaksione</div>
+        <div class="kpi-value" id="kpiOutflowTx">0</div>
+        <div class="kpi-sub">Accounts: <span id="kpiOutflowAcc">0</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Renewals · Transaksione</div>
+        <div class="kpi-value" id="kpiRenTx">0</div>
+        <div class="kpi-sub">Accounts: <span id="kpiRenAcc">0</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">In-Base Mov. · Transaksione</div>
+        <div class="kpi-value" id="kpiMovTx">0</div>
+        <div class="kpi-sub">Accounts: <span id="kpiMovAcc">0</span></div>
+      </div>
+    </div>
+
+    <table id="tabelaSummary" style="margin-top:14px;">
+      <thead>
+        <tr>
+          <th>Kategori</th>
+          <th>Transaksione</th>
+          <th>Accounts</th>
+          <th>Vlera Totale</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3 style="margin-top:16px; font-size:14px;">
+      Vlerat negative <span class="badge badge-red">Downgrade + Disconnect</span>
+    </h3>
+    <table id="tabelaNegative">
+      <thead>
+        <tr>
+          <th>Tipi</th>
+          <th>Vlera Totale</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div style="margin-top:8px; font-size:13px;">
+      <span class="badge badge-gray">Delta neto (MRR)</span>
+      <strong style="margin-left:6px;" id="deltaTotale">0</strong>
+    </div>
+  </section>
+
+  <!-- 3. Detaj Inflow & Outflow -->
+  <section class="card">
+    <h2>3. Detaj inflow &amp; outflow</h2>
+    <div class="card-subtitle">
+      Inflow sipas Sales Person · Outflow përmbledhje humbje mujore.
+    </div>
+
+    <h3 style="font-size:14px; margin-top:4px;">
+      Inflow – Aktivizime
+      <span class="badge badge-blue">SALES_PERSON</span>
+    </h3>
+    <table id="tabelaSalesPerson">
+      <thead>
+        <tr>
+          <th>Sales Person</th>
+          <th>Nr aktivizimesh</th>
+          <th>MRR totale</th>
+          <th>TCV totale</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3 style="font-size:14px; margin-top:18px;">
+      Outflow – Humbje mujore
+      <span class="badge badge-red">OLD_MFEE</span>
+    </h3>
+    <table id="tabelaOutflowQuick">
+      <thead>
+        <tr>
+          <th>Tip përmbledhës</th>
+          <th>Nr transaksionesh</th>
+          <th>Vlera totale (MRR)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- 4. Raport sipas BSE / Sales Person (renewals + movement + outflow) -->
+  <section class="card">
+    <h2>4. Raport sipas BSE / Sales Person</h2>
+    <div class="card-subtitle">
+      Renewals + In base movement (+ Outflow kur grupimi është BSE).
+    </div>
+
+    <div style="font-size:12px; margin-bottom:4px;">
+      <span class="badge badge-green" id="agentGroupingLabel">
+        BSE (renewals + movement + outflow)
+      </span>
+    </div>
+
+    <table id="tabelaBSE">
+      <thead>
+        <tr id="bseHeaderRow"></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- 5. Përmbledhje e kombinuar për BSE -->
+  <section class="card">
+    <h2>5. Përmbledhje e kombinuar për BSE</h2>
+    <div class="card-subtitle">
+      Inflow (sipas BSE) + renewals, in base movement &amp; outflow (sipas BSE) të kombinuara në një pamje.
+    </div>
+
+    <table id="tabelaSalesCombined">
+      <thead>
+        <tr>
+          <th>BSE</th>
+          <th>Inflow · Nr</th>
+          <th>Inflow · MRR</th>
+          <th>Renewals · Nr</th>
+          <th>Renewals · Delta</th>
+          <th>In-base · Nr</th>
+          <th>In-base · Delta</th>
+          <th>Outflow · Nr</th>
+          <th>Outflow · Delta</th>
+          <th>Totali (Inflow + Delta)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- 6. Log -->
+  <section class="card">
+    <h2>6. Log &amp; paralajmërime</h2>
+    <div id="log" class="log">Ende nuk ka të dhëna të përpunuara.</div>
+    <div class="footer">ADC · Internal reporting tool</div>
+  </section>
+
+  <script>
+    // ================== GJENDJA GLOBALE ==================
+    const adcState = {
+      inflowRows: [],
+      outflowRows: [],
+      movementRows: [],
+      renewalsRows: [],
+      inflowDistinctReason: new Set(),
+      outflowDistinct: {
+        reason: new Set(),
+        tariff: new Set(),
+        ordpos: new Set()
+      }
+    };
+
+    // ================== FUNKSIONE NDIHMËSE ==================
+    function toNumber(raw) {
+      if (raw === null || raw === undefined || raw === '') return 0;
+      if (typeof raw === 'number') return raw;
+
+      let s = raw.toString().trim();
+      s = s.replace(/\s/g, '');
+      if (s === '') return 0;
+
+      const hasComma = s.includes(',');
+      const hasDot = s.includes('.');
+
+      if (hasComma && !hasDot) {
+        s = s.replace(/,/g, '');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      }
+
+      if (hasDot && !hasComma) {
+        const parts = s.split('.');
+        if (parts[0].length > 3 && parts[1].length === 3) {
+          s = parts.join('');
+          const n = parseFloat(s);
+          return isNaN(n) ? 0 : n;
+        }
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      }
+
+      if (hasComma && hasDot) {
+        s = s.replace(/,/g, '');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      }
+
+      const n = parseFloat(s);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function safeKey(val, fallback) {
+      const s = (val || '').toString().trim();
+      return s === '' ? fallback : s;
+    }
+
+    function addAccount(setObj, key, rawVal) {
+      const id = (rawVal || '').toString().trim();
+      if (!id) return;
+      setObj[key].add(id);
+    }
+
+    function classifyDelta(delta, statusRaw) {
+      const s = (statusRaw || '').toString().toLowerCase();
+      if (s.includes('upgrade')) return 'upgrade';
+      if (s.includes('downgrade')) return 'downgrade';
+      if (s.includes('neutral') || s.includes('modification')) return 'same';
+
+      if (delta > 0.01) return 'upgrade';
+      if (delta < -0.01) return 'downgrade';
+      return 'same';
+    }
+
+    function formatNumber(value) {
+      if (isNaN(value)) return '0';
+      return value.toLocaleString('sq-AL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function getMultiSelectValues(id) {
+      const sel = document.getElementById(id);
+      const vals = [];
+      for (const opt of sel.options) {
+        if (opt.selected) vals.push(opt.value);
+      }
+      return vals;
+    }
+
+    function clearFilters() {
+      const ids = ['inflowReasonFilter', 'outflowReasonFilter', 'outflowTariffFilter', 'outflowOrdPosFilter'];
+      ids.forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        for (const opt of sel.options) opt.selected = false;
+      });
+    }
+
+    function ensureBSE(stats, bseKey) {
+      if (!stats.byBSE[bseKey]) {
+        stats.byBSE[bseKey] = {
+          renewalsCount: 0,
+          renewalsDelta: 0,
+          movementCount: 0,
+          movementDelta: 0,
+          disconnectCount: 0,
+          disconnectDelta: 0
+        };
+      }
+      return stats.byBSE[bseKey];
+    }
+
+    // ================== LEXO EXCEL ==================
+    function loadWorkbook() {
+      const fileInput = document.getElementById('fileInput');
+      const errorEl = document.getElementById('error');
+      const logEl = document.getElementById('log');
+      const sheetInfoEl = document.getElementById('sheetInfo');
+
+      errorEl.textContent = '';
+      logEl.textContent = '';
+      sheetInfoEl.textContent = '';
+
+      adcState.inflowRows = [];
+      adcState.outflowRows = [];
+      adcState.movementRows = [];
+      adcState.renewalsRows = [];
+      adcState.inflowDistinctReason = new Set();
+      adcState.outflowDistinct = { reason: new Set(), tariff: new Set(), ordpos: new Set() };
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        errorEl.textContent = 'Ju lutem zgjidhni një file Excel.';
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        try {
+          const data = e.target.result;
+          const workbook = XLSX.read(data, { type: 'binary' });
+
+          const sheetNames = workbook.SheetNames;
+          sheetInfoEl.textContent = 'Fletët e gjetura: ' + sheetNames.join(', ');
+
+          const logLines = [];
+
+          sheetNames.forEach(sheetName => {
+            const sheet = workbook.Sheets[sheetName];
+            if (!sheet) return;
+
+            const rows = XLSX.utils.sheet_to_json(sheet, { defval: null });
+            if (!rows || rows.length === 0) {
+              logLines.push('Sheet "' + sheetName + '" është bosh ose pa të dhëna.');
+              return;
+            }
+
+            const headers = Object.keys(rows[0]).map(h => h.toString().trim());
+
+            const isInflow = headers.includes('ACTUAL_MFEE') && headers.includes('TCV') && !headers.includes('OLD_MFEE');
+            const isOutflow = headers.includes('OLD_MFEE') && headers.includes('BUNDLES_NAMES_OLD') && !headers.includes('TP_ACTUAL');
+            const isMovement = headers.includes('TP_ACTUAL') && headers.includes('OLD_MFEE') && headers.includes('STATUS') && headers.includes('BUNDLES_NAMES_OLD');
+            const isRenewals = headers.includes('TP_ACTUAL') && headers.includes('OLD_MFEE') && headers.includes('STATUS') && headers.includes('POS_CHANNEL');
+
+            if (isInflow) {
+              logLines.push(`Sheet "${sheetName}" u klasifikua si inflow (aktivizime).`);
+              adcState.inflowRows = rows;
+              rows.forEach(r => {
+                const rs = (r['REASON'] || '').toString().trim();
+                if (rs) adcState.inflowDistinctReason.add(rs);
+              });
+            } else if (isOutflow) {
+              logLines.push(`Sheet "${sheetName}" u klasifikua si outflow (disconnect).`);
+              adcState.outflowRows = rows;
+              rows.forEach(r => {
+                const rs = (r['REASON'] || '').toString().trim();
+                const tp = (r['TARIFF_PLAN'] || '').toString().trim();
+                const op = (r['ORD_POS'] || '').toString().trim();
+                if (rs) adcState.outflowDistinct.reason.add(rs);
+                if (tp) adcState.outflowDistinct.tariff.add(tp);
+                if (op) adcState.outflowDistinct.ordpos.add(op);
+              });
+            } else if (isMovement) {
+              logLines.push(`Sheet "${sheetName}" u klasifikua si In base movement (upgrade/downgrade).`);
+              adcState.movementRows = rows;
+            } else if (isRenewals) {
+              logLines.push(`Sheet "${sheetName}" u klasifikua si renewals (rinovime).`);
+              adcState.renewalsRows = rows;
+            } else {
+              logLines.push(`Sheet "${sheetName}" nuk u njoh (kombinim kolonash i panjohur). U anashkalua.`);
+            }
+          });
+
+          // aktivizo & popullo filtrat
+          const inflowSel = document.getElementById('inflowReasonFilter');
+          const outReasonSel = document.getElementById('outflowReasonFilter');
+          const outTariffSel = document.getElementById('outflowTariffFilter');
+          const outOrdSel = document.getElementById('outflowOrdPosFilter');
+          const groupingSel = document.getElementById('agentGrouping');
+
+          inflowSel.disabled = false;
+          outReasonSel.disabled = false;
+          outTariffSel.disabled = false;
+          outOrdSel.disabled = false;
+          groupingSel.disabled = false;
+
+          function fillMultiSelect(sel, valuesSet) {
+            sel.innerHTML = '';
+            const values = Array.from(valuesSet).sort();
+            values.forEach(v => {
+              const opt = document.createElement('option');
+              opt.value = v;
+              opt.textContent = v;
+              sel.appendChild(opt);
+            });
+            sel.selectedIndex = -1;
+          }
+
+          fillMultiSelect(inflowSel, adcState.inflowDistinctReason);
+          fillMultiSelect(outReasonSel, adcState.outflowDistinct.reason);
+          fillMultiSelect(outTariffSel, adcState.outflowDistinct.tariff);
+          fillMultiSelect(outOrdSel, adcState.outflowDistinct.ordpos);
+
+          groupingSel.value = 'bse';
+          document.getElementById('agentGroupingLabel').textContent =
+            'BSE (renewals + movement + outflow)';
+
+          logEl.textContent = logLines.join('\n') || 'Workbook u lexua me sukses. Zgjidh filtrat dhe kliko "Përpuno & Nxirr Raportin".';
+        } catch (err) {
+          console.error(err);
+          errorEl.textContent = 'Ndodhi një gabim gjatë leximit të file-it. Kontrollo formatin.';
+        }
+      };
+
+      reader.onerror = function() {
+        errorEl.textContent = 'Ndodhi një gabim gjatë leximit të file-it.';
+      };
+
+      reader.readAsBinaryString(file);
+    }
+
+    // ================== PËRPUNIMI ME FILTRA ==================
+    function recomputeStats() {
+      const inflowReasonsSel = getMultiSelectValues('inflowReasonFilter');
+      const outReasonsSel = getMultiSelectValues('outflowReasonFilter');
+      const outTariffsSel = getMultiSelectValues('outflowTariffFilter');
+      const outOrdSel = getMultiSelectValues('outflowOrdPosFilter');
+      const grouping = document.getElementById('agentGrouping').value;
+      const logEl = document.getElementById('log');
+
+      const stats = {
+        inflow: { count: 0, mrrTotal: 0, tcvTotal: 0 },
+        outflow: { count: 0, lostMrrTotal: 0 },
+        movement: {
+          count: 0,
+          upgradeCount: 0,
+          upgradeDelta: 0,
+          downgradeCount: 0,
+          downgradeDelta: 0,
+          sameCount: 0
+        },
+        renewals: {
+          count: 0,
+          upgradeCount: 0,
+          upgradeDelta: 0,
+          downgradeCount: 0,
+          downgradeDelta: 0,
+          sameCount: 0
+        },
+        uniqueAccounts: {
+          inflow: new Set(),
+          outflow: new Set(),
+          movement: new Set(),
+          renewals: new Set()
+        },
+        negative: {
+          downgrade: 0,
+          disconnect: 0,
+          total: 0
+        },
+        deltaTotal: 0,
+        bySalesInflow: {},     // inflow sipas Sales Person
+        byBSE: {},             // renewals + movement + outflow sipas BSE
+        byRenewMovSales: {},   // renewals + movement sipas Sales Person
+        byBSEInflow: {}        // inflow sipas BSE
+      };
+
+      // INFLOW
+      adcState.inflowRows.forEach(row => {
+        const mfee = toNumber(row['ACTUAL_MFEE'] || row['TP_FEE']);
+        const tcv  = toNumber(row['TCV']);
+        if (mfee === 0 && tcv === 0) return;
+
+        const reason = (row['REASON'] || '').toString().trim();
+        if (inflowReasonsSel.length > 0 && !inflowReasonsSel.includes(reason)) return;
+
+        stats.inflow.count += 1;
+        stats.inflow.mrrTotal += mfee;
+        stats.inflow.tcvTotal  += tcv;
+
+        addAccount(stats.uniqueAccounts, 'inflow', row['CUSTOMER_ID']);
+
+        const sp = safeKey(row['SALES_PERSON'], 'Pa emër');
+        if (!stats.bySalesInflow[sp]) {
+          stats.bySalesInflow[sp] = { count: 0, mrr: 0, tcv: 0 };
+        }
+        stats.bySalesInflow[sp].count += 1;
+        stats.bySalesInflow[sp].mrr   += mfee;
+        stats.bySalesInflow[sp].tcv   += tcv;
+
+        // inflow sipas BSE
+        const bseKey = safeKey(row['BSE'], 'Pa BSE');
+        if (!stats.byBSEInflow[bseKey]) {
+          stats.byBSEInflow[bseKey] = { count: 0, mrr: 0 };
+        }
+        stats.byBSEInflow[bseKey].count += 1;
+        stats.byBSEInflow[bseKey].mrr   += mfee;
+      });
+
+      // OUTFLOW
+      adcState.outflowRows.forEach(row => {
+        const oldMfee = toNumber(row['OLD_MFEE'] || row['TP_FEE']);
+        if (oldMfee === 0) return;
+
+        const rReason = (row['REASON'] || '').toString().trim();
+        const rTariff = (row['TARIFF_PLAN'] || '').toString().trim();
+        const rOrd    = (row['ORD_POS'] || '').toString().trim();
+
+        if (outReasonsSel.length > 0 && !outReasonsSel.includes(rReason)) return;
+        if (outTariffsSel.length > 0 && !outTariffsSel.includes(rTariff)) return;
+        if (outOrdSel.length > 0 && !outOrdSel.includes(rOrd)) return;
+
+        stats.outflow.count += 1;
+        const loss = -oldMfee;
+        stats.outflow.lostMrrTotal += loss;
+        stats.negative.disconnect += loss;
+
+        addAccount(stats.uniqueAccounts, 'outflow', row['CUSTOMER_ID']);
+
+        const bseKey = safeKey(row['BSE'], 'Pa BSE');
+        const bseStats = ensureBSE(stats, bseKey);
+        bseStats.disconnectCount += 1;
+        bseStats.disconnectDelta += loss;
+      });
+
+      // IN BASE MOVEMENT
+      adcState.movementRows.forEach(row => {
+        const newMfee = toNumber(row['ACTUAL_MFEE'] || row['TP_FEE']);
+        const oldMfee = toNumber(row['OLD_MFEE'] || row['TP_FEE_OLD']);
+        if (newMfee === 0 && oldMfee === 0) return;
+
+        const delta = newMfee - oldMfee;
+        const cls = classifyDelta(delta, row['STATUS']);
+
+        stats.movement.count += 1;
+        addAccount(stats.uniqueAccounts, 'movement', row['CUSTOMER_ID']);
+
+        const bseKey = safeKey(row['BSE'], 'Pa BSE');
+        const bseStats = ensureBSE(stats, bseKey);
+
+        const sp = safeKey(row['SALES_PERSON'], 'Pa emër');
+        if (!stats.byRenewMovSales[sp]) {
+          stats.byRenewMovSales[sp] = {
+            renewalsCount: 0,
+            renewalsDelta: 0,
+            movementCount: 0,
+            movementDelta: 0
+          };
+        }
+
+        if (cls === 'upgrade') {
+          stats.movement.upgradeCount += 1;
+          stats.movement.upgradeDelta += delta;
+
+          bseStats.movementCount += 1;
+          bseStats.movementDelta += delta;
+
+          stats.byRenewMovSales[sp].movementCount += 1;
+          stats.byRenewMovSales[sp].movementDelta += delta;
+        } else if (cls === 'downgrade') {
+          stats.movement.downgradeCount += 1;
+          stats.movement.downgradeDelta += delta;
+          stats.negative.downgrade += delta;
+
+          bseStats.movementCount += 1;
+          bseStats.movementDelta += delta;
+
+          stats.byRenewMovSales[sp].movementCount += 1;
+          stats.byRenewMovSales[sp].movementDelta += delta;
+        } else {
+          stats.movement.sameCount += 1;
+        }
+      });
+
+      // RENEWALS
+      adcState.renewalsRows.forEach(row => {
+        const newMfee = toNumber(row['ACTUAL_MFEE'] || row['TP_FEE']);
+        const oldMfee = toNumber(row['OLD_MFEE'] || row['TP_FEE_OLD']);
+        if (newMfee === 0 && oldMfee === 0) return;
+
+        const delta = newMfee - oldMfee;
+        const cls = classifyDelta(delta, row['STATUS']);
+
+        stats.renewals.count += 1;
+        addAccount(stats.uniqueAccounts, 'renewals', row['CUSTOMER_ID']);
+
+        const bseKey = safeKey(row['BSE'], 'Pa BSE');
+        const bseStats = ensureBSE(stats, bseKey);
+
+        const sp = safeKey(row['SALES_PERSON'], 'Pa emër');
+        if (!stats.byRenewMovSales[sp]) {
+          stats.byRenewMovSales[sp] = {
+            renewalsCount: 0,
+            renewalsDelta: 0,
+            movementCount: 0,
+            movementDelta: 0
+          };
+        }
+
+        if (cls === 'upgrade') {
+          stats.renewals.upgradeCount += 1;
+          stats.renewals.upgradeDelta += delta;
+
+          bseStats.renewalsCount += 1;
+          bseStats.renewalsDelta += delta;
+
+          stats.byRenewMovSales[sp].renewalsCount += 1;
+          stats.byRenewMovSales[sp].renewalsDelta += delta;
+        } else if (cls === 'downgrade') {
+          stats.renewals.downgradeCount += 1;
+          stats.renewals.downgradeDelta += delta;
+          stats.negative.downgrade += delta;
+
+          bseStats.renewalsCount += 1;
+          bseStats.renewalsDelta += delta;
+
+          stats.byRenewMovSales[sp].renewalsCount += 1;
+          stats.byRenewMovSales[sp].renewalsDelta += delta;
+        } else {
+          stats.renewals.sameCount += 1;
+
+          bseStats.renewalsCount += 1;
+          stats.byRenewMovSales[sp].renewalsCount += 1;
+        }
+      });
+
+      stats.negative.total = stats.negative.downgrade + stats.negative.disconnect;
+      stats.deltaTotal =
+        stats.inflow.mrrTotal +
+        stats.movement.upgradeDelta +
+        stats.renewals.upgradeDelta +
+        stats.outflow.lostMrrTotal +
+        stats.movement.downgradeDelta +
+        stats.renewals.downgradeDelta;
+
+      fillTables(stats, grouping);
+      logEl.textContent = 'Raporti u përgatit me sukses sipas filtrave aktualë.';
+    }
+
+    // ================== MBUSH TABELAT & KPI ==================
+    function fillTables(stats, grouping) {
+      // KPI
+      document.getElementById('kpiInflowTx').textContent = stats.inflow.count;
+      document.getElementById('kpiOutflowTx').textContent = stats.outflow.count;
+      document.getElementById('kpiRenTx').textContent = stats.renewals.count;
+      document.getElementById('kpiMovTx').textContent = stats.movement.count;
+
+      document.getElementById('kpiInflowAcc').textContent = stats.uniqueAccounts.inflow.size;
+      document.getElementById('kpiOutflowAcc').textContent = stats.uniqueAccounts.outflow.size;
+      document.getElementById('kpiRenAcc').textContent = stats.uniqueAccounts.renewals.size;
+      document.getElementById('kpiMovAcc').textContent = stats.uniqueAccounts.movement.size;
+
+      const tbodySummary = document.querySelector('#tabelaSummary tbody');
+      const tbodyNegative = document.querySelector('#tabelaNegative tbody');
+      const deltaTotEl = document.getElementById('deltaTotale');
+
+      const tbodySales = document.querySelector('#tabelaSalesPerson tbody');
+      const tbodyOutQuick = document.querySelector('#tabelaOutflowQuick tbody');
+      const tbodyBSE = document.querySelector('#tabelaBSE tbody');
+      const headerRow = document.getElementById('bseHeaderRow');
+      const groupingLabel = document.getElementById('agentGroupingLabel');
+      const tbodySalesCombined = document.querySelector('#tabelaSalesCombined tbody');
+
+      tbodySummary.innerHTML = '';
+      tbodyNegative.innerHTML = '';
+      tbodySales.innerHTML = '';
+      tbodyOutQuick.innerHTML = '';
+      tbodyBSE.innerHTML = '';
+      headerRow.innerHTML = '';
+      tbodySalesCombined.innerHTML = '';
+
+      // Përmbledhje
+      const renewValue = stats.renewals.upgradeDelta + stats.renewals.downgradeDelta;
+      const inbaseValue = stats.movement.upgradeDelta + stats.movement.downgradeDelta;
+      const outflowValue = stats.outflow.lostMrrTotal;
+      const inflowValue = stats.inflow.mrrTotal;
+
+      const summaryRows = [
+        ['Renewals', stats.renewals.count, stats.uniqueAccounts.renewals.size, renewValue],
+        ['In base movement', stats.movement.count, stats.uniqueAccounts.movement.size, inbaseValue],
+        ['Outflow (disconnect)', stats.outflow.count, stats.uniqueAccounts.outflow.size, outflowValue],
+        ['Inflow (aktivizime)', stats.inflow.count, stats.uniqueAccounts.inflow.size, inflowValue]
+      ];
+
+      summaryRows.forEach(row => {
+        const tr = document.createElement('tr');
+        const tdCat = document.createElement('td');
+        const tdTx = document.createElement('td');
+        const tdAcc = document.createElement('td');
+        const tdVal = document.createElement('td');
+        tdCat.textContent = row[0];
+        tdTx.textContent = row[1];
+        tdAcc.textContent = row[2];
+        tdVal.textContent = formatNumber(row[3]);
+        tr.appendChild(tdCat);
+        tr.appendChild(tdTx);
+        tr.appendChild(tdAcc);
+        tr.appendChild(tdVal);
+        tbodySummary.appendChild(tr);
+      });
+
+      // Negative
+      const negRows = [
+        ['Downgrade (renewals + in base)', stats.negative.downgrade],
+        ['Disconnect (outflow)', stats.negative.disconnect],
+        ['Totale negative', stats.negative.total]
+      ];
+      negRows.forEach(row => {
+        const tr = document.createElement('tr');
+        const tdCat = document.createElement('td');
+        const tdVal = document.createElement('td');
+        tdCat.textContent = row[0];
+        tdVal.textContent = formatNumber(row[1]);
+        tr.appendChild(tdCat);
+        tr.appendChild(tdVal);
+        tbodyNegative.appendChild(tr);
+      });
+
+      deltaTotEl.textContent = formatNumber(stats.deltaTotal);
+
+      // Inflow per Sales Person (detaj)
+      const inflowEntries = Object.entries(stats.bySalesInflow);
+      inflowEntries.sort((a, b) => b[1].mrr - a[1].mrr);
+      inflowEntries.forEach(([name, s]) => {
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td');
+        const tdCount = document.createElement('td');
+        const tdMrr = document.createElement('td');
+        const tdTCV = document.createElement('td');
+        tdName.textContent = name;
+        tdCount.textContent = s.count;
+        tdMrr.textContent = formatNumber(s.mrr);
+        tdTCV.textContent = formatNumber(s.tcv);
+        tr.appendChild(tdName);
+        tr.appendChild(tdCount);
+        tr.appendChild(tdMrr);
+        tr.appendChild(tdTCV);
+        tbodySales.appendChild(tr);
+      });
+
+      // Outflow quick summary
+      const trOut = document.createElement('tr');
+      const tdLbl = document.createElement('td');
+      const tdTxCnt = document.createElement('td');
+      const tdLoss = document.createElement('td');
+      tdLbl.textContent = 'Gjithsej disconnect';
+      tdTxCnt.textContent = stats.outflow.count;
+      tdLoss.textContent = formatNumber(stats.outflow.lostMrrTotal);
+      trOut.appendChild(tdLbl);
+      trOut.appendChild(tdTxCnt);
+      trOut.appendChild(tdLoss);
+      tbodyOutQuick.appendChild(trOut);
+
+      // Grupimi BSE / Sales
+      if (grouping === 'bse') {
+        groupingLabel.textContent = 'BSE (renewals + movement + outflow)';
+
+        const headers = [
+          'BSE',
+          'Nr rinovimesh',
+          'Delta rinovimesh',
+          'Nr lëvizjesh',
+          'Delta lëvizjesh',
+          'Nr disconnect',
+          'Humbje disconnect',
+          'Delta totale'
+        ];
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          headerRow.appendChild(th);
+        });
+
+        const bseEntries = Object.entries(stats.byBSE);
+        bseEntries.sort((a, b) => {
+          const deltaA = (a[1].renewalsDelta || 0) + (a[1].movementDelta || 0) + (a[1].disconnectDelta || 0);
+          const deltaB = (b[1].renewalsDelta || 0) + (b[1].movementDelta || 0) + (b[1].disconnectDelta || 0);
+          return deltaB - deltaA;
+        });
+
+        bseEntries.forEach(([bse, s]) => {
+          const tr = document.createElement('tr');
+          const totalDelta = (s.renewalsDelta || 0) + (s.movementDelta || 0) + (s.disconnectDelta || 0);
+
+          const cells = [
+            bse,
+            s.renewalsCount,
+            formatNumber(s.renewalsDelta),
+            s.movementCount,
+            formatNumber(s.movementDelta),
+            s.disconnectCount,
+            formatNumber(s.disconnectDelta),
+            formatNumber(totalDelta)
+          ];
+          cells.forEach(c => {
+            const td = document.createElement('td');
+            td.textContent = c;
+            tr.appendChild(td);
+          });
+          tbodyBSE.appendChild(tr);
+        });
+      } else {
+        groupingLabel.textContent = 'Sales Person (vetëm renewals + in base movement)';
+
+        const headers = [
+          'Sales Person',
+          'Nr rinovimesh',
+          'Delta rinovimesh',
+          'Nr lëvizjesh',
+          'Delta lëvizjesh',
+          'Delta totale'
+        ];
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          headerRow.appendChild(th);
+        });
+
+        const spEntries = Object.entries(stats.byRenewMovSales);
+        spEntries.sort((a, b) => {
+          const deltaA = (a[1].renewalsDelta || 0) + (a[1].movementDelta || 0);
+          const deltaB = (b[1].renewalsDelta || 0) + (b[1].movementDelta || 0);
+          return deltaB - deltaA;
+        });
+
+        spEntries.forEach(([sp, s]) => {
+          const tr = document.createElement('tr');
+          const totalDelta = (s.renewalsDelta || 0) + (s.movementDelta || 0);
+
+          const cells = [
+            sp,
+            s.renewalsCount,
+            formatNumber(s.renewalsDelta),
+            s.movementCount,
+            formatNumber(s.movementDelta),
+            formatNumber(totalDelta)
+          ];
+          cells.forEach(c => {
+            const td = document.createElement('td');
+            td.textContent = c;
+            tr.appendChild(td);
+          });
+          tbodyBSE.appendChild(tr);
+        });
+      }
+
+      // Përmbledhja e kombinuar për BSE
+      const combined = {};
+      // Inflow sipas BSE
+      for (const [bse, v] of Object.entries(stats.byBSEInflow)) {
+        if (!combined[bse]) {
+          combined[bse] = {
+            inflowCount: 0,
+            inflowMrr: 0,
+            renCount: 0,
+            renDelta: 0,
+            movCount: 0,
+            movDelta: 0,
+            outCount: 0,
+            outDelta: 0
+          };
+        }
+        combined[bse].inflowCount = v.count;
+        combined[bse].inflowMrr   = v.mrr;
+      }
+      // Renewals / movement / outflow sipas BSE
+      for (const [bse, v] of Object.entries(stats.byBSE)) {
+        if (!combined[bse]) {
+          combined[bse] = {
+            inflowCount: 0,
+            inflowMrr: 0,
+            renCount: 0,
+            renDelta: 0,
+            movCount: 0,
+            movDelta: 0,
+            outCount: 0,
+            outDelta: 0
+          };
+        }
+        combined[bse].renCount = v.renewalsCount || 0;
+        combined[bse].renDelta = v.renewalsDelta || 0;
+        combined[bse].movCount = v.movementCount || 0;
+        combined[bse].movDelta = v.movementDelta || 0;
+        combined[bse].outCount = v.disconnectCount || 0;
+        combined[bse].outDelta = v.disconnectDelta || 0;
+      }
+
+      const combinedEntries = Object.entries(combined);
+      combinedEntries.sort((a, b) => {
+        const totalA = (a[1].inflowMrr || 0) + (a[1].renDelta || 0) + (a[1].movDelta || 0) + (a[1].outDelta || 0);
+        const totalB = (b[1].inflowMrr || 0) + (b[1].renDelta || 0) + (b[1].movDelta || 0) + (b[1].outDelta || 0);
+        return totalB - totalA;
+      });
+
+      combinedEntries.forEach(([bse, s]) => {
+        const tr = document.createElement('tr');
+        const total = (s.inflowMrr || 0) + (s.renDelta || 0) + (s.movDelta || 0) + (s.outDelta || 0);
+
+        const cells = [
+          bse,
+          s.inflowCount,
+          formatNumber(s.inflowMrr),
+          s.renCount,
+          formatNumber(s.renDelta),
+          s.movCount,
+          formatNumber(s.movDelta),
+          s.outCount,
+          formatNumber(s.outDelta),
+          formatNumber(total)
+        ];
+
+        cells.forEach(val => {
+          const td = document.createElement('td');
+          td.textContent = val;
+          tr.appendChild(td);
+        });
+
+        tbodySalesCombined.appendChild(tr);
+      });
+    }
+  </script>
+
+</body>
+</html>

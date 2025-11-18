@@ -507,7 +507,7 @@
   <section class="card">
     <h2>5. Përmbledhje e kombinuar për BSE</h2>
     <div class="card-subtitle">
-      Inflow (sipas BSE) + renewals, in base movement &amp; outflow (sipas BSE) të kombinuara në një pamje.
+      Inflow (nga Sales Person → BSE) + renewals, in base movement &amp; outflow (sipas BSE) të kombinuara në një pamje.
     </div>
 
     <table id="tabelaSalesCombined">
@@ -549,6 +549,21 @@
         tariff: new Set(),
         ordpos: new Set()
       }
+    };
+
+    // Harta: Sales Person -> BSE (siç më dhe ti)
+    const salesToBSE = {
+      "Alesja Troka": "Atroka",
+      "Beniamin Mata": "Bmata",
+      "Bora Xhaxho": "Bxhaxho",
+      "Klodiana Hysenaj1": "Khysenaj",
+      "KRIKS MUHO": "Kmuho",
+      "Lorenca Olldashi": "Lolldashi",
+      "Rainis Jovanaj": "Rjovanaj",
+      "Xhensila Daulle1": "Xhdaulle",
+	  "Xhensila Daulle2": "Xhdaulle",
+      "Marinela Kola": "Mkola",
+      "Arjola Duka": "Aduka"
     };
 
     // ================== FUNKSIONE NDIHMËSE ==================
@@ -822,16 +837,15 @@
           total: 0
         },
         deltaTotal: 0,
-        bySalesInflow: {},     // inflow sipas Sales Person
-        byBSE: {},             // renewals + movement + outflow sipas BSE
-        byRenewMovSales: {},   // renewals + movement sipas Sales Person
-        byBSEInflow: {}        // inflow sipas BSE
+        bySalesInflow: {}, // inflow sipas Sales Person
+        byBSE: {}, // renewals + movement + outflow sipas BSE
+        byRenewMovSales: {} // renewals + movement sipas Sales Person
       };
 
       // INFLOW
       adcState.inflowRows.forEach(row => {
         const mfee = toNumber(row['ACTUAL_MFEE'] || row['TP_FEE']);
-        const tcv  = toNumber(row['TCV']);
+        const tcv = toNumber(row['TCV']);
         if (mfee === 0 && tcv === 0) return;
 
         const reason = (row['REASON'] || '').toString().trim();
@@ -839,7 +853,7 @@
 
         stats.inflow.count += 1;
         stats.inflow.mrrTotal += mfee;
-        stats.inflow.tcvTotal  += tcv;
+        stats.inflow.tcvTotal += tcv;
 
         addAccount(stats.uniqueAccounts, 'inflow', row['CUSTOMER_ID']);
 
@@ -848,16 +862,8 @@
           stats.bySalesInflow[sp] = { count: 0, mrr: 0, tcv: 0 };
         }
         stats.bySalesInflow[sp].count += 1;
-        stats.bySalesInflow[sp].mrr   += mfee;
-        stats.bySalesInflow[sp].tcv   += tcv;
-
-        // inflow sipas BSE
-        const bseKey = safeKey(row['BSE'], 'Pa BSE');
-        if (!stats.byBSEInflow[bseKey]) {
-          stats.byBSEInflow[bseKey] = { count: 0, mrr: 0 };
-        }
-        stats.byBSEInflow[bseKey].count += 1;
-        stats.byBSEInflow[bseKey].mrr   += mfee;
+        stats.bySalesInflow[sp].mrr += mfee;
+        stats.bySalesInflow[sp].tcv += tcv;
       });
 
       // OUTFLOW
@@ -867,7 +873,7 @@
 
         const rReason = (row['REASON'] || '').toString().trim();
         const rTariff = (row['TARIFF_PLAN'] || '').toString().trim();
-        const rOrd    = (row['ORD_POS'] || '').toString().trim();
+        const rOrd = (row['ORD_POS'] || '').toString().trim();
 
         if (outReasonsSel.length > 0 && !outReasonsSel.includes(rReason)) return;
         if (outTariffsSel.length > 0 && !outTariffsSel.includes(rTariff)) return;
@@ -1207,10 +1213,12 @@
         });
       }
 
-      // Përmbledhja e kombinuar për BSE
+      // 🔹 Përmbledhja e kombinuar për BSE
       const combined = {};
-      // Inflow sipas BSE
-      for (const [bse, v] of Object.entries(stats.byBSEInflow)) {
+
+      // 1) Inflow – nga Sales Person, map-uar në BSE
+      for (const [sp, v] of Object.entries(stats.bySalesInflow)) {
+        const bse = salesToBSE[sp] || "Pa BSE (nga inflow)";
         if (!combined[bse]) {
           combined[bse] = {
             inflowCount: 0,
@@ -1223,10 +1231,11 @@
             outDelta: 0
           };
         }
-        combined[bse].inflowCount = v.count;
-        combined[bse].inflowMrr   = v.mrr;
+        combined[bse].inflowCount += v.count;
+        combined[bse].inflowMrr += v.mrr;
       }
-      // Renewals / movement / outflow sipas BSE
+
+      // 2) Renewals / movement / outflow sipas BSE
       for (const [bse, v] of Object.entries(stats.byBSE)) {
         if (!combined[bse]) {
           combined[bse] = {
@@ -1248,6 +1257,7 @@
         combined[bse].outDelta = v.disconnectDelta || 0;
       }
 
+      // 3) Renditja dhe shfaqja
       const combinedEntries = Object.entries(combined);
       combinedEntries.sort((a, b) => {
         const totalA = (a[1].inflowMrr || 0) + (a[1].renDelta || 0) + (a[1].movDelta || 0) + (a[1].outDelta || 0);

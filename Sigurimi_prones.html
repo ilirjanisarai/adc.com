@@ -2,7 +2,7 @@
 <html lang="sq">
 <head>
   <meta charset="UTF-8">
-  <title>Kalkulator Sigurimi (Vlera e deklaruar nga klienti)</title>
+  <title>ADC - Kalkulator Sigurimi (Vlera e deklaruar nga klienti)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -33,7 +33,7 @@
 
     .card {
       background: #fff;
-      max-width: 720px;
+      max-width: 960px; /* më e gjerë */
       width: 100%;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.08);
@@ -109,7 +109,7 @@
     .layout {
       display: grid;
       grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-      gap: 20px;
+      gap: 24px;
     }
 
     @media (max-width: 768px) {
@@ -166,6 +166,13 @@
     .result-row.premium span.value {
       color: var(--adc-red);
       font-size: 1.1rem;
+    }
+
+    .discount-title {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #444;
     }
 
     .rate-note {
@@ -268,15 +275,26 @@
             <span class="value" id="totalValueDisplay">-</span>
           </div>
           <div class="result-row premium">
-            <span class="label">Prima vjetore </span>
+            <span class="label">Prima vjetore</span>
             <span class="value" id="premiumDisplay">-</span>
           </div>
 
+          <div class="discount-title">Prima me zbritje</div>
+          <div class="result-row">
+            <span class="label">Prima me 20% zbritje</span>
+            <span class="value" id="premium20Display">-</span>
+          </div>
+          <div class="result-row">
+            <span class="label">Prima me 30% zbritje</span>
+            <span class="value" id="premium30Display">-</span>
+          </div>
+
           <div class="rate-note">
-            Prima llogaritet si <strong>prima vjetore × vlera totale e siguruar</strong>
+            Prima bazë llogaritet si <strong>Prima × vlera totale e siguruar</strong>,
+            më pas aplikohet zbritja përkatëse.
             <span class="pill">zjarr</span>
             <span class="pill">tërmet</span>
-            <span class="pill">rreziqe të tjera </span>
+            <span class="pill">rreziqe të tjera</span>
           </div>
         </div>
 
@@ -304,17 +322,18 @@
   const pricePerM2Display = document.getElementById('pricePerM2Display');
   const totalValueDisplay = document.getElementById('totalValueDisplay');
   const premiumDisplay = document.getElementById('premiumDisplay');
+  const premium20Display = document.getElementById('premium20Display');
+  const premium30Display = document.getElementById('premium30Display');
 
   const typeHelp = document.getElementById('typeHelp');
   const surfaceHelp = document.getElementById('surfaceHelp');
 
   function parseNumber(str) {
     if (!str) return 0;
-    // Heq hapësirat dhe presjet për mijëshet, kthen presjen dhjetore në pikë nëse përdoret
     str = String(str)
       .replace(/\s+/g, '')
       .replace(/,/g, '')   // presje si ndarës mijëshe
-      .replace(/\./g, '.'); // pika si dhjetore (lëmë siç është)
+      .replace(/\./g, '.'); // pika si dhjetore
     const val = parseFloat(str);
     return isNaN(val) ? 0 : val;
   }
@@ -349,6 +368,17 @@
     calculate();
   }
 
+  function resetDisplays(structure, contents, surface, pricePerM2, total, premium, p20, p30) {
+    structureValueDisplay.textContent = structure;
+    contentsValueDisplay.textContent = contents;
+    surfaceDisplay.textContent = surface;
+    pricePerM2Display.textContent = pricePerM2;
+    totalValueDisplay.textContent = total;
+    premiumDisplay.textContent = premium;
+    premium20Display.textContent = p20;
+    premium30Display.textContent = p30;
+  }
+
   function calculate() {
     const type = propertyTypeSelect.value;
     const surface = parseNumber(surfaceInput.value);
@@ -358,53 +388,55 @@
     let structureValue = 0;
     let pricePerM2 = 0;
 
-    // Reset shfaqjen kur s’ka të dhëna bazë
-    if (!surface && type === 'vile') {
-      structureValueDisplay.textContent = '-';
-      contentsValueDisplay.textContent = contentsVal ? formatLek(contentsVal) : '-';
-      surfaceDisplay.textContent = '-';
-      pricePerM2Display.textContent = '-';
-      totalValueDisplay.textContent = '-';
-      premiumDisplay.textContent = '-';
-      return;
-    }
-
     if (type === 'apartament') {
       if (!surface || !declaredValue) {
-        structureValueDisplay.textContent = declaredValue ? formatLek(declaredValue) : '-';
-        contentsValueDisplay.textContent = contentsVal ? formatLek(contentsVal) : '-';
-        surfaceDisplay.textContent = surface ? formatLek(surface, 2) : '-';
-        pricePerM2Display.textContent = '-';
-        totalValueDisplay.textContent = '-';
-        premiumDisplay.textContent = '-';
+        resetDisplays(
+          declaredValue ? formatLek(declaredValue) : '-',
+          contentsVal ? formatLek(contentsVal) : '-',
+          surface ? formatLek(surface, 2) : '-',
+          '-',
+          '-',
+          '-',
+          '-',
+          '-'
+        );
         return;
       }
       structureValue = declaredValue;
       pricePerM2 = declaredValue / surface;
     } else if (type === 'vile') {
-      // Vilë – vlera e strukturës = 90 000 × m²
       if (!surface) {
-        structureValueDisplay.textContent = '-';
-        contentsValueDisplay.textContent = contentsVal ? formatLek(contentsVal) : '-';
-        surfaceDisplay.textContent = '-';
-        pricePerM2Display.textContent = '-';
-        totalValueDisplay.textContent = '-';
-        premiumDisplay.textContent = '-';
+        resetDisplays(
+          '-',
+          contentsVal ? formatLek(contentsVal) : '-',
+          '-',
+          '-',
+          '-',
+          '-',
+          '-',
+          '-'
+        );
         return;
       }
       structureValue = surface * VILLA_COST_PER_M2;
-      pricePerM2 = VILLA_COST_PER_M2; // fiks
+      pricePerM2 = VILLA_COST_PER_M2;
     }
 
     const totalValue = structureValue + contentsVal;
     const premium = totalValue * PREMIUM_RATE;
+    const premium20 = premium * 0.8; // 20% zbritje
+    const premium30 = premium * 0.7; // 30% zbritje
 
-    structureValueDisplay.textContent = formatLek(structureValue);
-    contentsValueDisplay.textContent = contentsVal ? formatLek(contentsVal) : '0';
-    surfaceDisplay.textContent = surface ? formatLek(surface, 2) : '-';
-    pricePerM2Display.textContent = pricePerM2 ? formatLek(pricePerM2, type === 'apartament' ? 2 : 0) : '-';
-    totalValueDisplay.textContent = formatLek(totalValue);
-    premiumDisplay.textContent = formatLek(premium, 2);
+    resetDisplays(
+      formatLek(structureValue),
+      contentsVal ? formatLek(contentsVal) : '0',
+      surface ? formatLek(surface, 2) : '-',
+      pricePerM2 ? formatLek(pricePerM2, type === 'apartament' ? 2 : 0) : '-',
+      formatLek(totalValue),
+      formatLek(premium, 2),
+      formatLek(premium20, 2),
+      formatLek(premium30, 2)
+    );
   }
 
   propertyTypeSelect.addEventListener('change', updateUIForType);

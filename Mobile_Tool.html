@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <title>Rekomandues Planet e Reja – Klientë Biznes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary: #e60000;
+      --primary-dark: #b00000;
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --text-main: #222222;
+      --text-muted: #666666;
+      --border: #dddddd;
+      --success: #0b8f3d;
+      --warning: #e6a700;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .header-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .header-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 460px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+      border: 1px solid #ececec;
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    select {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.92rem;
+      outline: none;
+      background: #fff;
+    }
+
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(230,0,0,0.15);
+    }
+
+    .plans-wrapper {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .plans-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .plan-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f1f5;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.8rem;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .pill-old {
+      background: #f3f4ff;
+    }
+
+    .pill-new {
+      background: #e8fff1;
+      color: #0b6430;
+    }
+
+    .pill-alt {
+      background: #fff7e0;
+      color: #8c6500;
+    }
+
+    .price {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .price-small {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      .plan-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .plan-row-label {
+      color: var(--text-muted);
+    }
+
+    .plan-row-value {
+      font-weight: 500;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid #e0e0e0;
+      color: var(--text-muted);
+      background: #fafafa;
+      margin-left: 6px;
+    }
+
+    .tag-portfolio {
+      border-color: #d0e2ff;
+      background: #f3f7ff;
+      color: #30539f;
+    }
+
+    .tag-main {
+      border-color: #bfe5cc;
+      background: #eafaf0;
+      color: #0b6430;
+    }
+
+    .tag-alt {
+      border-color: #f6e2a3;
+      background: #fff7df;
+      color: #7f5a00;
+    }
+
+    .comparison {
+      margin-top: 10px;
+      border-top: 1px dashed #e0e0e0;
+      padding-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .empty {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .footer {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .highlight {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .arrow {
+      font-size: 1.1rem;
+      margin: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div>
+        <div class="header-title">Rekomandues i Planit të Ri Tarifor – Klientë Biznes</div>
+        <div class="header-sub">
+          Zgjidh planin aktual (të vjetër) të klientit dhe sistemi do të sugjerojë automatikisht
+          planin/en e ri/e të përshtatshëm sipas portofolit të ri (efektiv nga 06 Shkurt 2024).
+        </div>
+      </div>
+      <div>
+        <span class="badge">Versioni 1 – Lokale (HTML + JS)</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Zgjedhja e planit aktual</div>
+          <div class="card-subtitle">Planet e vjetra (Next, RED, Vodafone, Business RED, etj.)</div>
+        </div>
+      </div>
+      <label for="oldPlanSelect">Plani aktual i klientit</label>
+      <select id="oldPlanSelect">
+        <option value="">— Zgjidh planin e vjetër —</option>
+
+        <optgroup label="Vodafone Next+ Portfolio">
+          <option value="next_x_plus">Next X+</option>
+          <option value="next_s_plus">Next S+</option>
+          <option value="next_m_plus">Next M+</option>
+          <option value="next_l_plus">Next L+</option>
+        </optgroup>
+
+        <optgroup label="Business RED Portfolio">
+          <option value="red_business">RED (Business RED)</option>
+          <option value="red_pro">RED Pro</option>
+          <option value="red_prime">RED Prime</option>
+          <option value="business_black">Business Black</option>
+        </optgroup>
+
+        <optgroup label="Vodafone Next Portfolio (standard)">
+          <option value="next_x">Next X</option>
+          <option value="next_s">Next S</option>
+          <option value="next_m">Next M</option>
+          <option value="next_l">Next L</option>
+        </optgroup>
+
+        <optgroup label="RED Portfolio (standard)">
+          <option value="red_start">RED Start</option>
+          <option value="red_extra">RED Extra</option>
+          <option value="red_advance">RED Advance</option>
+          <option value="red_executive">RED Executive</option>
+        </optgroup>
+
+        <optgroup label="Vodafone Plans">
+          <option value="vodafone_1200">Vodafone 1200</option>
+          <option value="vodafone_1800">Vodafone 1800</option>
+        </optgroup>
+      </select>
+      <div class="hint">
+        <strong>Shënim:</strong> Ky mjet është orientues. Agjenti mund të zgjedhë edhe plan alternativ,
+        në varësi të konsumit real të klientit (internet, ndërkombëtare, roaming).
+      </div>
+    </div>
+
+    <div class="plans-wrapper">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Plani aktual (i vjetër)</div>
+            <div class="card-subtitle">Detajet bazë të planit që ka klienti sot</div>
+          </div>
+          <span class="tag tag-portfolio" id="oldPortfolioTag" style="display:none;"></span>
+        </div>
+        <div id="oldPlanContent" class="empty">
+          Zgjidh një plan nga lista për të parë detajet e tij dhe sugjerimin për planin e ri.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Plani i ri i sugjeruar</div>
+            <div class="card-subtitle">Plan(i) nga portofoli i ri biznes bazuar në planin ekzistues</div>
+          </div>
+        </div>
+        <div id="newPlanContent" class="empty">
+          Pasi të zgjedhësh planin e vjetër, këtu do të shfaqet rekomandimi kryesor dhe, nëse ka, një alternativë.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      ADC – mjet orientues për agjentët e shitjeve (Versioni 1, lokal).
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // 1. Definimi i planeve të reja
+    // -----------------------------
+    const newPlans = {
+      business_bronze: {
+        id: "business_bronze",
+        emri: "Business Bronze",
+        cmimi: 1200,
+        internet: "10 GB",
+        minKomb: "1500",
+        smsKomb: "1500",
+        intl: "-",
+        roaming: "-",
+        portfolio: "Planet e Reja Business",
+        extra: "Plan hyrës biznes me kombinim të mirë çmim/përfitime."
+      },
+      business_silver: {
+        id: "business_silver",
+        emri: "Business Silver",
+        cmimi: 1500,
+        internet: "25 GB",
+        minKomb: "2000",
+        smsKomb: "2000",
+        intl: "20",
+        roaming: "-",
+        portfolio: "Planet e Reja Business",
+        extra: "Internet më i lartë dhe minuta/sms shtesë, i përshtatshëm për përdorim mesatar."
+      },
+      business_gold: {
+        id: "business_gold",
+        emri: "Business Gold",
+        cmimi: 1800,
+        internet: "45 GB",
+        minKomb: "2500",
+        smsKomb: "2500",
+        intl: "30",
+        roaming: "-",
+        portfolio: "Planet e Reja Business",
+        extra: "Plan shumë balancuar për biznes me përdorim intensiv."
+      },
+      business_unlimited: {
+        id: "business_unlimited",
+        emri: "Business Unlimited",
+        cmimi: 2300,
+        internet: "Pa limit (FUP 200 GB)",
+        minKomb: "Pa limit (FUP 15,000)",
+        smsKomb: "Pa limit (FUP 3,000)",
+        intl: "50",
+        roaming: "400 Lekë/Dita",
+        portfolio: "Planet e Reja Business",
+        extra: "I përshtatshëm për përdorues shumë aktivë dhe komunikim të shpeshtë."
+      },
+      red_lite: {
+        id: "red_lite",
+        emri: "RED Lite",
+        cmimi: 3000,
+        internet: "Pa limit (FUP 300 GB)",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit (FUP 3,000)",
+        intl: "150",
+        roaming: "200 Lekë/Dita",
+        portfolio: "Planet RED të Rinj",
+        extra: "Plan RED me përfitime të forta kombëtare dhe ndërkombëtare."
+      },
+      red_boost: {
+        id: "red_boost",
+        emri: "RED Boost",
+        cmimi: 6000,
+        internet: "Pa limit (FUP 600 GB)",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit (FUP 5,000)",
+        intl: "400",
+        roaming: "200 Lekë/Dita",
+        portfolio: "Planet RED të Rinj",
+        extra: "Plan premium për klientë me konsum shumë të lartë dhe lëvizshmëri ndërkombëtare."
+      },
+      business_bronze_plus: {
+        id: "business_bronze_plus",
+        emri: "Business Bronze+",
+        cmimi: 1200,
+        internet: "5 GB",
+        minKomb: "1500",
+        smsKomb: "1500",
+        intl: "-",
+        roaming: "-",
+        portfolio: "Planet e Reja Business",
+        extra: "Variant me internet më të ulët për klientë me fokus në zë."
+      }
+    };
+
+    // --------------------------------
+    // 2. Definimi i planeve të vjetra
+    // --------------------------------
+    const oldPlans = {
+      // Vodafone Next+ Portfolio
+      next_x_plus: {
+        id: "next_x_plus",
+        emri: "Next X+",
+        portfolio: "Vodafone Next+ Portfolio",
+        cmimi: 1000,
+        internet: "1 GB",
+        minKomb: "800",
+        smsKomb: "800",
+        smsVodafone: "0",
+        intl: "0",
+        roaming: "-",
+      },
+      next_s_plus: {
+        id: "next_s_plus",
+        emri: "Next S+",
+        portfolio: "Vodafone Next+ Portfolio",
+        cmimi: 1500,
+        internet: "6 GB",
+        minKomb: "2500",
+        smsKomb: "250",
+        smsVodafone: "2500",
+        intl: "20",
+        roaming: "-",
+      },
+      next_m_plus: {
+        id: "next_m_plus",
+        emri: "Next M+",
+        portfolio: "Vodafone Next+ Portfolio",
+        cmimi: 2000,
+        internet: "12 GB",
+        minKomb: "3500",
+        smsKomb: "350",
+        smsVodafone: "3500",
+        intl: "40",
+        roaming: "-",
+      },
+      next_l_plus: {
+        id: "next_l_plus",
+        emri: "Next L+",
+        portfolio: "Vodafone Next+ Portfolio",
+        cmimi: 3000,
+        internet: "24 GB",
+        minKomb: "4500",
+        smsKomb: "450",
+        smsVodafone: "4500",
+        intl: "100",
+        roaming: "-",
+      },
+
+      // Business RED Portfolio
+      red_business: {
+        id: "red_business",
+        emri: "RED (Business RED)",
+        portfolio: "Business RED Portfolio",
+        cmimi: 3000,
+        internet: "20 GB / pa limit",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit",
+        smsVodafone: "Pa limit",
+        intl: "150 minuta & 150 SMS",
+        roaming: "200 Lekë/Dita",
+      },
+      red_pro: {
+        id: "red_pro",
+        emri: "RED Pro",
+        portfolio: "Business RED Portfolio",
+        cmimi: 4800,
+        internet: "35 GB / pa limit",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit",
+        smsVodafone: "Pa limit",
+        intl: "250 minuta & 250 SMS",
+        roaming: "200 Lekë/Dita",
+      },
+      red_prime: {
+        id: "red_prime",
+        emri: "RED Prime",
+        portfolio: "Business RED Portfolio",
+        cmimi: 8500,
+        internet: "50 GB / pa limit",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit",
+        smsVodafone: "Pa limit",
+        intl: "400 minuta & 400 SMS",
+        roaming: "200 Lekë/Dita",
+      },
+      business_black: {
+        id: "business_black",
+        emri: "Business Black",
+        portfolio: "Business RED Portfolio",
+        cmimi: 12500,
+        internet: "Pa limit",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit",
+        smsVodafone: "Pa limit",
+        intl: "600 minuta & 600 SMS",
+        roaming: "200 Lekë/Dita",
+      },
+
+      // Vodafone Next Portfolio (standard)
+      next_x: {
+        id: "next_x",
+        emri: "Next X",
+        portfolio: "Vodafone Next Portfolio",
+        cmimi: 800,
+        internet: "0.4 GB",
+        minKomb: "400",
+        smsKomb: "400",
+        smsVodafone: "0",
+        intl: "0",
+        roaming: "-",
+      },
+      next_s: {
+        id: "next_s",
+        emri: "Next S",
+        portfolio: "Vodafone Next Portfolio",
+        cmimi: 1300,
+        internet: "3 GB",
+        minKomb: "2500",
+        smsKomb: "250",
+        smsVodafone: "2500",
+        intl: "0",
+        roaming: "-",
+      },
+      next_m: {
+        id: "next_m",
+        emri: "Next M",
+        portfolio: "Vodafone Next Portfolio",
+        cmimi: 1800,
+        internet: "6 GB",
+        minKomb: "3500",
+        smsKomb: "350",
+        smsVodafone: "3500",
+        intl: "20",
+        roaming: "-",
+      },
+      next_l: {
+        id: "next_l",
+        emri: "Next L",
+        portfolio: "Vodafone Next Portfolio",
+        cmimi: 2600,
+        internet: "12 GB",
+        minKomb: "4500",
+        smsKomb: "450",
+        smsVodafone: "4500",
+        intl: "70",
+        roaming: "-",
+      },
+
+      // RED Portfolio (standard)
+      red_start: {
+        id: "red_start",
+        emri: "RED Start",
+        portfolio: "RED Portfolio",
+        cmimi: 2500,
+        internet: "5 GB",
+        minKomb: "2500",
+        smsKomb: "2500",
+        smsVodafone: "-",
+        intl: "100 minuta & 100 SMS",
+        roaming: "500 Lekë/Dita",
+      },
+      red_extra: {
+        id: "red_extra",
+        emri: "RED Extra",
+        portfolio: "RED Portfolio",
+        cmimi: 4800,
+        internet: "10 GB",
+        minKomb: "4000",
+        smsKomb: "4000",
+        smsVodafone: "-",
+        intl: "200 minuta & 200 SMS",
+        roaming: "500 Lekë/Dita",
+      },
+      red_advance: {
+        id: "red_advance",
+        emri: "RED Advance",
+        portfolio: "RED Portfolio",
+        cmimi: 8400,
+        internet: "15 GB",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit",
+        smsVodafone: "-",
+        intl: "300 minuta & 50 SMS",
+        roaming: "500 Lekë/Dita",
+      },
+      red_executive: {
+        id: "red_executive",
+        emri: "RED Executive",
+        portfolio: "RED Portfolio",
+        cmimi: 12500,
+        internet: "20 GB",
+        minKomb: "Pa limit",
+        smsKomb: "Pa limit",
+        smsVodafone: "-",
+        intl: "400 minuta & 4600 SMS",
+        roaming: "0 Lekë/Dita",
+      },
+
+      // Vodafone Plans
+      vodafone_1200: {
+        id: "vodafone_1200",
+        emri: "Vodafone 1200",
+        portfolio: "Vodafone Plans",
+        cmimi: 1200,
+        internet: "2 GB / pa limit",
+        minKomb: "1000",
+        smsKomb: "100",
+        smsVodafone: "Pa limit",
+        intl: "0",
+        roaming: "-",
+      },
+      vodafone_1800: {
+        id: "vodafone_1800",
+        emri: "Vodafone 1800",
+        portfolio: "Vodafone Plans",
+        cmimi: 1800,
+        internet: "2 GB / pa limit",
+        minKomb: "2500",
+        smsKomb: "250",
+        smsVodafone: "Pa limit",
+        intl: "50",
+        roaming: "-",
+      }
+    };
+
+    // ---------------------------------------------------
+    // 3. LOGJIKA: Map-i nga plan i vjetër -> plan(e) i ri
+    // ---------------------------------------------------
+    const mapping = {
+      // Vodafone Next+ Portfolio
+      next_x_plus: {
+        primary: "business_bronze",
+        alt: null,
+        comment: "Çmim pak më i lartë, por klienti fiton më shumë internet (10 GB) dhe ruan një nivel të mirë minutash."
+      },
+      next_s_plus: {
+        primary: "business_silver",
+        alt: "business_bronze",
+        comment: "Çmim identik me Business Silver, por me internet më të lartë. Business Bronze mund të përdoret si alternativë më ekonomike."
+      },
+      next_m_plus: {
+        primary: "business_gold",
+        alt: "business_silver",
+        comment: "Business Gold ofron më shumë internet dhe minuta me çmim afër planit ekzistues. Business Silver si alternativë pak më e lirë."
+      },
+      next_l_plus: {
+        primary: "red_lite",
+        alt: "business_gold",
+        comment: "Next L+ është plan i fortë; RED Lite ofron pa limit kombëtar dhe më shumë ndërkombëtare. Business Gold si alternativë më ekonomike."
+      },
+
+      // Business RED Portfolio
+      red_business: {
+        primary: "red_lite",
+        alt: "business_unlimited",
+        comment: "RED (Business) kalon natyrshëm në RED Lite, me koncept të ngjashëm RED. Business Unlimited si opsion më ekonomik për fokus në kombëtare."
+      },
+      red_pro: {
+        primary: "red_boost",
+        alt: "red_lite",
+        comment: "RED Pro është plan i lartë; RED Boost është pasardhës logjik. RED Lite si opsion më i lirë nëse klienti ul konsum."
+      },
+      red_prime: {
+        primary: "red_boost",
+        alt: "red_lite",
+        comment: "RED Prime me çmim shumë të lartë; RED Boost ul ndjeshëm faturën duke ruajtur përfitime premium."
+      },
+      business_black: {
+        primary: "red_boost",
+        alt: "business_unlimited",
+        comment: "Business Black me çmim shumë të lartë; RED Boost është alternativa më e afërt premium. Business Unlimited si opsion me fokus në kombëtare."
+      },
+
+      // Vodafone Next Portfolio (standard)
+      next_x: {
+        primary: "business_bronze",
+        alt: "business_bronze_plus",
+        comment: "Next X është plan bazë; Business Bronze dhe Business Bronze+ janë zëvendësuesit logjikë."
+      },
+      next_s: {
+        primary: "business_bronze",
+        alt: "business_silver",
+        comment: "Next S është plan i mesëm; Business Bronze për klientë me fokus çmimin, Business Silver për më shumë internet."
+      },
+      next_m: {
+        primary: "business_gold",
+        alt: "business_silver",
+        comment: "Next M ka çmim të afërt me Business Gold; Business Silver mund të përdoret si alternativë më e lirë."
+      },
+      next_l: {
+        primary: "business_gold",
+        alt: "red_lite",
+        comment: "Next L përdoret nga klientë me konsum të lartë. Business Gold është opsion ekonomik, RED Lite është alternativë më e fortë për klientë që kërkojnë pa limit."
+      },
+
+      // RED Portfolio (standard)
+      red_start: {
+        primary: "business_gold",
+        alt: "business_silver",
+        comment: "RED Start mund të migrojë në Business Gold (më shumë internet) ose Business Silver (më i lirë)."
+      },
+      red_extra: {
+        primary: "red_boost",
+        alt: "red_lite",
+        comment: "RED Extra është nivel i lartë; RED Boost si pasardhës premium, RED Lite si opsion me çmim më të ulët."
+      },
+      red_advance: {
+        primary: "red_lite",
+        alt: "red_boost",
+        comment: "RED Advance (çmim shumë i lartë). RED Lite ul dukshëm faturën; RED Boost për ata që nuk duan të ulin përfitimet."
+      },
+      red_executive: {
+        primary: "red_boost",
+        alt: "red_lite",
+        comment: "RED Executive është plani më i lartë; RED Boost është pasuesi logjik, RED Lite si alternativë ekonomike."
+      },
+
+      // Vodafone Plans
+      vodafone_1200: {
+        primary: "business_bronze",
+        alt: "business_bronze_plus",
+        comment: "Vodafone 1200 kalon natyrshëm në Business Bronze. Business Bronze+ mund të përdoret për klientë me më pak internet."
+      },
+      vodafone_1800: {
+        primary: "business_gold",
+        alt: "business_silver",
+        comment: "Vodafone 1800 kalon në Business Gold, me internet dukshëm më të lartë. Business Silver si opsion pak më i lirë."
+      }
+    };
+
+    // -------------------------------
+    // 4. Renderimi i informacionit
+    // -------------------------------
+    const oldPlanSelect = document.getElementById("oldPlanSelect");
+    const oldPlanContent = document.getElementById("oldPlanContent");
+    const newPlanContent = document.getElementById("newPlanContent");
+    const oldPortfolioTag = document.getElementById("oldPortfolioTag");
+
+    function formatPrice(value) {
+      if (value == null) return "-";
+      return value.toLocaleString("sq-AL") + " Lekë / muaj";
+    }
+
+    function renderOldPlan(plan) {
+      if (!plan) {
+        oldPortfolioTag.style.display = "none";
+        oldPlanContent.innerHTML = `<div class="empty">
+          Zgjidh një plan nga lista për të parë detajet e tij.
+        </div>`;
+        return;
+      }
+
+      oldPortfolioTag.textContent = plan.portfolio;
+      oldPortfolioTag.style.display = "inline-block";
+
+      oldPlanContent.innerHTML = `
+        <div class="plan-chip pill-old">
+          Plani aktual: <strong>${plan.emri}</strong>
+        </div>
+
+        <div class="price" style="margin-top:8px;">
+          ${formatPrice(plan.cmimi)}
+          <span class="price-small">(plan i vjetër)</span>
+        </div>
+
+        <div class="plan-grid">
+          <div>
+            <div class="plan-row-label">Internet</div>
+            <div class="plan-row-value">${plan.internet || "-"}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">Minuta kombëtare</div>
+            <div class="plan-row-value">${plan.minKomb || "-"}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">SMS kombëtare</div>
+            <div class="plan-row-value">${plan.smsKomb || "-"}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">SMS drejt Vodafone</div>
+            <div class="plan-row-value">${plan.smsVodafone || "-"}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">Min/SMS ndërkombëtare</div>
+            <div class="plan-row-value">${plan.intl || "-"}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">Roaming</div>
+            <div class="plan-row-value">${plan.roaming || "-"}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNewPlans(oldPlanId) {
+      const mappingItem = mapping[oldPlanId];
+      if (!mappingItem) {
+        newPlanContent.innerHTML = `<div class="empty">
+          Nuk ka ende rekomandim të konfiguruar për këtë plan. Mund ta shtosh manualisht në kod në seksionin <code>mapping</code>.
+        </div>`;
+        return;
+      }
+
+      const primary = newPlans[mappingItem.primary];
+      const alt = mappingItem.alt ? newPlans[mappingItem.alt] : null;
+
+      if (!primary) {
+        newPlanContent.innerHTML = `<div class="empty">
+          Rekomandimi kryesor nuk u gjet. Kontrollo ID e planit në objektin <code>newPlans</code>.
+        </div>`;
+        return;
+      }
+
+      let html = "";
+
+      // Plani kryesor
+      html += `
+        <div class="plan-chip pill-new">
+          Rekomandimi kryesor: <strong>${primary.emri}</strong>
+        </div>
+        <span class="tag tag-main">Kryesor</span>
+        <span class="tag tag-portfolio">${primary.portfolio}</span>
+
+        <div class="price" style="margin-top:8px;">
+          ${formatPrice(primary.cmimi)}
+          <span class="price-small">(plan i ri)</span>
+        </div>
+
+        <div class="plan-grid">
+          <div>
+            <div class="plan-row-label">Internet</div>
+            <div class="plan-row-value">${primary.internet}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">Minuta kombëtare</div>
+            <div class="plan-row-value">${primary.minKomb}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">SMS kombëtare</div>
+            <div class="plan-row-value">${primary.smsKomb}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">Min/SMS ndërkombëtare</div>
+            <div class="plan-row-value">${primary.intl}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">Roaming ditor</div>
+            <div class="plan-row-value">${primary.roaming}</div>
+          </div>
+          <div>
+            <div class="plan-row-label">Koment</div>
+            <div class="plan-row-value">${primary.extra}</div>
+          </div>
+        </div>
+      `;
+
+      // Alternativë
+      if (alt) {
+        html += `
+          <div style="margin:14px 0 8px 0; font-size:0.85rem;">
+            <span class="arrow">⬇</span>
+            <strong>Alternativë e mundshme</strong>
+          </div>
+
+          <div class="plan-chip pill-alt">
+            Alternativë: <strong>${alt.emri}</strong>
+          </div>
+          <span class="tag tag-alt">Opsion alternativ</span>
+          <span class="tag tag-portfolio">${alt.portfolio}</span>
+
+          <div class="price" style="margin-top:8px;">
+            ${formatPrice(alt.cmimi)}
+            <span class="price-small">(plan i ri, alternativë)</span>
+          </div>
+
+          <div class="plan-grid">
+            <div>
+              <div class="plan-row-label">Internet</div>
+              <div class="plan-row-value">${alt.internet}</div>
+            </div>
+            <div>
+              <div class="plan-row-label">Minuta kombëtare</div>
+              <div class="plan-row-value">${alt.minKomb}</div>
+            </div>
+            <div>
+              <div class="plan-row-label">SMS kombëtare</div>
+              <div class="plan-row-value">${alt.smsKomb}</div>
+            </div>
+            <div>
+              <div class="plan-row-label">Min/SMS ndërkombëtare</div>
+              <div class="plan-row-value">${alt.intl}</div>
+            </div>
+            <div>
+              <div class="plan-row-label">Roaming ditor</div>
+              <div class="plan-row-value">${alt.roaming}</div>
+            </div>
+            <div>
+              <div class="plan-row-label">Koment</div>
+              <div class="plan-row-value">${alt.extra}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Koment i përgjithshëm
+      html += `
+        <div class="comparison">
+          <span class="highlight">Këshillë për agjentin:</span> ${mappingItem.comment}
+        </div>
+      `;
+
+      newPlanContent.innerHTML = html;
+    }
+
+    // ---------------------------------
+    // 5. Event listener për dropdown-in
+    // ---------------------------------
+    oldPlanSelect.addEventListener("change", () => {
+      const id = oldPlanSelect.value;
+      if (!id) {
+        renderOldPlan(null);
+        newPlanContent.innerHTML = `
+          <div class="empty">
+            Pasi të zgjedhësh planin e vjetër, këtu do të shfaqet rekomandimi.
+          </div>
+        `;
+        return;
+      }
+
+      const oldPlan = oldPlans[id];
+      renderOldPlan(oldPlan);
+      renderNewPlans(id);
+    });
+  </script>
+</body>
+</html>

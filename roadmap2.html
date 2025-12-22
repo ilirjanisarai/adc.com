@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8" />
+  <title>ADC – Roadmap Vjetor i Fushatave Telesales</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #e5e7eb;
+      --card: #ffffff;
+      --border: #d1d5db;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .tag-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 900px;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    th, td {
+      border: 1px solid #d4d4d8;
+      padding: 6px 8px;
+      font-size: 12px;
+      text-align: center;
+      background: #f9fafb;
+      color: var(--muted);
+    }
+
+    th {
+      font-weight: 600;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .company-cell {
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      background: #f3f4f6;
+    }
+
+    .total-agents-cell {
+      background: #e5e7eb;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .month-cell {
+      height: 40px;
+      background: #f9fafb;
+      position: relative;
+    }
+
+    .month-label {
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .campaign-pill {
+      position: relative;
+      margin: 1px 0;
+      padding: 2px 4px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.1;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.6),
+                  0 3px 6px rgba(17, 24, 39, 0.25);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+      user-select: none;
+    }
+
+    .campaign-pill:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 6px 12px rgba(15, 23, 42, 0.3);
+      filter: brightness(1.02);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.35);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 14px 18px 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: #eef2ff;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .modal-chip {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4ff;
+      border: 1px solid #c7d2fe;
+      color: #4b5563;
+    }
+
+    .modal-body {
+      padding: 14px 18px 4px;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .modal-footer {
+      padding: 10px 18px 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #f3f4f6;
+    }
+
+    .field-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .field-value {
+      font-size: 13px;
+      color: #111827;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .metric-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 6px 8px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .metric-input {
+      width: 100%;
+      padding: 3px 6px;
+      border-radius: 8px;
+      border: 1px solid #d4d4d8;
+      background: #f9fafb;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+    }
+
+    .metric-input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4);
+      background: #ffffff;
+    }
+
+    .months-editor {
+      border-radius: 10px;
+      border: 1px dashed #cbd5f5;
+      padding: 8px;
+      font-size: 12px;
+      background: #eef2ff;
+    }
+
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+      margin-top: 6px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .month-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      padding: 3px 5px;
+      border-radius: 8px;
+      background: #f9fafb;
+      border: 1px solid #d4d4d8;
+      cursor: pointer;
+    }
+
+    .month-toggle input {
+      accent-color: var(--accent);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid #d4d4d8;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      background: #ffffff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.12s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .btn:hover {
+      background: #f3f4f6;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(148, 163, 184, 0.4);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #facc15, #f97316);
+      color: #111827;
+      border-color: #f59e0b;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #fde047, #fb923c);
+    }
+
+    .btn-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: #d4d4d8;
+      color: var(--muted);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Summary card */
+    .summary-card {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 12px 14px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .summary-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #111827;
+    }
+
+    .summary-title small {
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .summary-table th,
+    .summary-table td {
+      padding: 4px 6px;
+      border: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .summary-table th {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .summary-table td {
+      background: #ffffff;
+      color: var(--muted);
+    }
+
+    .summary-table tfoot td {
+      font-weight: 600;
+      color: #111827;
+      background: #f9fafb;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+      .modal-body {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>ADC · Roadmap vjetor i fushatave Telesales</h1>
+    <div class="subtitle">
+      Kliko mbi çdo fushatë për të edituar volumet (thirrje, leads, kontrata).  
+      Numri i agjentëve llogaritet automatikisht sipas produktivitetit ditor të secilës fushatë.
+    </div>
+
+    <div class="toolbar" id="legend"></div>
+
+    <div class="toolbar" style="margin-top:4px;margin-bottom:8px;">
+      <button class="btn" id="btnAddCampaign">+ Shto fushatë</button>
+      <button class="btn" id="btnExport">Eksporto JSON</button>
+      <button class="btn" id="btnImport">Importo JSON</button>
+      <button class="btn btn-ghost" id="btnReset">Reset lokalisht</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none" />
+    </div>
+
+    <div class="toolbar" style="margin-top:0;margin-bottom:12px;">
+      <span class="hint">
+        Produktiviteti llogaritet me 22 ditë pune / muaj. P.sh. Vodafone Rezidencial: 85 thirrje/ditë → 1870 thirrje/agent/muaj.
+      </span>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th class="company-cell">Partneri / Fushatat</th>
+            <th><span class="month-label">Jan</span></th>
+            <th><span class="month-label">Shk</span></th>
+            <th><span class="month-label">Mar</span></th>
+            <th><span class="month-label">Pri</span></th>
+            <th><span class="month-label">Maj</span></th>
+            <th><span class="month-label">Qer</span></th>
+            <th><span class="month-label">Kor</span></th>
+            <th><span class="month-label">Gus</span></th>
+            <th><span class="month-label">Sht</span></th>
+            <th><span class="month-label">Tet</span></th>
+            <th><span class="month-label">Nën</span></th>
+            <th><span class="month-label">Dhj</span></th>
+          </tr>
+        </thead>
+        <tbody id="timelineBody"></tbody>
+      </table>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-title">
+        <span>Kapaciteti i nevojshëm · Agjentë telesales</span>
+        <small>(llogaritur nga thirrjet mujore dhe thirrjet/agent/ditë për secilën fushatë)</small>
+      </div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Partneri</th>
+            <th>Fushata</th>
+            <th>Thirrje / muaj</th>
+            <th>Agjentë / fushatë / muaj</th>
+          </tr>
+        </thead>
+        <tbody id="agentsSummaryBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3">Totali i agjentëve (shumëzuar sipas fushatave)</td>
+            <td id="agentsSummaryTotal">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modalTitle"></div>
+          <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+            <span class="modal-chip" id="modalCompany"></span>
+            <span class="modal-chip" id="modalType"></span>
+          </div>
+        </div>
+        <button class="btn btn-ghost" id="btnCloseModal">
+          <span class="btn-icon">✕</span> Mbyll
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div>
+          <div class="field-label">Periudha aktuale</div>
+          <div class="field-value" id="modalPeriod"></div>
+
+          <div class="field-label" style="margin-top:10px;">Objektivat kryesore mujore</div>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">Thirrje outbound / muaj</div>
+              <input type="number" min="0" id="inputCalls" class="metric-input" />
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Leads të kualifikuara / muaj</div>
+              <input type="number" min="0" id="inputLeads" class="metric-input" />
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Kontrata / muaj</div>
+              <input type="number" min="0" id="inputContracts" class="metric-input" />
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Success rate</div>
+              <div class="field-value" id="successRatesBox">
+                <div id="leadRateText">Leads / thirrje: –</div>
+                <div id="contractRateText">Kontrata / thirrje: –</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-label" style="margin-top:10px;">Fokus & shënime</div>
+          <div class="field-value" id="modalNotes"></div>
+
+          <div class="field-label" style="margin-top:10px;">Agjentë të nevojshëm (llogari paraprake)</div>
+          <div class="field-value" id="modalAgentsNeeded"></div>
+        </div>
+
+        <div>
+          <div class="months-editor">
+            <div class="field-label">Afatet · Muajt kur fushata është aktive</div>
+            <div class="months-grid" id="monthsEditor"></div>
+            <div class="hint">
+              Ndrysho muajt aktivë dhe kliko <strong>Ruaj</strong> për të rifreskuar roadmap-in.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" id="btnCancelChanges">Anulo ndryshimet</button>
+        <button class="btn btn-primary" id="btnSaveMonths">
+          <span class="btn-icon">💾</span> Ruaj
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const months = [
+      "Jan", "Shk", "Mar", "Pri", "Maj", "Qer",
+      "Kor", "Gus", "Sht", "Tet", "Nën", "Dhj"
+    ];
+
+    const WORKING_DAYS_PER_MONTH = 22;
+    const STORAGE_KEY = "adc_telesales_roadmap_full_v1";
+
+    // Thirrje me përgjigje / agjent / ditë për çdo partner
+    const companyDailyProductivity = {
+      "Vodafone Rezidencial": 85,
+      "Vodafone B2B": 40,
+      "Albsig": 40,
+      "Euronews": 30,
+      "Setup": 40,
+      "Volton": 60
+    };
+
+    const companyColors = {
+      "Vodafone Rezidencial": "#f97373",
+      "Vodafone B2B": "#fb923c",
+      "Euronews": "#38bdf8",
+      "Setup": "#34d399",
+      "Albsig": "#a855f7",
+      "Volton": "#22d3ee"
+    };
+
+    function getCallsPerAgentPerMonth(company) {
+      const daily = companyDailyProductivity[company] || 0;
+      return daily * WORKING_DAYS_PER_MONTH;
+    }
+
+    // Kampanjat default (template fillestar)
+    const campaigns = [
+      {
+        id: "vf-res-annual",
+        company: "Vodafone Rezidencial",
+        label: "Retention & Upsell",
+        type: "12 muaj · kontrata + cross-sell",
+        activeMonths: [1,2,3,4,5,6,7,8,9,10,11,12],
+        metrics: {
+          calls: 6000,
+          contracts: 650,
+          leads: 900
+        },
+        notes:
+          "Target: ruajtje + rinovim kontratash rezidenciale, kalim në paketa me ARPU më të lartë, TV & fixed internet. Fokus tek klientët që skadojnë brenda 90 ditëve dhe bazat me risk churn."
+      },
+      {
+        id: "vf-b2b-annual",
+        company: "Vodafone B2B",
+        label: "SME & SOHO Mobile + Fixed",
+        type: "12 muaj · B2B hunting & farming",
+        activeMonths: [1,2,3,4,5,6,7,8,9,10,11,12],
+        metrics: {
+          calls: 3500,
+          contracts: 450,
+          leads: 700
+        },
+        notes:
+          "Target: SME & SOHO me fokus planet business mobile, fixed internet dhe IoT. Kombinim hunting (klientë të rinj) dhe farming (rritje portofoli tek klientët ekzistues)."
+      },
+      {
+        id: "euronews-q2",
+        company: "Euronews",
+        label: "Pako reklame TV + Online",
+        type: "4 muaj · lead → takim",
+        activeMonths: [3,4,5,6],
+        metrics: {
+          calls: 1200,
+          contracts: 25,
+          leads: 80
+        },
+        notes:
+          "Target: biznese me buxhet marketingu për TV & digital. Objektiv kryesor: takime të kualifikuara me menaxherët e marketingut të Euronews; kontrata dalin pas takimeve."
+      },
+      {
+        id: "setup-wave1",
+        company: "Setup",
+        label: "IT Support / Cloud · Wave 1",
+        type: "3 muaj · lead generation",
+        activeMonths: [2,3,4],
+        metrics: {
+          calls: 800,
+          contracts: 15,
+          leads: 50
+        },
+        notes:
+          "Target: SME që kërkojnë IT helpdesk, migrim në cloud dhe maintenance. Fokus tek leads të kualifikuar për pipeline të Setup, kontratat mbyllen nga ekipi teknik/komercial."
+      },
+      {
+        id: "setup-wave2",
+        company: "Setup",
+        label: "Software & Projekte · Wave 2",
+        type: "3 muaj · project leads",
+        activeMonths: [9,10,11],
+        metrics: {
+          calls: 700,
+          contracts: 10,
+          leads: 40
+        },
+        notes:
+          "Target: projekte zhvillimi software, CRM, portale, integrime. Objektiv: identifikim projektesh konkrete, buxhet & afate, dhe kalim i tyre tek sales i Setup."
+      },
+      {
+        id: "albsig-annual",
+        company: "Albsig",
+        label: "Kasko, Shëndet & Jete",
+        type: "12 muaj · siguri & cross-sell",
+        activeMonths: [1,2,3,4,5,6,7,8,9,10,11,12],
+        metrics: {
+          calls: 4000,
+          contracts: 380,
+          leads: 600
+        },
+        notes:
+          "Target: polica kasko, sigurim shëndeti & jete, si dhe rinovime. Fokus tek cross-sell nga bazat ekzistuese dhe ngrohje e lead-eve të rinj për rrjetin e agjentëve."
+      },
+      {
+        id: "volton-wave1",
+        company: "Volton",
+        label: "Kalim furnizori · Wave 1",
+        type: "3 muaj · aktivizim kontratash",
+        activeMonths: [1,2,3],
+        metrics: {
+          calls: 2500,
+          contracts: 350,
+          leads: 450
+        },
+        notes:
+          "Target: kalimi i klientëve në Volton për energji, me fokus ofertat me kursim dhe transparencë faturimi. Thirrje outbound + rikthim mbi lead-et e vjetra."
+      },
+      {
+        id: "volton-wave2",
+        company: "Volton",
+        label: "Rikthim klientësh · Wave 2",
+        type: "2 muaj · win-back",
+        activeMonths: [10,11],
+        metrics: {
+          calls: 1800,
+          contracts: 200,
+          leads: 260
+        },
+        notes:
+          "Target: ish-klientë Volton ose klientë në risk churn. Fokus tek oferta speciale për rikthim dhe rritje lojaliteti."
+      }
+    ];
+
+    function computeAgentsNeeded(campaign) {
+      const calls = campaign.metrics.calls || 0;
+      const cap = getCallsPerAgentPerMonth(campaign.company);
+      if (!cap || cap <= 0 || calls <= 0) return 0;
+      if (!campaign.activeMonths || campaign.activeMonths.length === 0) return 0;
+      return Math.ceil(calls / cap);
+    }
+
+    // ===== Persistenca (localStorage) =====
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
+      } catch (e) {
+        console.error("Nuk u ruajt dot gjendja:", e);
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (!Array.isArray(saved)) return;
+
+        campaigns.length = 0;
+        saved.forEach(c => campaigns.push(c));
+      } catch (e) {
+        console.error("Nuk u ngarkua dot gjendja:", e);
+      }
+    }
+
+    // ===== Legend =====
+    function renderLegend() {
+      const legend = document.getElementById("legend");
+      legend.innerHTML = "";
+      const companies = [...new Set(campaigns.map(c => c.company))];
+
+      companies.forEach(company => {
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        const dot = document.createElement("span");
+        dot.className = "tag-dot";
+        dot.style.backgroundColor = companyColors[company] || "#a3a3a3";
+        tag.appendChild(dot);
+        const label = document.createElement("span");
+        const daily = companyDailyProductivity[company] || 0;
+        label.textContent = `${company} · ${daily} answered calls/ditë`;
+        tag.appendChild(label);
+        legend.appendChild(tag);
+      });
+    }
+
+    // ===== Timeline =====
+    function renderTimeline() {
+      const tbody = document.getElementById("timelineBody");
+      tbody.innerHTML = "";
+
+      const companies = [...new Set(campaigns.map(c => c.company))];
+      const agentsPerMonth = new Array(12).fill(0);
+
+      campaigns.forEach(camp => {
+        const agents = computeAgentsNeeded(camp);
+        if (agents > 0) {
+          camp.activeMonths.forEach(m => {
+            const idx = m - 1;
+            if (idx >= 0 && idx < 12) {
+              agentsPerMonth[idx] += agents;
+            }
+          });
+        }
+      });
+
+      companies.forEach(company => {
+        const tr = document.createElement("tr");
+
+        const companyCell = document.createElement("td");
+        companyCell.className = "company-cell";
+        companyCell.textContent = company;
+        tr.appendChild(companyCell);
+
+        for (let m = 1; m <= 12; m++) {
+          const td = document.createElement("td");
+          td.className = "month-cell";
+
+          const active = campaigns.filter(
+            c => c.company === company && c.activeMonths.includes(m)
+          );
+
+          active.forEach(camp => {
+            const pill = document.createElement("div");
+            pill.className = "campaign-pill";
+            pill.textContent = camp.label;
+            pill.style.backgroundColor = companyColors[camp.company] || "#a3a3a3";
+            pill.dataset.campaignId = camp.id;
+            td.appendChild(pill);
+          });
+
+          tr.appendChild(td);
+        }
+
+        tbody.appendChild(tr);
+      });
+
+      // Rreshti "Agjentë / muaj"
+      const totalRow = document.createElement("tr");
+      const labelCell = document.createElement("td");
+      labelCell.className = "company-cell total-agents-cell";
+      labelCell.textContent = "Agjentë / muaj";
+      totalRow.appendChild(labelCell);
+
+      for (let idx = 0; idx < 12; idx++) {
+        const td = document.createElement("td");
+        td.className = "month-cell total-agents-cell";
+        td.textContent = agentsPerMonth[idx] ? agentsPerMonth[idx].toLocaleString("sq-AL") : "";
+        totalRow.appendChild(td);
+      }
+
+      tbody.appendChild(totalRow);
+
+      document.querySelectorAll(".campaign-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+          const id = pill.dataset.campaignId;
+          openModal(id);
+        });
+      });
+
+      renderAgentsSummary();
+    }
+
+    // ===== Agents summary =====
+    function renderAgentsSummary() {
+      const body = document.getElementById("agentsSummaryBody");
+      const totalCell = document.getElementById("agentsSummaryTotal");
+      body.innerHTML = "";
+      let totalAgents = 0;
+
+      campaigns.forEach(camp => {
+        const agents = computeAgentsNeeded(camp);
+        if (agents <= 0) return;
+
+        totalAgents += agents;
+
+        const tr = document.createElement("tr");
+        const tdCompany = document.createElement("td");
+        tdCompany.textContent = camp.company;
+        const tdLabel = document.createElement("td");
+        tdLabel.textContent = camp.label;
+        const tdCalls = document.createElement("td");
+        tdCalls.textContent = (camp.metrics.calls || 0).toLocaleString("sq-AL");
+        const tdAgents = document.createElement("td");
+        tdAgents.textContent = agents.toLocaleString("sq-AL");
+
+        tr.appendChild(tdCompany);
+        tr.appendChild(tdLabel);
+        tr.appendChild(tdCalls);
+        tr.appendChild(tdAgents);
+
+        body.appendChild(tr);
+      });
+
+      totalCell.textContent = totalAgents.toLocaleString("sq-AL");
+    }
+
+    // ===== Modal logic =====
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalCompany = document.getElementById("modalCompany");
+    const modalType = document.getElementById("modalType");
+    const modalPeriod = document.getElementById("modalPeriod");
+    const modalNotes = document.getElementById("modalNotes");
+    const monthsEditor = document.getElementById("monthsEditor");
+    const modalAgentsNeeded = document.getElementById("modalAgentsNeeded");
+
+    const inputCalls = document.getElementById("inputCalls");
+    const inputLeads = document.getElementById("inputLeads");
+    const inputContracts = document.getElementById("inputContracts");
+
+    const leadRateText = document.getElementById("leadRateText");
+    const contractRateText = document.getElementById("contractRateText");
+
+    let currentCampaignId = null;
+    let tempActiveMonths = [];
+
+    function formatPeriod(activeMonths) {
+      if (!activeMonths.length) return "Asnjë muaj i aktivizuar";
+
+      const sorted = [...activeMonths].sort((a, b) => a - b);
+      const first = months[sorted[0] - 1];
+      const last = months[sorted[sorted.length - 1] - 1];
+
+      if (sorted.length === 12) return "Vitin e plotë (Jan – Dhj)";
+      if (sorted.length === 1) return `${first}`;
+      if (sorted.length === (sorted[sorted.length - 1] - sorted[0] + 1)) {
+        return `${first} – ${last}`;
+      }
+      return sorted.map(m => months[m - 1]).join(", ");
+    }
+
+    function updateSuccessRatesPreview() {
+      const calls = Number(inputCalls.value) || 0;
+      const leads = Number(inputLeads.value) || 0;
+      const contracts = Number(inputContracts.value) || 0;
+
+      if (calls > 0 && leads >= 0) {
+        const leadRate = (leads * 100) / calls;
+        leadRateText.textContent = `Leads / thirrje: ${leadRate.toFixed(1)} %`;
+      } else {
+        leadRateText.textContent = "Leads / thirrje: –";
+      }
+
+      if (calls > 0 && contracts >= 0) {
+        const contractRate = (contracts * 100) / calls;
+        contractRateText.textContent = `Kontrata / thirrje: ${contractRate.toFixed(1)} %`;
+      } else {
+        contractRateText.textContent = "Kontrata / thirrje: –";
+      }
+    }
+
+    function updateModalAgentsPreview(camp) {
+      const tempCamp = {
+        ...camp,
+        metrics: {
+          ...camp.metrics,
+          calls: Number(inputCalls.value) || 0
+        },
+        activeMonths: [...tempActiveMonths]
+      };
+      const agents = computeAgentsNeeded(tempCamp);
+      const cap = getCallsPerAgentPerMonth(camp.company);
+      if (!cap || cap <= 0) {
+        modalAgentsNeeded.textContent = "0 agjentë (nuk ka produktivitet të përcaktuar për këtë fushatë).";
+        return;
+      }
+      if (agents <= 0) {
+        modalAgentsNeeded.textContent = `0 agjentë (pa volum thirrjesh ose pa muaj aktivë).`;
+      } else {
+        modalAgentsNeeded.textContent =
+          `${agents.toLocaleString("sq-AL")} agjentë / muaj ` +
+          `(llogaritur nga ${tempCamp.metrics.calls.toLocaleString("sq-AL")} thirrje / muaj, ` +
+          `${companyDailyProductivity[camp.company] || 0} thirrje/ditë/agent, ` +
+          `${WORKING_DAYS_PER_MONTH} ditë pune / muaj).`;
+      }
+    }
+
+    function openModal(id) {
+      const camp = campaigns.find(c => c.id === id);
+      if (!camp) return;
+      currentCampaignId = id;
+      tempActiveMonths = [...camp.activeMonths];
+
+      modalTitle.textContent = camp.label;
+      modalCompany.textContent = camp.company;
+      modalType.textContent = camp.type || "";
+      modalPeriod.textContent = formatPeriod(camp.activeMonths);
+      modalNotes.textContent = camp.notes || "";
+
+      inputCalls.value = camp.metrics.calls || 0;
+      inputLeads.value = camp.metrics.leads || 0;
+      inputContracts.value = camp.metrics.contracts || 0;
+
+      modalCompany.style.borderColor = companyColors[camp.company] || "#d4d4d8";
+      modalCompany.style.color = "#111827";
+
+      monthsEditor.innerHTML = "";
+      months.forEach((name, index) => {
+        const m = index + 1;
+        const label = document.createElement("label");
+        label.className = "month-toggle";
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = m.toString();
+        input.checked = tempActiveMonths.includes(m);
+
+        input.addEventListener("change", () => {
+          const val = parseInt(input.value, 10);
+          if (input.checked) {
+            if (!tempActiveMonths.includes(val)) tempActiveMonths.push(val);
+          } else {
+            tempActiveMonths = tempActiveMonths.filter(x => x !== val);
+          }
+          updateModalAgentsPreview(camp);
+        });
+
+        const span = document.createElement("span");
+        span.textContent = name;
+
+        label.appendChild(input);
+        label.appendChild(span);
+        monthsEditor.appendChild(label);
+      });
+
+      [inputCalls, inputLeads, inputContracts].forEach(inp => {
+        inp.oninput = () => {
+          updateSuccessRatesPreview();
+          updateModalAgentsPreview(camp);
+        };
+      });
+
+      updateSuccessRatesPreview();
+      updateModalAgentsPreview(camp);
+
+      modalBackdrop.style.display = "flex";
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = "none";
+      currentCampaignId = null;
+      tempActiveMonths = [];
+    }
+
+    document.getElementById("btnCloseModal").addEventListener("click", closeModal);
+    document.getElementById("btnCancelChanges").addEventListener("click", closeModal);
+
+    document.getElementById("btnSaveMonths").addEventListener("click", () => {
+      if (!currentCampaignId) return;
+      const camp = campaigns.find(c => c.id === currentCampaignId);
+      if (!camp) return;
+
+      const calls = Number(inputCalls.value) || 0;
+      const leads = Number(inputLeads.value) || 0;
+      const contracts = Number(inputContracts.value) || 0;
+
+      camp.metrics.calls = calls;
+      camp.metrics.leads = leads;
+      camp.metrics.contracts = contracts;
+
+      const uniqueSorted = [...new Set(tempActiveMonths)].sort((a, b) => a - b);
+      camp.activeMonths = uniqueSorted;
+
+      saveState();
+      renderTimeline();
+      closeModal();
+    });
+
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) {
+        closeModal();
+      }
+    });
+
+    // ===== Butoni "Shto fushatë" =====
+document.getElementById("btnAddCampaign").addEventListener("click", () => {
+  const company = prompt("Partneri (p.sh. Vodafone Rezidencial):");
+  if (!company) return;
+
+  const label = prompt("Emri i fushatës (p.sh. SME Mobile Wave 3):");
+  if (!label) return;
+
+  const type = prompt("Tipi/periudha (p.sh. 3 muaj · retention):") || "Fushatë e re";
+
+  const calls = Number(prompt("Thirrje / muaj (target):") || "0");
+  const leads = Number(prompt("Leads / muaj (target):") || "0");
+  const contracts = Number(prompt("Kontrata / muaj (target):") || "0");
+
+  // Muajt aktivë – user-i jep p.sh. "1,2,3,4"
+  let activeMonths = [];
+  const monthsInput = prompt(
+    "Muajt aktivë (shkruaj numrat e muajve, p.sh. 1,2,3 për Jan, Shk, Mar). Nëse e lë bosh, fushata aktivizohet për gjithë vitin:",
+    ""
+  );
+
+  if (monthsInput && monthsInput.trim() !== "") {
+    activeMonths = monthsInput
+      .split(",")
+      .map(s => parseInt(s.trim(), 10))
+      .filter(n => !isNaN(n) && n >= 1 && n <= 12);
+  }
+
+  // Nëse s'ka zgjedhur asgjë të vlefshme, e bëjmë aktive gjithë vitin
+  if (activeMonths.length === 0) {
+    activeMonths = [1,2,3,4,5,6,7,8,9,10,11,12];
+  }
+
+  const id = "camp_" + Date.now();
+
+  campaigns.push({
+    id,
+    company,
+    label,
+    type,
+    activeMonths,
+    metrics: { calls, leads, contracts },
+    notes: ""
+  });
+
+  saveState();
+  renderLegend();
+  renderTimeline();
+});
+
+
+    // ===== Eksporto / Importo JSON =====
+    document.getElementById("btnExport").addEventListener("click", () => {
+      try {
+        const dataStr = JSON.stringify(campaigns, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "adc_telesales_config.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        console.error("Nuk u eksportua dot:", e);
+      }
+    });
+
+    const importFileInput = document.getElementById("importFile");
+
+    document.getElementById("btnImport").addEventListener("click", () => {
+      importFileInput.click();
+    });
+
+    importFileInput.addEventListener("change", (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target.result;
+          const imported = JSON.parse(text);
+          if (!Array.isArray(imported)) {
+            alert("Formati i skedarit nuk është i vlefshëm (pritshmëri: array JSON).");
+            return;
+          }
+          campaigns.length = 0;
+          imported.forEach(c => campaigns.push(c));
+          saveState();
+          renderLegend();
+          renderTimeline();
+          alert("Konfigurimi u importua me sukses.");
+        } catch (err) {
+          console.error("Gabim në import:", err);
+          alert("Gabim në leximin e skedarit JSON.");
+        } finally {
+          importFileInput.value = "";
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    });
+
+    // ===== Reset lokalisht =====
+    document.getElementById("btnReset").addEventListener("click", () => {
+      if (!confirm("Je i sigurt që do të fshish konfigurimin lokal dhe ta kthesh në default?")) return;
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      } catch (e) {
+        console.error("Nuk u fshi gjendja:", e);
+      }
+    });
+
+    // ===== Init =====
+    loadState();
+    renderLegend();
+    renderTimeline();
+  </script>
+</body>
+</html>

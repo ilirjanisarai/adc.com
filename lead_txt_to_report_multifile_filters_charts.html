@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Lead TXT → Raport + Excel (Multi-file + Filtra + Grafiqe)</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+  <style>
+    body { background:#f6f7fb; }
+    .card { border:0; box-shadow: 0 6px 20px rgba(0,0,0,0.06); border-radius: 14px; }
+    .muted { color:#6c757d; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    table.dataTable thead th { white-space: nowrap; }
+    td { vertical-align: top; }
+    .wrap { max-width: 520px; white-space: normal !important; }
+    .pill { display:inline-block; padding:.2rem .5rem; border-radius:999px; background:#eef2ff; }
+    .smallcaps { font-variant: all-small-caps; letter-spacing: .04em; }
+    canvas { max-height: 320px; }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid p-4">
+    <div class="d-flex flex-wrap gap-3 align-items-end justify-content-between mb-3">
+      <div>
+        <h1 class="h3 m-0">Lead TXT → Raport + Excel</h1>
+        <div class="muted">
+          Ngarko disa <span class="pill mono">.txt/.tsv/.csv</span> me header (tab/presje/pikëpresje) dhe gjenero:
+          përmbledhje sipas <b>status</b>, filtra sipas <b>user</b> dhe <b>list_id</b>, + grafiqe (pie/bar/line) + eksport Excel.
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="#" id="downloadSample">Shkarko shembull TXT</a>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-5">
+        <div class="card p-3">
+          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <div class="fw-semibold">1) Ngarko fajlat</div>
+            <div class="muted small">Mund të ngarkosh disa njëherësh</div>
+          </div>
+
+          <div class="mt-2">
+            <input type="file" id="fileInput" class="form-control" multiple
+                   accept=".txt,.csv,.tsv,text/plain,text/csv"/>
+          </div>
+
+          <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+            <button id="parseBtn" class="btn btn-primary" disabled>Gjenero raportin</button>
+            <button id="exportXlsxBtn" class="btn btn-success" disabled>Shkarko Excel (i filtruar)</button>
+            <button id="resetBtn" class="btn btn-outline-danger" disabled>Reset</button>
+          </div>
+
+          <div class="mt-3 small muted">
+            <div><span class="smallcaps">Kolonat në Excel</span>:
+              <span class="mono">status, phone_number, first_name, last_name, postal_code, comments_summary, last_local_call_time</span>
+            </div>
+            <div><span class="smallcaps">comments_summary</span> = 5–6 fjalët e para të comments.</div>
+          </div>
+
+          <hr class="my-3"/>
+
+          <div class="fw-semibold mb-2">2) Filtrat</div>
+          <div class="row g-2">
+            <div class="col-12 col-md-6">
+              <label class="muted small">User</label>
+              <select id="userFilter" class="form-select form-select-sm" disabled>
+                <option value="">Të gjitha</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="muted small">list_id (Fushata)</label>
+              <select id="listFilter" class="form-select form-select-sm" disabled>
+                <option value="">Të gjitha</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="muted small">Status</label>
+              <select id="statusFilter" class="form-select form-select-sm" disabled>
+                <option value="">Të gjitha</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="muted small mt-2" id="filteredCount"></div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-7">
+        <div class="card p-3">
+          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <div class="fw-semibold">3) Përmbledhje + Grafiqe</div>
+            <div class="d-flex gap-2 align-items-center">
+              <label class="muted small">Grafiku:</label>
+              <select id="chartType" class="form-select form-select-sm" style="max-width:160px;" disabled>
+                <option value="pie">Pie (Status)</option>
+                <option value="bar">Shtylla (Status)</option>
+                <option value="line">Linear (në kohë)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mt-1">
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Rreshta</div>
+                <div class="h4 m-0" id="kpiRows">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Status unik</div>
+                <div class="h4 m-0" id="kpiStatuses">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Nga data</div>
+                <div class="h6 m-0" id="kpiMinDate">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Deri më</div>
+                <div class="h6 m-0" id="kpiMaxDate">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <canvas id="chartCanvas"></canvas>
+          </div>
+
+          <div class="mt-3">
+            <table class="table table-sm table-striped mb-0" id="statusSummaryTable">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th class="text-end">Numër</th>
+                  <th class="text-end">%</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="3" class="muted">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="muted small mt-2">
+            Linear: agregohet nga <span class="mono">last_local_call_time</span> sipas ditës (YYYY-MM-DD).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-3">
+      <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
+        <div class="fw-semibold">4) Detaje (preview)</div>
+        <div class="muted small">Kërko në tabelë, filtro sipas User/list_id/Status, pastaj “Shkarko Excel (i filtruar)”</div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="detailsTable" class="display table table-striped table-hover" style="width:100%">
+          <thead>
+            <tr>
+              <th>user</th>
+              <th>list_id</th>
+              <th>status</th>
+              <th>phone_number</th>
+              <th>first_name</th>
+              <th>last_name</th>
+              <th>postal_code</th>
+              <th>comments_summary</th>
+              <th>last_local_call_time</th>
+              <th>source_file</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="muted small mt-2">
+        Këshillë: nëse encoding shfaqet si <span class="mono">Ã«</span>, faqja përpiqet ta riparojë automatikisht.
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script>
+    // --- Status mapping (codes -> labels)
+    const STATUS_MAP = {
+      "ACTCo": "Kontrate Aktive",
+      "Alb3ig": "Sigurim me banke",
+      "Albs1g": "Nuk ka nje prone te tij",
+      "Albs2g": "Nuk disponon dokumentat",
+      "B": "Busy",
+      "CALLBK": "Call Back",
+      "DC": "Disconnected Number",
+      "N": "No Answer",
+      "NEW": "Ne pritje per tu kontaktuar",
+      "NI": "Not Interested",
+      "Oferte": "Oferte e Derguar Albsig",
+      "Setup2": "Switched off",
+      "VFMob": "New Connection-Lead",
+      "Voda2": "Will think about",
+      "XALB": "Kontrate aktive - operator tjeter"
+    };
+    function mapStatus(code) {
+      const c = (code || "").trim();
+      return STATUS_MAP[c] || c || "(bosh)";
+    }
+
+    // ---------- Helpers ----------
+    function detectDelimiter(headerLine) {
+      const candidates = ['\t', ',', ';', '|'];
+      let best = '\t', bestCount = -1;
+      for (const d of candidates) {
+        const c = headerLine.split(d).length;
+        if (c > bestCount) { bestCount = c; best = d; }
+      }
+      return best;
+    }
+
+    // Typical mojibake: UTF-8 bytes read as Latin-1 -> shows Ã, Â, â, �
+    function repairMojibake(s) {
+      if (typeof s !== 'string') return s;
+      if (!(/[ÃÂâ�]/.test(s))) return s;
+      try { return decodeURIComponent(escape(s)); } catch { return s; }
+    }
+
+    function toSafeString(v) {
+      if (v === null || v === undefined) return '';
+      return String(v);
+    }
+
+    function normalizeHeader(h) { return toSafeString(h).trim(); }
+
+    function firstWords(text, nMin=5, nMax=6) {
+      const clean = toSafeString(text).replace(/\s+/g, ' ').trim();
+      if (!clean) return '';
+      const words = clean.split(' ');
+      const n = Math.min(nMax, Math.max(nMin, Math.min(words.length, nMax)));
+      return words.slice(0, n).join(' ');
+    }
+
+    function parseTextToRows(text) {
+      const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+      if (!lines.length) throw new Error('Fajli është bosh.');
+
+      const delimiter = detectDelimiter(lines[0]);
+      const headers = lines[0].split(delimiter).map(normalizeHeader);
+
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(delimiter);
+        while (parts.length < headers.length) parts.push('');
+        if (parts.length > headers.length) parts.length = headers.length;
+
+        const obj = {};
+        for (let j = 0; j < headers.length; j++) obj[headers[j]] = repairMojibake(parts[j]);
+        rows.push(obj);
+      }
+      return { headers, rows, delimiter };
+    }
+
+    function getField(row, options) {
+      for (const k of options) if (k in row) return row[k];
+      return '';
+    }
+
+    function pickRowForUI(row, sourceFileName) {
+      const user   = getField(row, ['user','User']);
+      const listId = getField(row, ['list_id','listId','ListId']);
+      const status = getField(row, ['status','Status']);
+      const phone  = getField(row, ['phone_number','phone','Phone','phoneNumber']);
+      const first  = getField(row, ['first_name','firstName','FirstName']);
+      const last   = getField(row, ['last_name','lastName','LastName']);
+      const postal = getField(row, ['postal_code','postal','zip','ZIP']);
+      const comm   = getField(row, ['comments','comment','Comments']);
+      const lastCt = getField(row, ['last_local_call_time','last_call_time','lastCallTime']);
+
+      return {
+        user: toSafeString(user).trim(),
+        list_id: toSafeString(listId).trim(),
+        status: mapStatus(toSafeString(status).trim()),
+        phone_number: toSafeString(phone).trim(),
+        first_name: toSafeString(first).trim(),
+        last_name: toSafeString(last).trim(),
+        postal_code: toSafeString(postal).trim(),
+        comments_summary: firstWords(comm, 5, 6),
+        last_local_call_time: toSafeString(lastCt).trim(),
+        source_file: sourceFileName || ''
+      };
+    }
+
+    function exportShape(rowUI) {
+      // Only the fields requested for Excel
+      return {
+        status: rowUI.status,
+        phone_number: rowUI.phone_number,
+        first_name: rowUI.first_name,
+        last_name: rowUI.last_name,
+        postal_code: rowUI.postal_code,
+        comments_summary: rowUI.comments_summary,
+        last_local_call_time: rowUI.last_local_call_time
+      };
+    }
+
+    function parseDateLike(s) {
+      const t = toSafeString(s).trim();
+      if (!t) return null;
+      const iso = t.replace(' ', 'T');
+      const d = new Date(iso);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function dayKeyFromDate(d) {
+      const pad = (n)=>String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+        .replaceAll('"','&quot;').replaceAll("'","&#39;");
+    }
+
+    // ---------- App State ----------
+    let rowsUI = [];     // all rows combined from files (for table & filtering)
+    let dt = null;
+    let chart = null;
+
+    const fileInput = document.getElementById('fileInput');
+    const parseBtn = document.getElementById('parseBtn');
+    const exportXlsxBtn = document.getElementById('exportXlsxBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const statusFilter = document.getElementById('statusFilter');
+    const userFilter = document.getElementById('userFilter');
+    const listFilter = document.getElementById('listFilter');
+    const chartType = document.getElementById('chartType');
+
+    fileInput.addEventListener('change', () => {
+      const files = fileInput.files;
+      const enabled = !!files && files.length > 0;
+      parseBtn.disabled = !enabled;
+      resetBtn.disabled = !enabled;
+    });
+
+    resetBtn.addEventListener('click', () => {
+      fileInput.value = '';
+      parseBtn.disabled = true;
+      exportXlsxBtn.disabled = true;
+      resetBtn.disabled = true;
+
+      statusFilter.disabled = true;
+      userFilter.disabled = true;
+      listFilter.disabled = true;
+      chartType.disabled = true;
+
+      statusFilter.innerHTML = '<option value="">Të gjitha</option>';
+      userFilter.innerHTML = '<option value="">Të gjitha</option>';
+      listFilter.innerHTML = '<option value="">Të gjitha</option>';
+
+      document.getElementById('kpiRows').textContent = '—';
+      document.getElementById('kpiStatuses').textContent = '—';
+      document.getElementById('kpiMinDate').textContent = '—';
+      document.getElementById('kpiMaxDate').textContent = '—';
+      document.getElementById('filteredCount').textContent = '';
+
+      const tbody = document.querySelector('#statusSummaryTable tbody');
+      tbody.innerHTML = '<tr><td colspan="3" class="muted">—</td></tr>';
+
+      rowsUI = [];
+      if (dt) { dt.destroy(); dt = null; }
+      document.querySelector('#detailsTable tbody').innerHTML = '';
+
+      if (chart) { chart.destroy(); chart = null; }
+      const ctx = document.getElementById('chartCanvas').getContext('2d');
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    });
+
+    parseBtn.addEventListener('click', async () => {
+      const files = Array.from(fileInput.files || []);
+      if (!files.length) return;
+
+      rowsUI = [];
+      for (const f of files) {
+        const text = await f.text();
+        let parsed;
+        try { parsed = parseTextToRows(text); }
+        catch (e) { alert(`Gabim në "${f.name}": ${e.message || String(e)}`); return; }
+
+        const mapped = parsed.rows.map(r => pickRowForUI(r, f.name));
+        rowsUI.push(...mapped);
+      }
+
+      buildTable(rowsUI);
+      setupFilters(rowsUI);
+
+      // initial summary/charts based on current filtered table
+      refreshSummaryAndCharts();
+
+      exportXlsxBtn.disabled = false;
+      resetBtn.disabled = false;
+      statusFilter.disabled = false;
+      userFilter.disabled = false;
+      listFilter.disabled = false;
+      chartType.disabled = false;
+    });
+
+    function buildTable(allRows) {
+      const tbody = document.querySelector('#detailsTable tbody');
+      tbody.innerHTML = allRows.map(r => `
+        <tr>
+          <td class="mono">${escapeHtml(r.user)}</td>
+          <td class="mono">${escapeHtml(r.list_id)}</td>
+          <td class="mono">${escapeHtml(r.status)}</td>
+          <td class="mono">${escapeHtml(r.phone_number)}</td>
+          <td>${escapeHtml(r.first_name)}</td>
+          <td>${escapeHtml(r.last_name)}</td>
+          <td class="mono">${escapeHtml(r.postal_code)}</td>
+          <td class="wrap">${escapeHtml(r.comments_summary)}</td>
+          <td class="mono">${escapeHtml(r.last_local_call_time)}</td>
+          <td class="mono">${escapeHtml(r.source_file)}</td>
+        </tr>
+      `).join('');
+
+      if (dt) dt.destroy();
+      dt = $('#detailsTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10,25,50,100,-1],[10,25,50,100,'All']],
+        scrollX: true
+      });
+
+      dt.on('draw', () => {
+        updateFilteredCount();
+        refreshSummaryAndCharts();
+      });
+      dt.on('search.dt', () => {
+        updateFilteredCount();
+        refreshSummaryAndCharts();
+      });
+
+      updateFilteredCount();
+    }
+
+    function setupFilters(allRows) {
+      // Unique values
+      const uniq = (arr) => Array.from(new Set(arr.map(v => (v||'').trim() || '(bosh)'))).sort();
+      const users = uniq(allRows.map(r => r.user));
+      const lists = uniq(allRows.map(r => r.list_id));
+      const stats = uniq(allRows.map(r => r.status));
+
+      fillSelect(userFilter, users);
+      fillSelect(listFilter, lists);
+      fillSelect(statusFilter, stats);
+
+      // DataTables columns: 0=user, 1=list_id, 2=status
+      userFilter.onchange = () => applyExactFilter(0, userFilter.value);
+      listFilter.onchange = () => applyExactFilter(1, listFilter.value);
+      statusFilter.onchange = () => applyExactFilter(2, statusFilter.value);
+
+      chartType.onchange = () => refreshSummaryAndCharts();
+    }
+
+    function fillSelect(sel, values) {
+      sel.innerHTML = '<option value="">Të gjitha</option>';
+      for (const v of values) {
+        const opt = document.createElement('option');
+        opt.value = v; opt.textContent = v;
+        sel.appendChild(opt);
+      }
+    }
+
+    function applyExactFilter(colIdx, val) {
+      if (!dt) return;
+      if (!val) dt.column(colIdx).search('').draw();
+      else dt.column(colIdx).search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false).draw();
+    }
+
+    function updateFilteredCount() {
+      if (!dt) return;
+      const filtered = dt.rows({search:'applied'}).count();
+      document.getElementById('filteredCount').textContent = `Rreshta (pas filtrave/kërkimit): ${filtered}`;
+    }
+
+    function getFilteredUIRows() {
+      if (!dt) return [];
+      const data = dt.rows({search:'applied'}).data().toArray();
+      // Convert from displayed cells to object
+      return data.map(arr => ({
+        user: stripHtml(arr[0]),
+        list_id: stripHtml(arr[1]),
+        status: stripHtml(arr[2]),
+        phone_number: stripHtml(arr[3]),
+        first_name: stripHtml(arr[4]),
+        last_name: stripHtml(arr[5]),
+        postal_code: stripHtml(arr[6]),
+        comments_summary: stripHtml(arr[7]),
+        last_local_call_time: stripHtml(arr[8]),
+        source_file: stripHtml(arr[9]),
+      }));
+    }
+
+    function refreshSummaryAndCharts() {
+      const rows = getFilteredUIRows();
+      buildSummary(rows);
+      renderChart(rows);
+    }
+
+    function buildSummary(rows) {
+      const total = rows.length;
+      document.getElementById('kpiRows').textContent = total;
+
+      const dates = rows.map(r => parseDateLike(r.last_local_call_time)).filter(Boolean);
+      const minD = dates.length ? new Date(Math.min(...dates)) : null;
+      const maxD = dates.length ? new Date(Math.max(...dates)) : null;
+      const fmt = (d) => d ? d.toISOString().slice(0,19).replace('T',' ') : '—';
+      document.getElementById('kpiMinDate').textContent = fmt(minD);
+      document.getElementById('kpiMaxDate').textContent = fmt(maxD);
+
+      const counts = {};
+      for (const r of rows) {
+        const s = (r.status || '').trim() || '(bosh)';
+        counts[s] = (counts[s] || 0) + 1;
+      }
+      const statusKeys = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+      document.getElementById('kpiStatuses').textContent = statusKeys.length;
+
+      const tbody = document.querySelector('#statusSummaryTable tbody');
+      tbody.innerHTML = '';
+      for (const s of statusKeys) {
+        const n = counts[s];
+        const pct = total ? (n*100/total) : 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="mono">${escapeHtml(s)}</td><td class="text-end">${n}</td><td class="text-end">${pct.toFixed(1)}%</td>`;
+        tbody.appendChild(tr);
+      }
+      if (!statusKeys.length) tbody.innerHTML = '<tr><td colspan="3" class="muted">—</td></tr>';
+    }
+
+    function renderChart(rows) {
+      const type = chartType.value || 'pie';
+      const ctx = document.getElementById('chartCanvas').getContext('2d');
+      if (chart) { chart.destroy(); chart = null; }
+
+      if (!rows.length) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        return;
+      }
+
+      if (type === 'line') {
+        // Aggregate by day (last_local_call_time)
+        const byDay = {};
+        for (const r of rows) {
+          const d = parseDateLike(r.last_local_call_time);
+          if (!d) continue;
+          const k = dayKeyFromDate(d);
+          byDay[k] = (byDay[k] || 0) + 1;
+        }
+        const labels = Object.keys(byDay).sort();
+        const values = labels.map(l => byDay[l]);
+
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: { labels, datasets: [{ label: 'Thirrje/Lead-e (në ditë)', data: values, tension: 0.2 }] },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: true } },
+            scales: { x: { ticks: { maxRotation: 0, autoSkip: true } } }
+          }
+        });
+        return;
+      }
+
+      // pie or bar: status distribution
+      const counts = {};
+      for (const r of rows) {
+        const s = (r.status || '').trim() || '(bosh)';
+        counts[s] = (counts[s] || 0) + 1;
+      }
+      const labels = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).slice(0, 20);
+      const values = labels.map(l => counts[l]);
+
+      chart = new Chart(ctx, {
+        type: type === 'bar' ? 'bar' : 'pie',
+        data: { labels, datasets: [{ label: 'Numër', data: values }] },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: type !== 'bar' } },
+          scales: type === 'bar' ? { x: { ticks: { autoSkip: false } }, y: { beginAtZero: true } } : {}
+        }
+      });
+    }
+
+    exportXlsxBtn.addEventListener('click', () => {
+      if (!dt) return;
+
+      // Export only requested columns, based on current filters/search
+      const rows = getFilteredUIRows().map(exportShape);
+      if (!rows.length) { alert('Nuk ka rreshta për eksport (pas filtrave).'); return; }
+
+      const ws = XLSX.utils.json_to_sheet(rows, {
+        header: ['status','phone_number','first_name','last_name','postal_code','comments_summary','last_local_call_time']
+      });
+      ws['!cols'] = [{wch:22},{wch:18},{wch:16},{wch:16},{wch:12},{wch:40},{wch:20}];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Leads');
+
+      // Summary sheet by status for filtered dataset
+      const counts = {};
+      for (const r of rows) {
+        const s = (r.status || '').trim() || '(bosh)';
+        counts[s] = (counts[s] || 0) + 1;
+      }
+      const summaryArr = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(k => ({status:k, count:counts[k]}));
+      const ws2 = XLSX.utils.json_to_sheet(summaryArr, { header: ['status','count'] });
+      ws2['!cols'] = [{wch:26},{wch:10}];
+      XLSX.utils.book_append_sheet(wb, ws2, 'Përmbledhje');
+
+      const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      XLSX.writeFile(wb, `leads_export_${ts}.xlsx`);
+    });
+
+    function stripHtml(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return (div.textContent || div.innerText || '').trim();
+    }
+
+    // Sample TXT
+    document.getElementById('downloadSample').addEventListener('click', (e) => {
+      e.preventDefault();
+      const sample =
+`ead_id\tuser\tlist_id\tstatus\tphone_number\tfirst_name\tlast_name\tpostal_code\tcomments\tlast_local_call_time
+16896\t1005\t7777\tDC\t355684040631\tEno\tSef\t1000\tObjekti i veprimtarisë së shoqërisë...\t2025-12-22 11:24:06
+16834\t1005\t7777\tCALLBK\t0694008813\tGiacomo\tBartolini\t1001\tSherbime profesionale dhe komerciale...\t2025-12-19 13:43:48
+16835\t1006\t8888\tOferte\t0692058399\tSara\tDemrozi\t1002\tSallon estetik dhe bukurie...\t2025-12-19 13:45:06`;
+      const blob = new Blob([sample], {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'sample_leads_multi.txt';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

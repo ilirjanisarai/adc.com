@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Lead TXT → Raport + Excel (Multi-file + Filtra + Grafike)</title>
+  <title>Lead TXT → Raport + Excel (Multi-file + Filtra + Grafike + Periudha)</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
@@ -28,8 +28,9 @@
       <div>
         <h1 class="h3 m-0">Lead TXT → Raport + Excel</h1>
         <div class="muted">
-          Ngarko disa <span class="pill mono">.txt/.tsv/.csv</span> me header (tab/presje/pikëpresje) dhe gjenero:
-          përmbledhje sipas <b>status</b>, filtra sipas <b>user</b> dhe <b>list_id</b>, + grafiqe (pie/bar/line) + eksport Excel.
+          Ngarko disa <span class="pill mono">.txt/.tsv/.csv</span> me header dhe gjenero:
+          filtra sipas <b>user</b>, <b>list_id</b>, <b>status</b>, + <b>periudhë</b> (ditore/javore/mujore/interval),
+          grafiqe (pie/bar/line) + eksport Excel.
         </div>
       </div>
       <div class="d-flex gap-2">
@@ -58,7 +59,7 @@
 
           <div class="mt-3 small muted">
             <div><span class="smallcaps">Kolonat në Excel</span>:
-              <span class="mono">status, phone_number, first_name, last_name, postal_code, comments_summary, last_local_call_time</span>
+              <span class="mono">status, phone_number, first_name, last_name, postal_code, comments_summary, city, last_local_call_time</span>
             </div>
             <div><span class="smallcaps">comments_summary</span> = 5–6 fjalët e para të comments.</div>
           </div>
@@ -84,6 +85,34 @@
               <select id="statusFilter" class="form-select form-select-sm" disabled>
                 <option value="">Të gjitha</option>
               </select>
+            </div>
+
+            <div class="col-12">
+              <label class="muted small">Periudha (last_local_call_time)</label>
+              <select id="periodType" class="form-select form-select-sm" disabled>
+                <option value="all">Të gjitha</option>
+                <option value="daily">Ditore (zgjidh datën)</option>
+                <option value="weekly">Javore (java e datës)</option>
+                <option value="monthly">Mujore (muaji i datës)</option>
+                <option value="custom">Interval (nga—deri)</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="muted small">Data (për ditore/javore/mujore)</label>
+              <input id="periodDate" type="date" class="form-control form-control-sm" disabled />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="muted small">Interval (custom)</label>
+              <div class="d-flex gap-2">
+                <input id="startDate" type="date" class="form-control form-control-sm" disabled />
+                <input id="endDate" type="date" class="form-control form-control-sm" disabled />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="muted small" id="activePeriodLabel"></div>
             </div>
           </div>
 
@@ -161,7 +190,7 @@
     <div class="card p-3">
       <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
         <div class="fw-semibold">4) Detaje (preview)</div>
-        <div class="muted small">Kërko në tabelë, filtro sipas User/list_id/Status, pastaj “Shkarko Excel (i filtruar)”</div>
+        <div class="muted small">Kërko në tabelë, filtro sipas User/list_id/Status/Periudhë, pastaj “Shkarko Excel (i filtruar)”</div>
       </div>
 
       <div class="table-responsive">
@@ -196,7 +225,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <script>
-    // --- Status mapping (codes -> labels)
+    // --- Status mapping (codes -> labels) - nga versioni yt
     const STATUS_MAP = {
       "ACTCo": "Klient ekzistues VF-AL/Albsig",
       "Alb3ig": "Sigurim me banke",
@@ -211,7 +240,6 @@
       "Oferte": "Oferta te derguara",
       "Setup2": "Switched off",
       "VFMob": "New Connection-Lead",
-      "Voda2": "Will think about",
       "VFMo1": "Mobile Upgrade",
       "VFMo2": "Rinovim me te njejtat kushte",
       "VFMo3": "Downgrade",
@@ -317,7 +345,6 @@
     }
 
     function exportShape(rowUI) {
-      // Only the fields requested for Excel
       return {
         status: rowUI.status,
         phone_number: rowUI.phone_number,
@@ -348,8 +375,149 @@
         .replaceAll('"','&quot;').replaceAll("'","&#39;");
     }
 
+    function stripHtml(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return (div.textContent || div.innerText || '').trim();
+    }
+
+    // ---------- Period filter logic (DataTables ext.search) ----------
+    const periodFilter = { mode: 'all', start: null, end: null }; // inclusive start/end
+
+    function startOfDay(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
+    function endOfDay(d) { const x = new Date(d); x.setHours(23,59,59,999); return x; }
+
+    function startOfWeekMonday(d) {
+      const x = startOfDay(d);
+      const day = x.getDay(); // 0=Sun..6=Sat
+      const diff = (day === 0 ? -6 : 1 - day); // Monday
+      x.setDate(x.getDate() + diff);
+      return x;
+    }
+    function endOfWeekSunday(d) {
+      const s = startOfWeekMonday(d);
+      const e = new Date(s);
+      e.setDate(e.getDate() + 6);
+      return endOfDay(e);
+    }
+    function startOfMonth(d) {
+      const x = startOfDay(d);
+      x.setDate(1);
+      return x;
+    }
+    function endOfMonth(d) {
+      const x = new Date(d);
+      x.setHours(0,0,0,0);
+      x.setMonth(x.getMonth() + 1, 1);
+      x.setDate(x.getDate() - 1);
+      x.setHours(23,59,59,999);
+      return x;
+    }
+    function fmtDateOnly(d) {
+      if (!d) return '';
+      const pad=(n)=>String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    // DataTables custom filter: column 8 is last_local_call_time
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+      if (periodFilter.mode === 'all') return true;
+      const t = data[8]; // last_local_call_time
+      const d = parseDateLike(stripHtml(t));
+      if (!d) return false; // exclude if no date when filtering
+      if (periodFilter.start && d < periodFilter.start) return false;
+      if (periodFilter.end && d > periodFilter.end) return false;
+      return true;
+    });
+
+    function setPeriodRange(start, end, label) {
+      periodFilter.start = start;
+      periodFilter.end = end;
+      document.getElementById('activePeriodLabel').textContent = label || '';
+    }
+
+    function syncPeriodControls() {
+      const mode = document.getElementById('periodType').value || 'all';
+      const periodDate = document.getElementById('periodDate');
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+
+      if (mode === 'daily' || mode === 'weekly' || mode === 'monthly') {
+        periodDate.disabled = false;
+        startDate.disabled = true;
+        endDate.disabled = true;
+      } else if (mode === 'custom') {
+        periodDate.disabled = true;
+        startDate.disabled = false;
+        endDate.disabled = false;
+      } else {
+        periodDate.disabled = true;
+        startDate.disabled = true;
+        endDate.disabled = true;
+      }
+    }
+
+    function applyPeriodFilter() {
+      const periodType = document.getElementById('periodType');
+      const periodDate = document.getElementById('periodDate');
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+
+      const mode = periodType.value || 'all';
+      periodFilter.mode = mode;
+
+      if (mode === 'all') {
+        setPeriodRange(null, null, '');
+        if (dt) dt.draw();
+        return;
+      }
+
+      if (mode === 'custom') {
+        const s = startDate.value ? new Date(startDate.value + 'T00:00:00') : null;
+        const e = endDate.value ? new Date(endDate.value + 'T00:00:00') : null;
+        if (!s || !e) {
+          setPeriodRange(null, null, 'Zgjidh "nga" dhe "deri" për intervalin.');
+          if (dt) dt.draw();
+          return;
+        }
+        const start = startOfDay(s);
+        const end = endOfDay(e);
+        setPeriodRange(start, end, `Interval: ${fmtDateOnly(start)} → ${fmtDateOnly(end)}`);
+        if (dt) dt.draw();
+        return;
+      }
+
+      // daily/weekly/monthly need a date
+      if (!periodDate.value) {
+        setPeriodRange(null, null, 'Zgjidh një datë për periudhën.');
+        if (dt) dt.draw();
+        return;
+      }
+
+      const base = new Date(periodDate.value + 'T00:00:00');
+
+      if (mode === 'daily') {
+        const start = startOfDay(base);
+        const end = endOfDay(base);
+        setPeriodRange(start, end, `Ditore: ${fmtDateOnly(start)}`);
+      } else if (mode === 'weekly') {
+        const start = startOfWeekMonday(base);
+        const end = endOfWeekSunday(base);
+        setPeriodRange(start, end, `Javore: ${fmtDateOnly(start)} → ${fmtDateOnly(end)}`);
+      } else if (mode === 'monthly') {
+        const start = startOfMonth(base);
+        const end = endOfMonth(base);
+        const label = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}`;
+        setPeriodRange(start, end, `Mujore: ${label}`);
+      } else {
+        setPeriodRange(null, null, '');
+      }
+
+      if (dt) dt.draw();
+    }
+
     // ---------- App State ----------
-    let rowsUI = [];     // all rows combined from files (for table & filtering)
+    let rowsUI = [];
     let dt = null;
     let chart = null;
 
@@ -361,6 +529,11 @@
     const userFilter = document.getElementById('userFilter');
     const listFilter = document.getElementById('listFilter');
     const chartType = document.getElementById('chartType');
+
+    const periodType = document.getElementById('periodType');
+    const periodDate = document.getElementById('periodDate');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
 
     fileInput.addEventListener('change', () => {
       const files = fileInput.files;
@@ -380,9 +553,23 @@
       listFilter.disabled = true;
       chartType.disabled = true;
 
+      periodType.disabled = true;
+      periodDate.disabled = true;
+      startDate.disabled = true;
+      endDate.disabled = true;
+
       statusFilter.innerHTML = '<option value="">Të gjitha</option>';
       userFilter.innerHTML = '<option value="">Të gjitha</option>';
       listFilter.innerHTML = '<option value="">Të gjitha</option>';
+      periodType.value = 'all';
+      periodDate.value = '';
+      startDate.value = '';
+      endDate.value = '';
+      document.getElementById('activePeriodLabel').textContent = '';
+
+      periodFilter.mode = 'all';
+      periodFilter.start = null;
+      periodFilter.end = null;
 
       document.getElementById('kpiRows').textContent = '—';
       document.getElementById('kpiStatuses').textContent = '—';
@@ -420,15 +607,18 @@
       buildTable(rowsUI);
       setupFilters(rowsUI);
 
-      // initial summary/charts based on current filtered table
-      refreshSummaryAndCharts();
-
       exportXlsxBtn.disabled = false;
       resetBtn.disabled = false;
+
       statusFilter.disabled = false;
       userFilter.disabled = false;
       listFilter.disabled = false;
       chartType.disabled = false;
+
+      periodType.disabled = false;
+      syncPeriodControls();
+      applyPeriodFilter();
+      refreshSummaryAndCharts();
     });
 
     function buildTable(allRows) {
@@ -468,15 +658,10 @@
     }
 
     function setupFilters(allRows) {
-      // Unique values
       const uniq = (arr) => Array.from(new Set(arr.map(v => (v||'').trim() || '(bosh)'))).sort();
-      const users = uniq(allRows.map(r => r.user));
-      const lists = uniq(allRows.map(r => r.list_id));
-      const stats = uniq(allRows.map(r => r.status));
-
-      fillSelect(userFilter, users);
-      fillSelect(listFilter, lists);
-      fillSelect(statusFilter, stats);
+      fillSelect(userFilter, uniq(allRows.map(r => r.user)));
+      fillSelect(listFilter, uniq(allRows.map(r => r.list_id)));
+      fillSelect(statusFilter, uniq(allRows.map(r => r.status)));
 
       // DataTables columns: 0=user, 1=list_id, 2=status
       userFilter.onchange = () => applyExactFilter(0, userFilter.value);
@@ -484,6 +669,12 @@
       statusFilter.onchange = () => applyExactFilter(2, statusFilter.value);
 
       chartType.onchange = () => refreshSummaryAndCharts();
+
+      // Period controls
+      periodType.onchange = () => { syncPeriodControls(); applyPeriodFilter(); };
+      periodDate.onchange = () => applyPeriodFilter();
+      startDate.onchange = () => applyPeriodFilter();
+      endDate.onchange = () => applyPeriodFilter();
     }
 
     function fillSelect(sel, values) {
@@ -510,7 +701,6 @@
     function getFilteredUIRows() {
       if (!dt) return [];
       const data = dt.rows({search:'applied'}).data().toArray();
-      // Convert from displayed cells to object
       return data.map(arr => ({
         user: stripHtml(arr[0]),
         list_id: stripHtml(arr[1]),
@@ -573,7 +763,6 @@
       }
 
       if (type === 'line') {
-        // Aggregate by day (last_local_call_time)
         const byDay = {};
         for (const r of rows) {
           const d = parseDateLike(r.last_local_call_time);
@@ -619,7 +808,6 @@
     exportXlsxBtn.addEventListener('click', () => {
       if (!dt) return;
 
-      // Export only requested columns, based on current filters/search
       const rows = getFilteredUIRows().map(exportShape);
       if (!rows.length) { alert('Nuk ka rreshta për eksport (pas filtrave).'); return; }
 
@@ -631,7 +819,6 @@
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Leads');
 
-      // Summary sheet by status for filtered dataset
       const counts = {};
       for (const r of rows) {
         const s = (r.status || '').trim() || '(bosh)';
@@ -646,20 +833,14 @@
       XLSX.writeFile(wb, `leads_export_${ts}.xlsx`);
     });
 
-    function stripHtml(html) {
-      const div = document.createElement('div');
-      div.innerHTML = html;
-      return (div.textContent || div.innerText || '').trim();
-    }
-
     // Sample TXT
     document.getElementById('downloadSample').addEventListener('click', (e) => {
       e.preventDefault();
       const sample =
-`ead_id\tuser\tlist_id\tstatus\tphone_number\tfirst_name\tlast_name\tpostal_code\tcomments\tlast_local_call_time
-16896\t1005\t7777\tDC\t355684040631\tEno\tSef\t1000\tObjekti i veprimtarisë së shoqërisë...\t2025-12-22 11:24:06
-16834\t1005\t7777\tCALLBK\t0694008813\tGiacomo\tBartolini\t1001\tSherbime profesionale dhe komerciale...\t2025-12-19 13:43:48
-16835\t1006\t8888\tOferte\t0692058399\tSara\tDemrozi\t1002\tSallon estetik dhe bukurie...\t2025-12-19 13:45:06`;
+`ead_id	user	list_id	status	phone_number	first_name	last_name	postal_code	comments	last_local_call_time
+16896	1005	7777	DC	355684040631	Eno	Sef	1000	Objekti i veprimtarisë së shoqërisë...	2025-12-22 11:24:06
+16834	1005	7777	CALLBK	0694008813	Giacomo	Bartolini	1001	Sherbime profesionale dhe komerciale...	2025-12-19 13:43:48
+16835	1006	8888	Oferte	0692058399	Sara	Demrozi	1002	Sallon estetik dhe bukurie...	2025-12-19 13:45:06`;
       const blob = new Blob([sample], {type:'text/plain;charset=utf-8'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -667,6 +848,12 @@
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
+
+    // Bind period events even before parse (safe)
+    document.getElementById('periodType').addEventListener('change', () => { syncPeriodControls(); applyPeriodFilter(); });
+    document.getElementById('periodDate').addEventListener('change', () => applyPeriodFilter());
+    document.getElementById('startDate').addEventListener('change', () => applyPeriodFilter());
+    document.getElementById('endDate').addEventListener('change', () => applyPeriodFilter());
   </script>
 </body>
 </html>

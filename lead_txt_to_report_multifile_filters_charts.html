@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Lead TXT → Raport + Excel (Multi-file + Filtra + Grafiqe)</title>
+  <title>Lead TXT → Raport + Excel (Multi-file + Filtra + Grafike)</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
@@ -94,7 +94,7 @@
       <div class="col-12 col-lg-7">
         <div class="card p-3">
           <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
-            <div class="fw-semibold">3) Përmbledhje + Grafiqe</div>
+            <div class="fw-semibold">3) Përmbledhje + Grafike</div>
             <div class="d-flex gap-2 align-items-center">
               <label class="muted small">Grafiku:</label>
               <select id="chartType" class="form-select form-select-sm" style="max-width:160px;" disabled>
@@ -198,7 +198,7 @@
   <script>
     // --- Status mapping (codes -> labels)
     const STATUS_MAP = {
-      "ACTCo": "Kontrate Aktive",
+      "ACTCo": "Klient ekzistues VF-AL/Albsig",
       "Alb3ig": "Sigurim me banke",
       "Albs1g": "Nuk ka nje prone te tij",
       "Albs2g": "Nuk disponon dokumentat",
@@ -212,6 +212,19 @@
       "Setup2": "Switched off",
       "VFMob": "New Connection-Lead",
       "Voda2": "Will think about",
+      "VFMo1": "Mobile Upgrade",
+      "VFMo2": "Rinovim me te njejtat kushte",
+      "VFMo3": "Downgrade",
+      "VFMob": "New Connection",
+      "Voda1": "Klient ekzistues VF-AL/Albsig",
+      "Voda2": "Do ta mendoj",
+      "Voda3": "Zone pa mbulim fix",
+      "Voda4": "Problem me Internetin-Coax",
+      "Voda5": "Trajtim Klienti",
+      "Voda6": "Te pakenaqur me Vodafone",
+      "Voda7": "Telefonate prezantuese",
+      "Setup": "Not interested-small business",
+      "Setup4": "Ka IT Support",
       "XALB": "Kontrate aktive - operator tjeter"
     };
     function mapStatus(code) {

@@ -2,7 +2,7 @@
 <html lang="sq">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
   <title>ADC Portal</title>
   <link rel="icon" type="image/png" href="adc.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,8 +24,8 @@
       --vodafone:#d32f2f; --vodafone-h:#a52828;
       --setup:#912983; --setup-h:#5e1b5c;
       --volton:#2e7d32; --volton-h:#1b5e20;
-      --albsig:#d32f2f; --albsig-h:#a52828; /* KUQE */
-      --b2b:#d32f2f; --b2b-h:#a52828; /* KUQE */
+      --albsig:#d32f2f; --albsig-h:#a52828;
+      --b2b:#d32f2f; --b2b-h:#a52828;
       --procedurat:#f59e0b; --procedurat-h:#ef6c00;
       --skripte:#06b6d4; --skripte-h:#0891b2;
       --reports:#0663d4; --reports-h:#06728c;
@@ -44,7 +44,7 @@
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%}
+    html,body{height:100%; overflow-x:hidden;}
     body{
       margin:0;
       font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
@@ -94,7 +94,7 @@
       transition:box-shadow .25s ease, border-color .25s ease;
     }
 
-    /* OPSIONET KRYESORE – neutral, modern */
+    /* OPSIONET KRYESORE */
     .group summary{
       list-style:none; cursor:pointer; user-select:none;
       display:flex; align-items:center; gap:10px;
@@ -102,6 +102,7 @@
       background:#fff; border:1px solid var(--line); border-radius:12px;
       position:relative;
       transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+      min-height:48px; /* Touch target */
     }
     .group summary::-webkit-details-marker{display:none}
     .group summary:hover{
@@ -117,19 +118,19 @@
     }
     .group[open] summary::after{ transform:translateY(-50%) rotate(45deg); border-color:#6b7280; }
 
-    /* NGJYRAT E IKONAVE – Albsig & B2B në të kuqe */
+    /* NGJYRAT E IKONAVE */
     .group[data-color="vodafone"] summary i{color:#d32f2f}
     .group[data-color="setup"] summary i{color:#912983}
     .group[data-color="volton"] summary i{color:#2e7d32}
-    .group[data-color="albsig"] summary i{color:#d32f2f} /* KUQE */
+    .group[data-color="albsig"] summary i{color:#d32f2f}
     .group[data-color="procedurat"] summary i{color:#f59e0b}
     .group[data-color="skripte"] summary i{color:#06b6d4}
     .group[data-color="hr"] summary i{color:#16a34a}
-    .group[data-color="b2b"] summary i{color:#d32f2f} /* KUQE */
+    .group[data-color="b2b"] summary i{color:#d32f2f}
     .group[data-color="reports"] summary i{color:#0663d4}
     .group[data-color="contracts"] summary i{color:#ef4444}
 
-    /* Nënopsionet – moderne dhe me ngjyrat e seksionit */
+    /* Nënopsionet */
     .group .menu{
       padding:10px; display:grid; gap:10px;
       background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0));
@@ -142,6 +143,8 @@
       transform:translateY(0);
       transition:transform .12s ease, box-shadow .2s ease, filter .2s ease, background .2s ease, color .2s ease;
       overflow:hidden;
+      min-height:48px; /* Touch target */
+      font-size:15px;
     }
     .group .menu button::before{
       content:""; position:absolute; inset:0;
@@ -176,6 +179,7 @@
       padding:12px; border-radius:12px; border:1px solid var(--line);
       background:linear-gradient(180deg, #0ea5e9, #0284c7); color:#fff; font-weight:700; cursor:pointer;
       box-shadow:var(--shadow);
+      min-height:48px; /* Touch target */
     }
     .refresh-btn:hover{filter:brightness(1.05)}
 
@@ -195,9 +199,11 @@
     .search-bar{display:flex; gap:8px}
     .search-bar input{
       flex:1; padding:12px 14px; border:1px solid var(--line); border-radius:12px; outline:none; font-weight:600;
+      font-size:16px; /* Prevent zoom on iOS */
     }
     .search-bar button{
       padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:#fff; cursor:pointer; font-weight:700;
+      min-height:48px; /* Touch target */
     }
     .results{display:grid; gap:10px}
     .result{
@@ -205,14 +211,23 @@
     }
     .result h4{margin:0 0 6px 0}
     .result .meta{color:var(--muted); font-size:12px}
+    .result button{
+      min-height:44px; /* Touch target */
+      font-size:15px;
+    }
     .hl{background: #fff3cd; padding:0 3px; border-radius:4px}
 
     .quick{margin-top:18px; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px}
     .qcard{
       background:var(--surface); border:1px solid var(--line); border-left:6px solid var(--brand);
       border-radius:14px; padding:14px 16px; box-shadow:var(--shadow);
+      min-height:60px; /* Touch friendly */
     }
-    .qcard a{display:inline-block; text-decoration:none; color:var(--brand); font-weight:700}
+    .qcard a{
+      display:inline-block; text-decoration:none; color:var(--brand); font-weight:700;
+      min-height:44px; /* Touch target */
+      line-height:1.5;
+    }
     .qcard a:hover{text-decoration:underline}
 
     /* Updates */
@@ -223,7 +238,10 @@
     .tag{display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; border:1px solid var(--line); margin-right:6px}
 
     /* Content frame */
-    .viewer{position:relative; height:90vh; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow)}
+    .viewer{
+      position:relative; height:90vh; border:1px solid var(--line); border-radius:14px; 
+      overflow:hidden; background:var(--surface); box-shadow:var(--shadow);
+    }
     .viewer iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
     .loader{
       position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:12px;
@@ -235,23 +253,167 @@
     .dot:nth-child(3){animation-delay:.3s}
     @keyframes bounce{to{transform:translateY(-6px); opacity:.7}}
 
-    /* Mobile */
+    /* Backdrop overlay */
+    .backdrop{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.5);
+      z-index:99;
+      backdrop-filter:blur(2px);
+      animation:fadeIn .2s ease;
+    }
+    .backdrop.show{display:block}
+    @keyframes fadeIn{from{opacity:0} to{opacity:1}}
+
+    /* Mobile toggle */
     .toggle{display:none}
+
+    /* ========== MOBILE OPTIMIZATIONS ========== */
     @media (max-width: 1024px){
+      /* Layout adjustments */
       .layout{grid-template-columns: 1fr}
-      aside.sidebar{position:fixed; top:64px; left:0; right:0; height:auto; max-height:65vh; transform:translateY(-120%); transition:transform .2s ease}
-      aside.sidebar.open{transform:translateY(0%)}
-      .toggle{display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; color:#111827; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer}
-      main.content{padding:18px}
+      
+      /* Sidebar mobile behavior */
+      aside.sidebar{
+        position:fixed; 
+        top:64px; 
+        left:0; 
+        right:0; 
+        height:auto; 
+        max-height:75vh; 
+        transform:translateY(-120%); 
+        transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index:100;
+        border-radius:0 0 20px 20px;
+        box-shadow:0 8px 32px rgba(0,0,0,0.3);
+      }
+      aside.sidebar.open{
+        transform:translateY(0%);
+      }
+      
+      /* Show toggle button */
+      .toggle{
+        display:inline-flex; 
+        align-items:center; 
+        gap:8px; 
+        border:1px solid var(--line); 
+        background:#fff; 
+        color:#111827; 
+        padding:8px 12px; 
+        border-radius:10px; 
+        font-weight:700; 
+        cursor:pointer;
+        min-height:44px; /* Touch target */
+        font-size:15px;
+      }
+      
+      /* Reduce padding on mobile */
+      main.content{padding:16px}
+      
+      /* Hero adjustments */
+      .hero{
+        padding:16px !important;
+        border-radius:12px;
+      }
+      .hero h2{font-size:22px}
+      
+      /* Search bar mobile */
+      .search-bar{
+        flex-direction:column;
+      }
+      .search-bar button{
+        width:100%;
+      }
+      
+      /* Quick cards single column on very small screens */
+      .quick{
+        grid-template-columns:1fr;
+      }
+      
+      /* Updates single column */
+      .updates-grid{
+        grid-template-columns:1fr;
+      }
+      
+      /* Viewer adjustments */
+      .viewer{
+        height:calc(100vh - 100px);
+        border-radius:12px;
+      }
+      
+      /* Header adjustments */
+      .appbar{
+        padding:12px 14px;
+      }
+      .appbar img{height:32px}
+      .appbar h1{font-size:16px}
+      .social-icons{gap:10px}
+      .social-icons a{font-size:14px}
+      
+      /* Ensure all interactive elements meet touch target size */
+      .group summary{
+        font-size:15px;
+      }
+      
+      /* Result cards */
+      .result{
+        padding:14px;
+      }
+    }
+
+    /* Extra small screens */
+    @media (max-width: 480px){
+      .appbar h1{display:none}
+      .appbar img{height:28px}
+      main.content{padding:12px}
+      .hero{padding:12px !important}
+      .hero h2{font-size:20px}
+      .social-icons{gap:8px}
+      
+      /* Sidebar even more compact */
+      aside.sidebar{
+        max-height:80vh;
+      }
+      
+      /* Group adjustments */
+      .group{
+        margin-bottom:10px;
+      }
+    }
+
+    /* Landscape mobile */
+    @media (max-width: 1024px) and (orientation: landscape){
+      aside.sidebar{
+        max-height:85vh;
+      }
+      .viewer{
+        height:calc(100vh - 80px);
+      }
+    }
+
+    /* Dark mode improvements for mobile */
+    @media (max-width: 1024px) and (prefers-color-scheme: dark){
+      .toggle{
+        background:var(--surface);
+        color:#fff;
+        border-color:var(--line);
+      }
+      aside.sidebar{
+        box-shadow:0 8px 32px rgba(0,0,0,0.6);
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Backdrop for mobile sidebar -->
+  <div class="backdrop" id="backdrop" onclick="closeSidebar()"></div>
+
   <!-- Header -->
   <header class="appbar" role="banner">
     <div class="brand" onclick="resetToMain()" title="Kthehu në faqen kryesore">
       <img src="logo.png" alt="ADC Logo" />
-      <h1>     </h1>
+      <h1>ADC Portal</h1>
     </div>
     <div class="spacer"></div>
     <button class="toggle" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar(this)">
@@ -392,7 +554,7 @@
           <div id="results" class="results"></div>
         </section>
 
-        <!-- Lidhje të shpejta (tani hapen në viewer) -->
+        <!-- Lidhje të shpejta -->
         <section class="quick" aria-label="Lidhje të shpejta">
           <div class="qcard"><a href="#" onclick="return openHome(event,'faqe_vodafone.html')">Ofertat Fix Rezidencial</a></div>
           <div class="qcard"><a href="#" onclick="return openHome(event,'faq_volton.html')">Volton FAQ</a></div>
@@ -424,14 +586,40 @@
     /* ======= Sidebar & Viewer ======= */
     function toggleSidebar(btn){
       const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('backdrop');
       const open = !sidebar.classList.contains('open');
       sidebar.classList.toggle('open', open);
+      backdrop.classList.toggle('show', open);
       if(btn){ btn.setAttribute('aria-expanded', String(open)); }
+      
+      // Prevent body scroll when sidebar is open on mobile
+      if(window.innerWidth <= 1024){
+        document.body.style.overflow = open ? 'hidden' : '';
+      }
     }
-    function closeAllMenus(){ document.querySelectorAll('aside details').forEach(d=>{ d.open=false; }); }
+    
+    function closeSidebar(){
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('backdrop');
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('show');
+      document.body.style.overflow = '';
+      const toggleBtn = document.querySelector('.toggle');
+      if(toggleBtn){ toggleBtn.setAttribute('aria-expanded', 'false'); }
+    }
+    
+    function closeAllMenus(){ 
+      document.querySelectorAll('aside details').forEach(d=>{ d.open=false; }); 
+    }
 
-    function showViewer(){ document.getElementById('home').hidden = true; document.getElementById('viewer').hidden = false; }
-    function showHome(){ document.getElementById('viewer').hidden = true; document.getElementById('home').hidden = false; }
+    function showViewer(){ 
+      document.getElementById('home').hidden = true; 
+      document.getElementById('viewer').hidden = false; 
+    }
+    function showHome(){ 
+      document.getElementById('viewer').hidden = true; 
+      document.getElementById('home').hidden = false; 
+    }
     function setActive(btn){
       document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
       if(btn){ btn.classList.add('active'); }
@@ -462,10 +650,9 @@
         frame.onload = ()=> loader.style.display = 'none';
         frame.onerror = ()=> {
           loader.style.display = 'none';
-          // Fallback: nëse s’lejohet embed, hape në tab të ri
           window.open(state.url, '_blank', 'noopener');
         };
-        document.getElementById('sidebar')?.classList.remove('open');
+        closeSidebar();
       }
     }
     function parseHashToState(){
@@ -487,11 +674,11 @@
       });
     }
 
-    // Navigimi i brendshëm me pushState (me fallback për external)
+    // Navigimi i brendshëm me pushState
     function loadPage(btn, url){
       setActive(btn);
       showViewer();
-      document.getElementById('sidebar')?.classList.remove('open');
+      closeSidebar();
       const frame = document.getElementById('frame');
       const loader = document.getElementById('loader');
       loader.style.display = 'flex';
@@ -499,7 +686,7 @@
       frame.onload = () => { loader.style.display = 'none'; };
       frame.onerror = () => {
         loader.style.display = 'none';
-        window.open(url, '_blank', 'noopener'); // fallback në tab të ri
+        window.open(url, '_blank', 'noopener');
       };
       pushRoute({view:'page', url});
     }
@@ -507,9 +694,10 @@
     function refreshAndCloseMenus(){ resetToMain(); }
     function loadPageExternal(url){ window.open(url, '_blank', 'noopener'); }
     function resetToMain(){
-      setActive(null); showHome(); closeAllMenus();
+      setActive(null); showHome(); closeAllMenus(); closeSidebar();
       window.scrollTo({top:0, behavior:'smooth'});
-      const frame = document.getElementById('frame'); const loader = document.getElementById('loader');
+      const frame = document.getElementById('frame'); 
+      const loader = document.getElementById('loader');
       if(frame) frame.src = '';
       if(loader) loader.style.display = 'none';
       pushRoute({view:'home'});
@@ -604,7 +792,7 @@
 
       if(!q){ statsEl.textContent = ""; resEl.innerHTML = ""; return; }
 
-      buildIndex(); // background
+      buildIndex();
 
       const results = [];
       for(const p of PAGES){
@@ -661,86 +849,37 @@
     }
 
     // Init
-    function initRouter(){
-      const initial = parseHashToState();
-      history.replaceState(initial, '', location.href);
-      applyState(initial);
-      window.addEventListener('popstate', (e)=>{
-        _suppressPush = true;
-        applyState(e.state || parseHashToState());
-        _suppressPush = false;
-      });
-    }
     document.addEventListener('DOMContentLoaded', ()=>{
       initRouter();
       buildIndex();
       renderUpdates();
     });
 
-    // Helpers për router
-    function parseHashToState(){
-      const h = location.hash || '';
-      if(h.startsWith('#/page/')){
-        const url = decodeURIComponent(h.slice('#/page/'.length));
-        return {view:'page', url};
-      }
-      return {view:'home'};
+    function loadPageExternal(url){
+      showViewer();
+      closeSidebar();
+      const f = document.getElementById('frame');
+      const l = document.getElementById('loader');
+      l.style.display='flex';
+      requestAnimationFrame(()=>{ f.src = url; });
+      f.onload = ()=> l.style.display='none';
+      f.onerror = ()=> l.innerHTML = '<span style="font-weight:800;color:#ef4444">Nuk u ngarkua.</span>';
+      pushRoute({view:'page', url});
     }
 
-
-
-
-
-
-function loadPageExternal(url){
-  showViewer();
-  document.getElementById('sidebar')?.classList.remove('open');
-  const f = document.getElementById('frame');
-  const l = document.getElementById('loader');
-  l.style.display='flex';
-  requestAnimationFrame(()=>{ f.src = url; });
-  f.onload = ()=> l.style.display='none';
-  f.onerror = ()=> l.innerHTML = '<span style="font-weight:800;color:#ef4444">Nuk u ngarkua.</span>';
-  pushRoute({view:'page', url});
-}
-
+    // Handle window resize
+    window.addEventListener('resize', ()=>{
+      if(window.innerWidth > 1024){
+        closeSidebar();
+        document.body.style.overflow = '';
+      }
+    });
     
   </script>
-
-
-
 
 <script>
 (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="a5W5MKC2pqARkls71UKeB";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
 </script>
 
-
-
-  
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

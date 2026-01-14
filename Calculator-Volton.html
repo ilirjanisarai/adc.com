@@ -1,233 +1,284 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-  <meta charset="UTF-8">
-  <title>Kalkulatori Volton</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background-color: #f4f4f4;
-    }
-    h2 {
-      color: #b40000;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .calculator {
-      background: white;
-      border-radius: 10px;
-      padding: 35px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-      max-width: 700px;
-    }
-    label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
-    input {
-      width: 110px;
-      padding: 3px;
-      font-size: 14px;
-    }
-    button {
-      background-color: #28a745;
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    table {
-      width: auto;
-      border-collapse: collapse;
-      margin-top: 12px;
-      font-size: 14px;
-    }
-    td {
-      padding: 3px 8px;
-      vertical-align: top;
-    }
-    .result {
-      margin-top: 10px;
-    }
-    .highlight {
-      color: green;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kursimi Energji Elektrike - Volton</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #27ae60;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #27ae60;
+        }
+
+        .result-label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #333;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .savings {
+            color: #27ae60;
+            font-size: 24px;
+        }
+
+        .info-box {
+            background: #e8f8f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>⚡ Kalkulator Kursimi Energji</h1>
+        <div class="subtitle">Llogarisni kursimin tuaj me Volton</div>
 
-  <div class="calculator">
-    <h2>Linja 10kV - 20kV | Konkurrenti: 18.34 lekë/kWh | Volton: 17.3 lekë/kWh</h2>
-    <label>Fatura mujore me TVSH:</label>
-    <input type="number" id="fatura1" placeholder="p.sh. 5000" />
-    <button onclick="llogarit(18.34, 17.3, 'fatura1', 'rezultati1')">Llogarit</button>
-    <div id="rezultati1" class="result"></div>
-  </div>
+        <div class="info-box">
+            <p><strong>Si funksionon:</strong> Vendosni vlerën e faturës tuaj aktuale (me TVSH 20%) dhe zgjidhni linjën e tensionit. Do të llogaritet kursimi juaj mujor duke kaluar te Volton.</p>
+        </div>
 
-  <div class="calculator">
-    <h2>Linja 35kV | Konkurrenti: 15.9 lekë/kWh | Volton: 14.6 lekë/kWh</h2>
-    <label>Fatura mujore me TVSH:</label>
-    <input type="number" id="fatura2" placeholder="p.sh. 5000" />
-    <button onclick="llogarit(15.9, 14.6, 'fatura2', 'rezultati2')">Llogarit</button>
-    <div id="rezultati2" class="result"></div>
-  </div>
+        <form id="calculatorForm">
+            <div class="form-group">
+                <label for="invoice">Fatura Aktuale (me TVSH 20%)</label>
+                <input type="number" id="invoice" placeholder="p.sh. 50000" required min="0" step="0.01">
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Shënim: Vendosni vlerën në Lekë</small>
+            </div>
 
-  <!-- Kalkulatori i tretë (i ri) -->
-  <div class="calculator">
-    <h2>Linja 6kV | Konkurrenti: 18.34 lekë/kWh | Volton: 16.9 lekë/kWh</h2>
-    <label>Fatura mujore me TVSH:</label>
-    <input type="number" id="fatura3" placeholder="p.sh. 5000" />
-    <button onclick="llogarit(18.34, 16.9, 'fatura3', 'rezultati3')">Llogarit</button>
-    <div id="rezultati3" class="result"></div>
-  </div>
+            <div class="form-group">
+                <label for="voltage">Linja e Tensionit</label>
+                <select id="voltage" required>
+                    <option value="">-- Zgjidhni linjën --</option>
+                    <option value="6">6 kV</option>
+                    <option value="10">10 kV</option>
+                    <option value="20">20 kV</option>
+                    <option value="35">35 kV</option>
+                </select>
+            </div>
 
-  <script>
-    function formatNumber(num) {
-      return Math.round(num).toLocaleString('sq-AL');
-    }
+            <button type="submit" class="btn">Llogarit Kursimin</button>
+        </form>
 
-    function llogarit(cmimiKonkurrent, cmimiVolton, inputId, outputId) {
-      const vleraFatures = parseFloat(document.getElementById(inputId).value);
-      if (isNaN(vleraFatures) || vleraFatures <= 0) {
-        document.getElementById(outputId).innerText = "Ju lutem vendosni një vlerë të saktë për faturën.";
-        return;
-      }
+        <div id="results" class="results">
+            <h3 style="margin-bottom: 20px; color: #333; text-align: center;">📊 Rezultatet</h3>
+            
+            <div class="result-item">
+                <span class="result-label">Fatura aktuale (me TVSH):</span>
+                <span class="result-value" id="currentInvoice">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Konsum në kWh:</span>
+                <span class="result-value" id="consumption">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Çmimi aktual (pa TVSH):</span>
+                <span class="result-value" id="currentPrice">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Çmimi Volton (pa TVSH):</span>
+                <span class="result-value" id="voltonPrice">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Fatura me Volton (me TVSH):</span>
+                <span class="result-value" id="voltonInvoice">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">💰 Kursim Mujor:</span>
+                <span class="result-value savings" id="savings">-</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">📅 Kursim Vjetor:</span>
+                <span class="result-value savings" id="yearlySavings">-</span>
+            </div>
+        </div>
+    </div>
 
-      const paTVSH = vleraFatures / 1.2;
-      const konsumKWH = paTVSH / cmimiKonkurrent;
-      const faturaVoltonMeTVSH = konsumKWH * cmimiVolton * 1.2;
-      const diferencaMujore = vleraFatures - faturaVoltonMeTVSH;
-      const kursimiVjetor = diferencaMujore * 12;
+    <script>
+        const prices = {
+            6: { current: 18.34, volton: 16.9 },
+            10: { current: 18.34, volton: 17.3 },
+            20: { current: 18.34, volton: 17.3 },
+            35: { current: 15.9, volton: 14.6 }
+        };
 
-      document.getElementById(outputId).innerHTML = `
-        <table>
-          <tr><td>Konsumi mujor:</td><td>${formatNumber(konsumKWH)} kWh</td></tr>
-          <tr><td>Fatura me Volton (me TVSH):</td><td>${formatNumber(faturaVoltonMeTVSH)} lekë</td></tr>
-          <tr><td>Kursimi mujor (me TVSH):</td><td>${formatNumber(diferencaMujore)} lekë</td></tr>
-          <tr><td class="highlight">Kursimi vjetor (me TVSH):</td><td class="highlight">${formatNumber(kursimiVjetor)} lekë</td></tr>
-        </table>
-      `;
-    }
-  </script>
+        const TVSH = 1.20; // 20% TVSH
 
-</body>
-</html><!DOCTYPE html>
-<html lang="sq">
-<head>
-  <meta charset="UTF-8">
-  <title>Kalkulatori Volton</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background-color: #f4f4f4;
-    }
-    h2 {
-      color: #b40000;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .calculator {
-      background: white;
-      border-radius: 10px;
-      padding: 35px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-      max-width: 700px;
-    }
-    label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
-    input {
-      width: 110px;
-      padding: 3px;
-      font-size: 14px;
-    }
-    button {
-      background-color: #28a745;
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    table {
-      width: auto;
-      border-collapse: collapse;
-      margin-top: 12px;
-      font-size: 14px;
-    }
-    td {
-      padding: 3px 8px;
-      vertical-align: top;
-    }
-    .result {
-      margin-top: 10px;
-    }
-    .highlight {
-      color: green;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
+        // Funksion për formatimin e numrave me presje dhjetore
+        function formatNumber(num) {
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
-  <div class="calculator">
-    <h2>Linja 10kV - 20kV | Konkurrenti: 18.34 lekë/kWh | Volton: 17.3 lekë/kWh</h2>
-    <label>Fatura mujore me TVSH:</label>
-    <input type="number" id="fatura1" placeholder="p.sh. 5000" />
-    <button onclick="llogarit(18.34, 17.3, 'fatura1', 'rezultati1')">Llogarit</button>
-    <div id="rezultati1" class="result"></div>
-  </div>
-
-  <div class="calculator">
-    <h2>Linja 35kV | Konkurrenti: 15.9 lekë/kWh | Volton: 14.6 lekë/kWh</h2>
-    <label>Fatura mujore me TVSH:</label>
-    <input type="number" id="fatura2" placeholder="p.sh. 5000" />
-    <button onclick="llogarit(15.9, 14.6, 'fatura2', 'rezultati2')">Llogarit</button>
-    <div id="rezultati2" class="result"></div>
-  </div>
-
-  <script>
-    function formatNumber(num) {
-      return Math.round(num).toLocaleString('sq-AL');
-    }
-
-    function llogarit(cmimiKonkurrent, cmimiVolton, inputId, outputId) {
-      const vleraFatures = parseFloat(document.getElementById(inputId).value);
-      if (isNaN(vleraFatures) || vleraFatures <= 0) {
-        document.getElementById(outputId).innerText = "Ju lutem vendosni një vlerë të saktë për faturën.";
-        return;
-      }
-
-      const paTVSH = vleraFatures / 1.2;
-      const konsumKWH = paTVSH / cmimiKonkurrent;
-      const faturaVoltonMeTVSH = konsumKWH * cmimiVolton * 1.2;
-      const diferencaMujore = vleraFatures - faturaVoltonMeTVSH;
-      const kursimiVjetor = diferencaMujore * 12;
-
-      document.getElementById(outputId).innerHTML = `
-        <table>
-          <tr><td>Konsumi mujor:</td><td>${formatNumber(konsumKWH)} kWh</td></tr>
-          <tr><td>Fatura me Volton (me TVSH):</td><td>${formatNumber(faturaVoltonMeTVSH)} lekë</td></tr>
-          <tr><td>Kursimi mujor (me TVSH):</td><td>${formatNumber(diferencaMujore)} lekë</td></tr>
-          <tr><td class="highlight">Kursimi vjetor (me TVSH):</td><td class="highlight">${formatNumber(kursimiVjetor)} lekë</td></tr>
-        </table>
-      `;
-    }
-  </script>
-
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const invoiceWithTVSH = parseFloat(document.getElementById('invoice').value);
+            const voltage = document.getElementById('voltage').value;
+            
+            if (!voltage) {
+                alert('Ju lutem zgjidhni linjën e tensionit!');
+                return;
+            }
+            
+            // Llogarit faturën pa TVSH
+            const invoiceWithoutTVSH = invoiceWithTVSH / TVSH;
+            
+            // Llogarit konsumin në kWh
+            const currentPricePerKWh = prices[voltage].current;
+            const consumption = invoiceWithoutTVSH / currentPricePerKWh;
+            
+            // Llogarit faturën me Volton
+            const voltonPricePerKWh = prices[voltage].volton;
+            const voltonInvoiceWithoutTVSH = consumption * voltonPricePerKWh;
+            const voltonInvoiceWithTVSH = voltonInvoiceWithoutTVSH * TVSH;
+            
+            // Llogarit kursimin
+            const monthlySavings = invoiceWithTVSH - voltonInvoiceWithTVSH;
+            const yearlySavings = monthlySavings * 12;
+            
+            // Shfaq rezultatet me format të presjes dhjetore
+            document.getElementById('currentInvoice').textContent = formatNumber(invoiceWithTVSH) + ' Lekë';
+            document.getElementById('consumption').textContent = formatNumber(consumption) + ' kWh';
+            document.getElementById('currentPrice').textContent = formatNumber(currentPricePerKWh) + ' Lekë/kWh';
+            document.getElementById('voltonPrice').textContent = formatNumber(voltonPricePerKWh) + ' Lekë/kWh';
+            document.getElementById('voltonInvoice').textContent = formatNumber(voltonInvoiceWithTVSH) + ' Lekë';
+            document.getElementById('savings').textContent = formatNumber(monthlySavings) + ' Lekë';
+            document.getElementById('yearlySavings').textContent = formatNumber(yearlySavings) + ' Lekë';
+            
+            document.getElementById('results').classList.add('show');
+        });
+    </script>
 </body>
 </html>
-

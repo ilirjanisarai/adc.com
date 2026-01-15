@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Call Stats → Raport + Excel (Multi-file + Filtra + Grafike + Periudha)</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+  <style>
+    body { background:#f6f7fb; }
+    .card { border:0; box-shadow: 0 6px 20px rgba(0,0,0,0.06); border-radius: 14px; }
+    .muted { color:#6c757d; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    table.dataTable thead th { white-space: nowrap; }
+    td { vertical-align: top; }
+    .wrap { max-width: 520px; white-space: normal !important; }
+    .pill { display:inline-block; padding:.2rem .5rem; border-radius:999px; background:#eef2ff; }
+    .smallcaps { font-variant: all-small-caps; letter-spacing: .04em; }
+    canvas { max-height: 320px; }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid p-4">
+    <div class="d-flex flex-wrap gap-3 align-items-end justify-content-between mb-3">
+      <div>
+        <h1 class="h3 m-0">Call Stats → Raport + Excel</h1>
+        <div class="muted">
+          Ngarko disa <span class="pill mono">.csv/.xlsx</span> me statistika thirrjesh dhe gjenero:
+          filtra sipas <b>campaign</b>, <b>group</b>, <b>list</b>, <b>status</b>, + <b>periudhë</b> (ditore/javore/mujore/interval),
+          grafiqe (pie/bar/line) + eksport Excel.
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="#" id="downloadSample">Shkarko shembull CSV</a>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-5">
+        <div class="card p-3">
+          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <div class="fw-semibold">1) Ngarko fajlat</div>
+            <div class="muted small">Mund të ngarkosh disa njëherësh</div>
+          </div>
+
+          <div class="mt-2">
+            <input type="file" id="fileInput" class="form-control" multiple
+                   accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
+          </div>
+
+          <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+            <button id="parseBtn" class="btn btn-primary" disabled>Gjenero raportin</button>
+            <button id="exportXlsxBtn" class="btn btn-success" disabled>Shkarko Excel (i filtruar)</button>
+            <button id="resetBtn" class="btn btn-outline-danger" disabled>Reset</button>
+          </div>
+
+          <div class="mt-3 small muted">
+            <div><span class="smallcaps">Kolonat në Excel</span>:
+              <span class="mono">date_time, length, status, phone, campaign, group, list, lead, hangup_reason</span>
+            </div>
+          </div>
+
+          <hr class="my-3"/>
+
+          <div class="fw-semibold mb-2">2) Filtrat</div>
+          <div class="row g-2">
+            <div class="col-12 col-md-6">
+              <label class="muted small">Campaign</label>
+              <select id="campaignFilter" class="form-select form-select-sm" disabled>
+                <option value="">Të gjitha</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="muted small">Group</label>
+              <select id="groupFilter" class="form-select form-select-sm" disabled>
+                <option value="">Të gjitha</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="muted small">List</label>
+              <select id="listFilter" class="form-select form-select-sm" disabled>
+                <option value="">Të gjitha</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="muted small">Status</label>
+              <select id="statusFilter" class="form-select form-select-sm" disabled>
+                <option value="">Të gjitha</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="muted small">Periudha (DATE/TIME)</label>
+              <select id="periodType" class="form-select form-select-sm" disabled>
+                <option value="all">Të gjitha</option>
+                <option value="daily">Ditore (zgjidh datën)</option>
+                <option value="weekly">Javore (java e datës)</option>
+                <option value="monthly">Mujore (muaji i datës)</option>
+                <option value="custom">Interval (nga—deri)</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="muted small">Data (për ditore/javore/mujore)</label>
+              <input id="periodDate" type="date" class="form-control form-control-sm" disabled />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="muted small">Interval (custom)</label>
+              <div class="d-flex gap-2">
+                <input id="startDate" type="date" class="form-control form-control-sm" disabled />
+                <input id="endDate" type="date" class="form-control form-control-sm" disabled />
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="muted small" id="activePeriodLabel"></div>
+            </div>
+          </div>
+
+          <div class="muted small mt-2" id="filteredCount"></div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-7">
+        <div class="card p-3">
+          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <div class="fw-semibold">3) Përmbledhje + Grafike</div>
+            <div class="d-flex gap-2 align-items-center">
+              <label class="muted small">Grafiku:</label>
+              <select id="chartType" class="form-select form-select-sm" style="max-width:160px;" disabled>
+                <option value="pie">Pie (Status)</option>
+                <option value="bar">Shtylla (Status)</option>
+                <option value="line">Linear (në kohë)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mt-1">
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Thirrje</div>
+                <div class="h4 m-0" id="kpiRows">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Status unik</div>
+                <div class="h4 m-0" id="kpiStatuses">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Nga data</div>
+                <div class="h6 m-0" id="kpiMinDate">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Deri më</div>
+                <div class="h6 m-0" id="kpiMaxDate">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Kohëzgjatja totale</div>
+                <div class="h6 m-0" id="kpiTotalDuration">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Mesatarja (sek)</div>
+                <div class="h6 m-0" id="kpiAvgDuration">—</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="p-2 rounded-3 bg-light">
+                <div class="muted small">Campaigns unik</div>
+                <div class="h6 m-0" id="kpiCampaigns">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <canvas id="chartCanvas"></canvas>
+          </div>
+
+          <div class="mt-3">
+            <table class="table table-sm table-striped mb-0" id="statusSummaryTable">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th class="text-end">Numër</th>
+                  <th class="text-end">%</th>
+                  <th class="text-end">Kohëzgjatja tot.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="4" class="muted">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="muted small mt-2">
+            Linear: agregohet nga <span class="mono">DATE/TIME</span> sipas ditës (YYYY-MM-DD).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-3">
+      <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
+        <div class="fw-semibold">4) Detaje (preview)</div>
+        <div class="muted small">Kërko në tabelë, filtro sipas Campaign/Group/List/Status/Periudhë, pastaj "Shkarko Excel (i filtruar)"</div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="detailsTable" class="display table table-striped table-hover" style="width:100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>DATE/TIME</th>
+              <th>LENGTH</th>
+              <th>STATUS</th>
+              <th>PHONE</th>
+              <th>CAMPAIGN</th>
+              <th>GROUP</th>
+              <th>LIST</th>
+              <th>LEAD</th>
+              <th>HANGUP REASON</th>
+              <th>SOURCE FILE</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script>
+    // --- Status mapping (codes -> labels)
+    const STATUS_MAP = {
+      "ACTCo": "Klient ekzistues VF-AL/Albsig",
+      "Alb3ig": "Sigurim me banke",
+      "Albs1g": "Nuk ka nje prone te tij",
+      "Albs2g": "Nuk disponon dokumentat",
+      "B": "Busy",
+      "CALLBK": "Kerkon te telefonohet here tjeter",
+      "DC": "Numer i pavlefshem",
+      "DISPO": "Disposition",
+      "N": "Nuk pergjigjet",
+      "NEW": "Ne pritje per tu kontaktuar",
+      "NI": "Nuk shpreh interes",
+      "Oferte": "Oferta te derguara",
+      "Setup2": "Switched off",
+      "VFMob": "New Connection-Lead",
+      "VFMo1": "Mobile Upgrade",
+      "VFMo2": "Rinovim me te njejtat kushte",
+      "VFMo3": "Downgrade",
+      "Voda1": "Klient ekzistues VF-AL/Albsig",
+      "Voda2": "Do ta mendoj",
+      "Voda3": "Zone pa mbulim fix",
+      "Voda4": "Problem me Internetin-Coax",
+      "Voda5": "Trajtim Klienti",
+      "Voda6": "Te pakenaqur me Vodafone",
+      "Voda7": "Telefonate prezantuese",
+      "Setup": "Not interested-small business",
+      "Setup1": "Nuk pergjigjet",
+      "Setup3": "Will think about",
+      "Setup4": "Ka IT Support",
+      "XALB": "Kontrate aktive - operator tjeter"
+    };
+    function mapStatus(code) {
+      const c = (code || "").trim();
+      return STATUS_MAP[c] || c || "(bosh)";
+    }
+
+    // ---------- Helpers ----------
+    function toSafeString(v) {
+      if (v === null || v === undefined) return '';
+      return String(v);
+    }
+
+    function formatDuration(seconds) {
+      const s = parseInt(seconds) || 0;
+      if (s < 60) return `${s}s`;
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      if (m < 60) return `${m}m ${sec}s`;
+      const h = Math.floor(m / 60);
+      const min = m % 60;
+      return `${h}h ${min}m ${sec}s`;
+    }
+
+    function parseDateLike(s) {
+      const t = toSafeString(s).trim();
+      if (!t) return null;
+      const iso = t.replace(' ', 'T');
+      const d = new Date(iso);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function dayKeyFromDate(d) {
+      const pad = (n)=>String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+        .replaceAll('"','&quot;').replaceAll("'","&#39;");
+    }
+
+    function stripHtml(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return (div.textContent || div.innerText || '').trim();
+    }
+
+    // ---------- Period filter logic (DataTables ext.search) ----------
+    const periodFilter = { mode: 'all', start: null, end: null };
+
+    function startOfDay(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
+    function endOfDay(d) { const x = new Date(d); x.setHours(23,59,59,999); return x; }
+
+    function startOfWeekMonday(d) {
+      const x = startOfDay(d);
+      const day = x.getDay();
+      const diff = (day === 0 ? -6 : 1 - day);
+      x.setDate(x.getDate() + diff);
+      return x;
+    }
+    function endOfWeekSunday(d) {
+      const s = startOfWeekMonday(d);
+      const e = new Date(s);
+      e.setDate(e.getDate() + 6);
+      return endOfDay(e);
+    }
+    function startOfMonth(d) {
+      const x = startOfDay(d);
+      x.setDate(1);
+      return x;
+    }
+    function endOfMonth(d) {
+      const x = new Date(d);
+      x.setHours(0,0,0,0);
+      x.setMonth(x.getMonth() + 1, 1);
+      x.setDate(x.getDate() - 1);
+      x.setHours(23,59,59,999);
+      return x;
+    }
+    function fmtDateOnly(d) {
+      if (!d) return '';
+      const pad=(n)=>String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    // DataTables custom filter: column 1 is DATE/TIME
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+      if (periodFilter.mode === 'all') return true;
+      const t = data[1];
+      const d = parseDateLike(stripHtml(t));
+      if (!d) return false;
+      if (periodFilter.start && d < periodFilter.start) return false;
+      if (periodFilter.end && d > periodFilter.end) return false;
+      return true;
+    });
+
+    function setPeriodRange(start, end, label) {
+      periodFilter.start = start;
+      periodFilter.end = end;
+      document.getElementById('activePeriodLabel').textContent = label || '';
+    }
+
+    function syncPeriodControls() {
+      const mode = document.getElementById('periodType').value || 'all';
+      const periodDate = document.getElementById('periodDate');
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+
+      if (mode === 'daily' || mode === 'weekly' || mode === 'monthly') {
+        periodDate.disabled = false;
+        startDate.disabled = true;
+        endDate.disabled = true;
+      } else if (mode === 'custom') {
+        periodDate.disabled = true;
+        startDate.disabled = false;
+        endDate.disabled = false;
+      } else {
+        periodDate.disabled = true;
+        startDate.disabled = true;
+        endDate.disabled = true;
+      }
+    }
+
+    function applyPeriodFilter() {
+      const periodType = document.getElementById('periodType');
+      const periodDate = document.getElementById('periodDate');
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+
+      const mode = periodType.value || 'all';
+      periodFilter.mode = mode;
+
+      if (mode === 'all') {
+        setPeriodRange(null, null, '');
+        if (dt) dt.draw();
+        return;
+      }
+
+      if (mode === 'custom') {
+        const s = startDate.value ? new Date(startDate.value + 'T00:00:00') : null;
+        const e = endDate.value ? new Date(endDate.value + 'T00:00:00') : null;
+        if (!s || !e) {
+          setPeriodRange(null, null, 'Zgjidh "nga" dhe "deri" për intervalin.');
+          if (dt) dt.draw();
+          return;
+        }
+        const start = startOfDay(s);
+        const end = endOfDay(e);
+        setPeriodRange(start, end, `Interval: ${fmtDateOnly(start)} → ${fmtDateOnly(end)}`);
+        if (dt) dt.draw();
+        return;
+      }
+
+      if (!periodDate.value) {
+        setPeriodRange(null, null, 'Zgjidh një datë për periudhën.');
+        if (dt) dt.draw();
+        return;
+      }
+
+      const base = new Date(periodDate.value + 'T00:00:00');
+
+      if (mode === 'daily') {
+        const start = startOfDay(base);
+        const end = endOfDay(base);
+        setPeriodRange(start, end, `Ditore: ${fmtDateOnly(start)}`);
+      } else if (mode === 'weekly') {
+        const start = startOfWeekMonday(base);
+        const end = endOfWeekSunday(base);
+        setPeriodRange(start, end, `Javore: ${fmtDateOnly(start)} → ${fmtDateOnly(end)}`);
+      } else if (mode === 'monthly') {
+        const start = startOfMonth(base);
+        const end = endOfMonth(base);
+        const label = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}`;
+        setPeriodRange(start, end, `Mujore: ${label}`);
+      } else {
+        setPeriodRange(null, null, '');
+      }
+
+      if (dt) dt.draw();
+    }
+
+    // ---------- Parse CSV/Excel ----------
+    async function parseFile(file) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      
+      if (ext === 'csv') {
+        const text = await file.text();
+        return parseCSV(text);
+      } else if (ext === 'xlsx' || ext === 'xls') {
+        const buffer = await file.arrayBuffer();
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+        return parseArrayData(data);
+      }
+      throw new Error('Unsupported file type');
+    }
+
+    function parseCSV(text) {
+      const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+      if (lines.length < 2) throw new Error('CSV file is too short');
+      
+      // Skip first line if it's a title, find the header row
+      let headerIdx = 0;
+      for (let i = 0; i < Math.min(3, lines.length); i++) {
+        if (lines[i].includes('DATE/TIME') || lines[i].includes('#')) {
+          headerIdx = i;
+          break;
+        }
+      }
+      
+      const rows = [];
+      for (let i = headerIdx + 1; i < lines.length; i++) {
+        // Simple CSV parsing (handles quoted fields)
+        const parts = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let j = 0; j < lines[i].length; j++) {
+          const c = lines[i][j];
+          if (c === '"') {
+            inQuotes = !inQuotes;
+          } else if (c === ',' && !inQuotes) {
+            parts.push(current.trim());
+            current = '';
+          } else {
+            current += c;
+          }
+        }
+        parts.push(current.trim());
+        
+        if (parts.length >= 10) { // Skip empty rows
+          rows.push(parts);
+        }
+      }
+      
+      return rows;
+    }
+
+    function parseArrayData(data) {
+      if (data.length < 2) throw new Error('Not enough data rows');
+      
+      // Find header row
+      let headerIdx = 0;
+      for (let i = 0; i < Math.min(3, data.length); i++) {
+        const row = data[i].map(v => String(v || ''));
+        if (row.some(c => c.includes('DATE/TIME') || c === '#')) {
+          headerIdx = i;
+          break;
+        }
+      }
+      
+      return data.slice(headerIdx + 1).filter(row => 
+        row.length >= 10 && row.some(v => v !== '' && v !== null)
+      );
+    }
+
+    function pickRowForUI(parts, sourceFileName) {
+      // parts: ["", "1", "2026-01-15 12:08:23", "141", "DISPO", "0686074552", "1610251", "ADMIN", "1610251", "23720", "CALLER"]
+      return {
+        num: toSafeString(parts[1] || '').trim(),
+        date_time: toSafeString(parts[2] || '').trim(),
+        length: toSafeString(parts[3] || '').trim(),
+        status: mapStatus(toSafeString(parts[4] || '').trim()),
+        phone: toSafeString(parts[5] || '').trim(),
+        campaign: toSafeString(parts[6] || '').trim(),
+        group: toSafeString(parts[7] || '').trim(),
+        list: toSafeString(parts[8] || '').trim(),
+        lead: toSafeString(parts[9] || '').trim(),
+        hangup_reason: toSafeString(parts[10] || '').trim(),
+        source_file: sourceFileName || ''
+      };
+    }
+
+    function exportShape(rowUI) {
+      return {
+        date_time: rowUI.date_time,
+        length: rowUI.length,
+        status: rowUI.status,
+        phone: rowUI.phone,
+        campaign: rowUI.campaign,
+        group: rowUI.group,
+        list: rowUI.list,
+        lead: rowUI.lead,
+        hangup_reason: rowUI.hangup_reason
+      };
+    }
+
+    // ---------- App State ----------
+    let rowsUI = [];
+    let dt = null;
+    let chart = null;
+
+    const fileInput = document.getElementById('fileInput');
+    const parseBtn = document.getElementById('parseBtn');
+    const exportXlsxBtn = document.getElementById('exportXlsxBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const statusFilter = document.getElementById('statusFilter');
+    const campaignFilter = document.getElementById('campaignFilter');
+    const groupFilter = document.getElementById('groupFilter');
+    const listFilter = document.getElementById('listFilter');
+    const chartType = document.getElementById('chartType');
+
+    const periodType = document.getElementById('periodType');
+    const periodDate = document.getElementById('periodDate');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+
+    fileInput.addEventListener('change', () => {
+      const files = fileInput.files;
+      const enabled = !!files && files.length > 0;
+      parseBtn.disabled = !enabled;
+      resetBtn.disabled = !enabled;
+    });
+
+    resetBtn.addEventListener('click', () => {
+      fileInput.value = '';
+      parseBtn.disabled = true;
+      exportXlsxBtn.disabled = true;
+      resetBtn.disabled = true;
+
+      statusFilter.disabled = true;
+      campaignFilter.disabled = true;
+      groupFilter.disabled = true;
+      listFilter.disabled = true;
+      chartType.disabled = true;
+
+      periodType.disabled = true;
+      periodDate.disabled = true;
+      startDate.disabled = true;
+      endDate.disabled = true;
+
+      statusFilter.innerHTML = '<option value="">Të gjitha</option>';
+      campaignFilter.innerHTML = '<option value="">Të gjitha</option>';
+      groupFilter.innerHTML = '<option value="">Të gjitha</option>';
+      listFilter.innerHTML = '<option value="">Të gjitha</option>';
+      periodType.value = 'all';
+      periodDate.value = '';
+      startDate.value = '';
+      endDate.value = '';
+      document.getElementById('activePeriodLabel').textContent = '';
+
+      periodFilter.mode = 'all';
+      periodFilter.start = null;
+      periodFilter.end = null;
+
+      document.getElementById('kpiRows').textContent = '—';
+      document.getElementById('kpiStatuses').textContent = '—';
+      document.getElementById('kpiMinDate').textContent = '—';
+      document.getElementById('kpiMaxDate').textContent = '—';
+      document.getElementById('kpiTotalDuration').textContent = '—';
+      document.getElementById('kpiAvgDuration').textContent = '—';
+      document.getElementById('kpiCampaigns').textContent = '—';
+      document.getElementById('filteredCount').textContent = '';
+
+      const tbody = document.querySelector('#statusSummaryTable tbody');
+      tbody.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>';
+
+      rowsUI = [];
+      if (dt) { dt.destroy(); dt = null; }
+      document.querySelector('#detailsTable tbody').innerHTML = '';
+
+      if (chart) { chart.destroy(); chart = null; }
+      const ctx = document.getElementById('chartCanvas').getContext('2d');
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    });
+
+    parseBtn.addEventListener('click', async () => {
+      const files = Array.from(fileInput.files || []);
+      if (!files.length) return;
+
+      rowsUI = [];
+      for (const f of files) {
+        try {
+          const rows = await parseFile(f);
+          const mapped = rows.map(r => pickRowForUI(r, f.name));
+          rowsUI.push(...mapped);
+        } catch (e) {
+          alert(`Gabim në "${f.name}": ${e.message || String(e)}`);
+          return;
+        }
+      }
+
+      buildTable(rowsUI);
+      setupFilters(rowsUI);
+
+      exportXlsxBtn.disabled = false;
+      resetBtn.disabled = false;
+
+      statusFilter.disabled = false;
+      campaignFilter.disabled = false;
+      groupFilter.disabled = false;
+      listFilter.disabled = false;
+      chartType.disabled = false;
+
+      periodType.disabled = false;
+      syncPeriodControls();
+      applyPeriodFilter();
+      refreshSummaryAndCharts();
+    });
+
+    function buildTable(allRows) {
+      const tbody = document.querySelector('#detailsTable tbody');
+      tbody.innerHTML = allRows.map(r => `
+        <tr>
+          <td class="mono">${escapeHtml(r.num)}</td>
+          <td class="mono">${escapeHtml(r.date_time)}</td>
+          <td class="mono">${escapeHtml(r.length)}</td>
+          <td class="mono">${escapeHtml(r.status)}</td>
+          <td class="mono">${escapeHtml(r.phone)}</td>
+          <td class="mono">${escapeHtml(r.campaign)}</td>
+          <td class="mono">${escapeHtml(r.group)}</td>
+          <td class="mono">${escapeHtml(r.list)}</td>
+          <td class="mono">${escapeHtml(r.lead)}</td>
+          <td class="mono">${escapeHtml(r.hangup_reason)}</td>
+          <td class="mono">${escapeHtml(r.source_file)}</td>
+        </tr>
+      `).join('');
+
+      if (dt) dt.destroy();
+      dt = $('#detailsTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [[10,25,50,100,-1],[10,25,50,100,'All']],
+        scrollX: true,
+        order: [[1, 'desc']] // Sort by date descending
+      });
+
+      dt.on('draw', () => {
+        updateFilteredCount();
+        refreshSummaryAndCharts();
+      });
+      dt.on('search.dt', () => {
+        updateFilteredCount();
+        refreshSummaryAndCharts();
+      });
+
+      updateFilteredCount();
+    }
+
+    function setupFilters(allRows) {
+      const uniq = (arr) => Array.from(new Set(arr.map(v => (v||'').trim() || '(bosh)'))).sort();
+      fillSelect(campaignFilter, uniq(allRows.map(r => r.campaign)));
+      fillSelect(groupFilter, uniq(allRows.map(r => r.group)));
+      fillSelect(listFilter, uniq(allRows.map(r => r.list)));
+      fillSelect(statusFilter, uniq(allRows.map(r => r.status)));
+
+      // DataTables columns: 3=status, 5=campaign, 6=group, 7=list
+      campaignFilter.onchange = () => applyExactFilter(5, campaignFilter.value);
+      groupFilter.onchange = () => applyExactFilter(6, groupFilter.value);
+      listFilter.onchange = () => applyExactFilter(7, listFilter.value);
+      statusFilter.onchange = () => applyExactFilter(3, statusFilter.value);
+
+      chartType.onchange = () => refreshSummaryAndCharts();
+
+      periodType.onchange = () => { syncPeriodControls(); applyPeriodFilter(); };
+      periodDate.onchange = () => applyPeriodFilter();
+      startDate.onchange = () => applyPeriodFilter();
+      endDate.onchange = () => applyPeriodFilter();
+    }
+
+    function fillSelect(sel, values) {
+      sel.innerHTML = '<option value="">Të gjitha</option>';
+      for (const v of values) {
+        const opt = document.createElement('option');
+        opt.value = v; opt.textContent = v;
+        sel.appendChild(opt);
+      }
+    }
+
+    function applyExactFilter(colIdx, val) {
+      if (!dt) return;
+      if (!val) dt.column(colIdx).search('').draw();
+      else dt.column(colIdx).search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false).draw();
+    }
+
+    function updateFilteredCount() {
+      if (!dt) return;
+      const filtered = dt.rows({search:'applied'}).count();
+      document.getElementById('filteredCount').textContent = `Thirrje (pas filtrave/kërkimit): ${filtered}`;
+    }
+
+    function getFilteredUIRows() {
+      if (!dt) return [];
+      const data = dt.rows({search:'applied'}).data().toArray();
+      return data.map(arr => ({
+        num: stripHtml(arr[0]),
+        date_time: stripHtml(arr[1]),
+        length: stripHtml(arr[2]),
+        status: stripHtml(arr[3]),
+        phone: stripHtml(arr[4]),
+        campaign: stripHtml(arr[5]),
+        group: stripHtml(arr[6]),
+        list: stripHtml(arr[7]),
+        lead: stripHtml(arr[8]),
+        hangup_reason: stripHtml(arr[9]),
+        source_file: stripHtml(arr[10]),
+      }));
+    }
+
+    function refreshSummaryAndCharts() {
+      const rows = getFilteredUIRows();
+      buildSummary(rows);
+      renderChart(rows);
+    }
+
+    function buildSummary(rows) {
+      const total = rows.length;
+      document.getElementById('kpiRows').textContent = total;
+
+      const dates = rows.map(r => parseDateLike(r.date_time)).filter(Boolean);
+      const minD = dates.length ? new Date(Math.min(...dates)) : null;
+      const maxD = dates.length ? new Date(Math.max(...dates)) : null;
+      const fmt = (d) => d ? d.toISOString().slice(0,16).replace('T',' ') : '—';
+      document.getElementById('kpiMinDate').textContent = fmt(minD);
+      document.getElementById('kpiMaxDate').textContent = fmt(maxD);
+
+      const totalDuration = rows.reduce((sum, r) => sum + (parseInt(r.length) || 0), 0);
+      const avgDuration = total > 0 ? Math.round(totalDuration / total) : 0;
+      document.getElementById('kpiTotalDuration').textContent = formatDuration(totalDuration);
+      document.getElementById('kpiAvgDuration').textContent = avgDuration;
+
+      const campaigns = new Set(rows.map(r => r.campaign).filter(Boolean));
+      document.getElementById('kpiCampaigns').textContent = campaigns.size;
+
+      const counts = {};
+      const durations = {};
+      for (const r of rows) {
+        const s = (r.status || '').trim() || '(bosh)';
+        counts[s] = (counts[s] || 0) + 1;
+        durations[s] = (durations[s] || 0) + (parseInt(r.length) || 0);
+      }
+      const statusKeys = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+      document.getElementById('kpiStatuses').textContent = statusKeys.length;
+
+      const tbody = document.querySelector('#statusSummaryTable tbody');
+      tbody.innerHTML = '';
+      for (const s of statusKeys) {
+        const n = counts[s];
+        const pct = total ? (n*100/total) : 0;
+        const dur = formatDuration(durations[s]);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="mono">${escapeHtml(s)}</td><td class="text-end">${n}</td><td class="text-end">${pct.toFixed(1)}%</td><td class="text-end mono">${dur}</td>`;
+        tbody.appendChild(tr);
+      }
+      if (!statusKeys.length) tbody.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>';
+    }
+
+    function renderChart(rows) {
+      const type = chartType.value || 'pie';
+      const ctx = document.getElementById('chartCanvas').getContext('2d');
+      if (chart) { chart.destroy(); chart = null; }
+
+      if (!rows.length) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        return;
+      }
+
+      if (type === 'line') {
+        const byDay = {};
+        for (const r of rows) {
+          const d = parseDateLike(r.date_time);
+          if (!d) continue;
+          const k = dayKeyFromDate(d);
+          byDay[k] = (byDay[k] || 0) + 1;
+        }
+        const labels = Object.keys(byDay).sort();
+        const values = labels.map(l => byDay[l]);
+
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: { labels, datasets: [{ label: 'Thirrje (në ditë)', data: values, tension: 0.2 }] },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: true } },
+            scales: { x: { ticks: { maxRotation: 0, autoSkip: true } } }
+          }
+        });
+        return;
+      }
+
+      const counts = {};
+      for (const r of rows) {
+        const s = (r.status || '').trim() || '(bosh)';
+        counts[s] = (counts[s] || 0) + 1;
+      }
+      const labels = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).slice(0, 20);
+      const values = labels.map(l => counts[l]);
+
+      chart = new Chart(ctx, {
+        type: type === 'bar' ? 'bar' : 'pie',
+        data: { labels, datasets: [{ label: 'Numër', data: values }] },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: type !== 'bar' } },
+          scales: type === 'bar' ? { x: { ticks: { autoSkip: false } }, y: { beginAtZero: true } } : {}
+        }
+      });
+    }
+
+    exportXlsxBtn.addEventListener('click', () => {
+      if (!dt) return;
+
+      const rows = getFilteredUIRows().map(exportShape);
+      if (!rows.length) { alert('Nuk ka rreshta për eksport (pas filtrave).'); return; }
+
+      const ws = XLSX.utils.json_to_sheet(rows, {
+        header: ['date_time','length','status','phone','campaign','group','list','lead','hangup_reason']
+      });
+      ws['!cols'] = [{wch:20},{wch:8},{wch:30},{wch:15},{wch:12},{wch:12},{wch:12},{wch:12},{wch:15}];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Calls');
+
+      const counts = {};
+      const durations = {};
+      for (const r of getFilteredUIRows()) {
+        const s = (r.status || '').trim() || '(bosh)';
+        counts[s] = (counts[s] || 0) + 1;
+        durations[s] = (durations[s] || 0) + (parseInt(r.length) || 0);
+      }
+      const summaryArr = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(k => ({
+        status:k, 
+        count:counts[k],
+        total_duration: formatDuration(durations[k])
+      }));
+      const ws2 = XLSX.utils.json_to_sheet(summaryArr, { header: ['status','count','total_duration'] });
+      ws2['!cols'] = [{wch:30},{wch:10},{wch:15}];
+      XLSX.utils.book_append_sheet(wb, ws2, 'Përmbledhje');
+
+      const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      XLSX.writeFile(wb, `call_stats_export_${ts}.xlsx`);
+    });
+
+    document.getElementById('downloadSample').addEventListener('click', (e) => {
+      e.preventDefault();
+      const sample =
+`"Outbound Calls for this Time Period: (10000 record limit)"
+"","#","DATE/TIME","LENGTH","STATUS","PHONE","CAMPAIGN","GROUP","LIST","LEAD","HANGUP REASON"
+"","1","2026-01-15 12:08:23","141","DISPO","0686074552","1610251","ADMIN","1610251","23720","CALLER"
+"","2","2026-01-15 12:04:37","33","NI","0686074099","1610251","ADMIN","1610251","23719","CALLER"
+"","3","2026-01-15 12:03:22","53","DC","0686070310","1610251","","1610251","23718","AGENT"
+"","4","2026-01-15 12:00:35","161","N","0686068655","1610251","ADMIN","1610251","23717","CALLER"
+"","5","2026-01-15 11:55:34","88","NI","0686062342","1610251","ADMIN","1610251","23716","CALLER"`;
+      const blob = new Blob([sample], {type:'text/csv;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'sample_call_stats.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

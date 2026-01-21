@@ -1,556 +1,640 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sq">
 <head>
   <meta charset="UTF-8">
-  <title>Topics with Expand</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proceset Kryesore të Agjentit TLM</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #d21c19 0%, #8b0000 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      font-size: 1.1em;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .content-wrapper {
+      padding: 40px;
     }
 
     .topic {
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 10px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .topic:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
     }
 
     .topic-title {
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 1.2em;
+      font-weight: 600;
       cursor: pointer;
-      background-color: #f0f0f0;
-      padding: 10px;
-      border-radius: 5px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 20px 25px;
+      border-left: 5px solid #d21c19;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      color: #2c3e50;
+    }
+
+    .topic-title:hover {
+      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+      padding-left: 30px;
+    }
+
+    .topic-title::after {
+      content: '▼';
+      font-size: 0.8em;
+      transition: transform 0.3s ease;
+      color: #d21c19;
+      font-weight: bold;
+    }
+
+    .topic-title.active::after {
+      transform: rotate(180deg);
     }
 
     .topic-content {
       display: none;
-      margin-top: 10px;
-      padding: 10px;
-      background-color: #fafafa;
-      border-left: 3px solid #4CAF50;
+      padding: 30px 25px;
+      background: #fafbfc;
+      border-top: 1px solid #e1e4e8;
+      animation: slideDown 0.3s ease;
     }
 
-    .topic-title:hover {
-      background-color: #e0e0e0;
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        max-height: 2000px;
+      }
+    }
+
+    .topic-content.show {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    td {
+      padding: 15px 20px;
+      border-bottom: 1px solid #e9ecef;
+      line-height: 1.6;
+      color: #495057;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    tr:hover {
+      background-color: #e7f3ff;
+      transition: background-color 0.2s ease;
+    }
+
+    .store-table {
+      margin-top: 30px;
+    }
+
+    .store-table tr:first-child {
+      background: linear-gradient(135deg, #d21c19 0%, #8b0000 100%);
+      color: white;
+      font-weight: 600;
+    }
+
+    .store-table tr:first-child td {
+      color: white;
+      border-bottom: none;
+    }
+
+    .store-table td:first-child {
+      font-weight: 600;
+      color: #d21c19;
+      text-align: center;
+      width: 60px;
+    }
+
+    strong {
+      color: #d21c19;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #d21c19;
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin-right: 10px;
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .success-box {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    footer {
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .content-wrapper {
+        padding: 20px;
+      }
+
+      .topic-title {
+        font-size: 1em;
+        padding: 15px;
+      }
+
+      .topic-content {
+        padding: 20px 15px;
+      }
+
+      td {
+        padding: 10px;
+        font-size: 0.9em;
+      }
+
+      table {
+        font-size: 0.85em;
+      }
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #d21c19;
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #8b0000;
     }
   </style>
 </head>
 <body>
 
-  <h1>Proceset kryesore te Agjentit TLM</h1>
+  <div class="container">
+    <header>
+      <h1>Proceset Kryesore të Agjentit TLM</h1>
+      <div class="subtitle">Albanian Development Company - Udhëzues i Proceseve</div>
+    </header>
 
-  <div class="topic">
-    <div class="topic-title" onclick="toggleContent(this)">1. Proceset e Door 2 Door</div>
-    <div class="topic-content">
-<figure class="table" style="width:480pt;">
-    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="639">
-        <colgroup><col style="width:100%;" width="639"></colgroup>
-        <tbody>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border:2pt double rgb(192, 230, 245);font-style:normal;font-weight:400;height:63.0pt;padding-left:72px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Symbol, serif;font-size:12pt;"><span>·</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Vjen lista nga Vodafone</span></font></span>
-                </td>
+    <div class="content-wrapper">
+
+      <!-- Topic 1: Door to Door -->
+      <div class="topic">
+        <div class="topic-title" onclick="toggleContent(this)">
+          <span><span class="badge">1</span>Proceset e Door 2 Door</span>
+        </div>
+        <div class="topic-content">
+          <table>
+            <tr>
+              <td>• Vjen lista nga Vodafone</td>
             </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:72px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Symbol, serif;font-size:12pt;"><span>·</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Klientet kontaktohet dhe ofertohen ne varesi te zones dhe ofertes perkatese</span></font></span>
-                </td>
+            <tr>
+              <td>• Klientët kontaktohen dhe ofërtohen në varësi të zonës dhe ofertës përkatëse</td>
             </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:72px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Symbol, serif;font-size:12pt;"><span>·</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Nese klienti dakordeson me oferten dergohet leads(nga agjenti drejt team leader)</span></font></span>
-                </td>
+            <tr>
+              <td>• Nëse klienti dakordëson me ofertën dërgohet leads (nga agjenti drejt team leader)</td>
             </tr>
-            <tr style="height:76.0pt;" height="101">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:76.0pt;padding-left:72px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="101" width="639">
-                    <span style="color:black;font-family:Symbol, serif;font-size:12pt;"><span>·</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Klienti kalohet te ekipi I D2D te cilet jane ne terren</span></font></span>
-                </td>
+            <tr>
+              <td>• Klienti kalohet te ekipi i D2D të cilët janë në terren</td>
             </tr>
-            <tr style="height:76.0pt;" height="101">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:76.0pt;padding-left:72px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="101" width="639">
-                    <span style="color:black;font-family:Symbol, serif;font-size:12pt;"><span>·</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Klienti kontaktohet serisht nga agjenti D2D dhe procedohet me kontraten</span></font></span>
-                </td>
+            <tr>
+              <td>• Klienti kontaktohet sërisht nga agjenti D2D dhe procedohet me kontratën</td>
             </tr>
-        </tbody>
-    </table>
-</figure>
-.</div>
+          </table>
+        </div>
+      </div>
+
+      <!-- Topic 2: Mirëmbajtja e bazës mobile -->
+      <div class="topic">
+        <div class="topic-title" onclick="toggleContent(this)">
+          <span><span class="badge">2</span>Proceset e mirëmbajtjes së bazës mobile</span>
+        </div>
+        <div class="topic-content">
+          <table>
+            <tr>
+              <td><strong>1.</strong> Mbifaturim roaming (ndiqet me departamentin e Complain)</td>
+            </tr>
+            <tr>
+              <td><strong>2.</strong> E-bill ose paqartësi në faturë (ndiqet me departamentin e Credit-it)</td>
+            </tr>
+            <tr>
+              <td><strong>3.</strong> Ndryshim PIN bëhet nga sistemi</td>
+            </tr>
+            <tr>
+              <td><strong>4.</strong> Aktivizim roaming (kontaktojmë shërbimin e klientit 149/1 për të hapur shërbimin apo për të parë nëse lidhet me rrjetin e duhur)</td>
+            </tr>
+            <tr>
+              <td><strong>5.</strong> Ndryshimi i planit (aktivizimi bëhet nga agjenti pasi i dërgohet kontrata firmoset vuloset dhe procedohet me SR)</td>
+            </tr>
+            <tr>
+              <td><strong>6.</strong> E-bill aktivizimi bëhet për personin i cili do marrë faturat në self care (plotësohet formulari për aktivizimin e E-BILL vendoset adresa e email-it dhe numri i kontaktit dhe delegohet te dep përkatës Credit)</td>
+            </tr>
+            <tr>
+              <td><strong>7.</strong> Ndryshim administratori (procedohet me SR ekstrakti dhe ID e admin të ri dhe i dërgohet SR vetting)</td>
+            </tr>
+            <tr>
+              <td><strong>8.</strong> Ndryshim NIPT-i (kërkesa bëhet te NIPT-i i ri, plotësohet kontrata për të gjithë numrat me kushtet përkatëse të secilit plan, ekstrakti, ID e administratorit dhe kërkesa nga subjekti i vjetër që lejon kalimin e numrave në subjektin e ri)</td>
+            </tr>
+            <tr>
+              <td><strong>9. Numër i ri</strong><br>
+                § Nuk ka asnjë numër dhe kërkon ti sugjerojmë ndonjë numër (numri i ri kërkohet në CRM nëse është i lirë, i dërgohet email vetting për konfirmim dhe nëse po i jepet klientit dhe procedohet me aktivizimin duke përzgjedhur planin dhe duke plotësuar kontratën hapim SR Subject New Activation dhe bëjmë attach dok përkatëse)<br>
+                § Ka një numër active pa kontratë dhe në emër individi (pasi bëhet përzgjedhja e planeve plotësohet kontrata bëhet kërkesa nga individi që pranon të kalojë në subject, hapet SR dhe attachohen të gjitha dok)
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Topic 3: MNP/PORT IN -->
+      <div class="topic">
+        <div class="topic-title" onclick="toggleContent(this)">
+          <span><span class="badge">3</span>MNP/PORT IN - Kalimi i numrave nga One në Vodafone</span>
+        </div>
+        <div class="topic-content">
+          <div class="info-box">
+            <strong>Kushtet paraprake për MNP:</strong> Numrat duhet të jenë jashtë kontrate dhe pa detyrime te operatori aktual.
+          </div>
+          <table>
+            <tr>
+              <td><strong>1.</strong> Numrat duhet të jenë jashtë kontrate</td>
+            </tr>
+            <tr>
+              <td><strong>2.</strong> Nuk duhet të kenë detyrime te operatori aktual</td>
+            </tr>
+            <tr>
+              <td><strong>3.</strong> Nëse numrat janë të regjistruar si individ atëherë kërkesa do të bëhet si individ, nëse janë të regjistruar si business do bëhet si business</td>
+            </tr>
+            <tr>
+              <td><strong>4.</strong> Bëhet përzgjedhja e planit, afati i kontratës, ID ose NIPT që janë të regjistruar te operatori përkatës</td>
+            </tr>
+            <tr>
+              <td><strong>5.</strong> Të gjitha procedurat për kalimin e numrit ndiqen nga agjenti</td>
+            </tr>
+            <tr>
+              <td><strong>6.</strong> Pasi plotësohet dokumentacioni përkatës nëse NIPT apo individi nuk ka pasur një llogari në Vodafone fillimisht regjistrohet dhe më pas dokumentacioni attachohet në SR MNP/PORT IN e cila i asignohet dep Vetting për të parë nëse dok është ok dhe më pas procedohet me kërkesë</td>
+            </tr>
+            <tr>
+              <td><strong>7.</strong> Nëse kërkesa aprovohet i dërgohet email vetting në cc dhe MNP që të procedohet me orderin në datën dhe orën përkatëse</td>
+            </tr>
+            <tr>
+              <td><strong>8.</strong> Nëse kërkesa nuk procedohet i dërgohet email MNP arsyen e refuzimit dhe ndiqet nga MNP</td>
+            </tr>
+            <tr>
+              <td><strong>9.</strong> Nëse refuzohet për detyrime i kërkohet pagesa e fundit që ka bërë</td>
+            </tr>
+            <tr>
+              <td><strong>10.</strong> Nëse refuzohet për ID mund të jetë i regjistruar në emër apo NIPT tjetër, kërkohet ID sërisht</td>
+            </tr>
+            <tr>
+              <td><strong>11.</strong> Mund të kërkojë përditësim të dhënave e cila bëhet në dyqanet e operatorit përkatës</td>
+            </tr>
+            <tr>
+              <td><strong>12.</strong> Detyrime kontraktuale (numri nuk kalon sepse është brenda kontratës)</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Topic 4: Rinovimi i kontratës -->
+      <div class="topic">
+        <div class="topic-title" onclick="toggleContent(this)">
+          <span><span class="badge">4</span>Procesi i rinovimit të kontratës</span>
+        </div>
+        <div class="topic-content">
+          <table>
+            <tr>
+              <td><strong>§</strong> Procedohet me order (kur sugjerimi është në Pega dhe klienti dakordëson me sugjerimin dhe procedohet direkt nga ne, klientit i dërgohet kontrata e cila gjenerohet direkt nga sistemi)</td>
+            </tr>
+            <tr>
+              <td><strong>§</strong> Me marrëveshje mund të bëhet nëse ka 2 numra e mësiper, bëhet perllogaritja me skemën e offer tool e cila përcakton bonusin që përfiton klienti dhe afatin e kontratës, përgatitet marrëveshja përcaktohet ku do e përdorë buxhetin Neptun apo Vodafone dhe i dërgohet klientit për firmë</td>
+            </tr>
+            <tr>
+              <td><strong>§</strong> Me SR ku i sugjeron planet standarte pa discount plotësohet kontrata i dërgohet klientit dhe hapet SR me subject RENEWAL</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Topic 5: Aktivizimi i kontratës së re -->
+      <div class="topic">
+        <div class="topic-title" onclick="toggleContent(this)">
+          <span><span class="badge">5</span>Si aktivizohet një kontratë e re</span>
+        </div>
+        <div class="topic-content">
+          <div class="success-box">
+            <strong>Mënyra si procedohet për një kontratë të re:</strong>
+          </div>
+          <table>
+            <tr>
+              <td><strong>1.</strong> Plotësohet kontrata</td>
+            </tr>
+            <tr>
+              <td><strong>2.</strong> Dërgohet tek klienti me WhatsApp ose me email</td>
+            </tr>
+            <tr>
+              <td><strong>3.</strong> Pasi e dërgon klienti të firmosur vulosur procedohet në CRM</td>
+            </tr>
+          </table>
+
+          <div class="success-box" style="margin-top: 30px;">
+            <strong>Kushtet e kontratës:</strong>
+          </div>
+          <table>
+            <tr>
+              <td><strong>1.</strong> Nëse është klient i ri dhe nuk është i regjistruar në CRM duhen kushtet e plota 26 pikat</td>
+            </tr>
+            <tr>
+              <td><strong>2.</strong> Nëse klienti i ka të attachuara një herë kushtet, nëse më vonë do procedojmë me rinovim apo aktivizim të ri nuk plotësohen më, vetëm kontrata pa 26 pikat</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Topic 6: Smart Agreement -->
+      <div class="topic">
+        <div class="topic-title" onclick="toggleContent(this)">
+          <span><span class="badge">6</span>Kur duhet të përdoret Smart Agreement?</span>
+        </div>
+        <div class="topic-content">
+          <table>
+            <tr>
+              <td><strong>1.</strong> Klienti duhet të ketë 2 ose më shumë numra në llogari</td>
+            </tr>
+            <tr>
+              <td><strong>2.</strong> Çmimet i merr standarte pa discount</td>
+            </tr>
+            <tr>
+              <td><strong>3.</strong> Plotësohet offer tool me planet aktuale dhe me planet e reja që do të vazhdojë klienti</td>
+            </tr>
+            <tr>
+              <td><strong>4.</strong> Nga offer tool del edhe vlera e buxhetit e cila do vendoset në marrëveshje</td>
+            </tr>
+            <tr>
+              <td><strong>5.</strong> Përcaktohet afati i kontratës 18 ose 24 mujore</td>
+            </tr>
+            <tr>
+              <td><strong>6.</strong> Përcaktohet se ku do përdoret buxheti Neptun apo Vodafone</td>
+            </tr>
+            <tr>
+              <td><strong>7.</strong> Nëse klienti zgjedh Neptun përcakton dhe personin që do përdorë buxhetin emër/mbiemër/numër kontakti</td>
+            </tr>
+
+<tr>
+              <td><strong>8.</strong>
+Raste te vecanta
+Nese klienti kerkon te njejtin buxhet qe ka pasur, ne kete rast ngrihet nje kerksese nga CRM for Sales per PNL.
+Pasi vjen PNL, agjenti e ploteson duke kerkuar te njejten vlere buxheti dhe e dergon per miratim</td>
+            </tr>
+
+
+
+          </table>
+
+          <!-- Vodafone Shops Table -->
+          <h3 style="margin-top: 40px; margin-bottom: 20px; color: #2c3e50;">Dyqanet Vodafone në Shqipëri</h3>
+          <table class="store-table">
+            <tr>
+              <td><strong>Nr</strong></td>
+              <td><strong>Dyqani</strong></td>
+              <td><strong>Adresa e dyqanit</strong></td>
+              <td><strong>Qyteti</strong></td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>VF Shop TEG</td>
+              <td>Tirana East Gate, Lunder, Kati 0</td>
+              <td>Tiranë</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>VF Shop Blloku</td>
+              <td>Rruga Ibrahim Rugova 42</td>
+              <td>Tiranë</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>VF Shop Rinas</td>
+              <td>Tirana International Airport, Terminali i ri</td>
+              <td>Tiranë</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>VF Shop 21 Dhjetori</td>
+              <td>Pjesa "C" e lokalit gjelltore, Unaza ndodhur në rrugën "Muhamet Gjollesha"</td>
+              <td>Tiranë</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>VF Shop Stacioni i trenit</td>
+              <td>Bulevardi Zogu I'rë</td>
+              <td>Tiranë</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>VF Shop Piramida</td>
+              <td>Bulevardi Dëshmorët e Kombit 5</td>
+              <td>Tiranë</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>VF Shop Durrës</td>
+              <td>Rruga Tregtare, Nr.4</td>
+              <td>Durrës</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>VF Shop Elbasan</td>
+              <td>Hotel Skampa, Ish-Turizmi</td>
+              <td>Elbasan</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>VF Shop Fier</td>
+              <td>Bulevardi 'Jakov Xoxa', Ish Hotel Turizmi</td>
+              <td>Fier</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>VF Shkodër 5</td>
+              <td>Bulevardi "Zogu I", Ndërtesa Nr. 49</td>
+              <td>Shkodër</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>VF Shop Korçë 2</td>
+              <td>Rruga Themistokli Germenji</td>
+              <td>Korçë</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>VF Shop Vlorë</td>
+              <td>Lagja Lef Sallata, Rruga Sadik Zotaj (Blv. Vlorë-Skele)</td>
+              <td>Vlorë</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      <p>&copy; 2025 Albanian Development Company - Të gjitha të drejtat e rezervuara</p>
+      <p style="margin-top: 10px; font-size: 0.85em; opacity: 0.8;">Connecting Communities, Empowering People</p>
+    </footer>
   </div>
-
-  <div class="topic">
-    <div class="topic-title" onclick="toggleContent(this)">2. Proceset e mirembajtjes se bazes mobile</div>
-    <div class="topic-content">
-<p>
-<figure class="table" style="width:480pt;">
-    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="639">
-        <colgroup><col style="width:100%;" width="639"></colgroup>
-        <tbody>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border:2pt double rgb(192, 230, 245);font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">1.&nbsp;&nbsp;&nbsp;&nbsp;Mbifaturim roaming(ndiqet me departamentin e Complain )</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">2.&nbsp;&nbsp;&nbsp;&nbsp;E bill ose paqartesi ne fature (ndiqet me departamentine Creditit)</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">3.&nbsp;&nbsp;&nbsp;&nbsp;Ndryshim Pin behet nga sistemi</span></span>
-                </td>
-            </tr>
-            <tr style="height:76.0pt;" height="101">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:76.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="101" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">4.&nbsp;&nbsp;&nbsp;&nbsp;Aktivizim roaming ( kontaktojme sherbimin e klientit 149/1 per te hapur sherbimin apo per te pare nese lidhet me rrjetin e duhur)</span></span>
-                </td>
-            </tr>
-            <tr style="height:76.0pt;" height="101">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:76.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="101" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">5.&nbsp;&nbsp;&nbsp;&nbsp;Ndryshimi I planit( aktivizimi behet nga agjenti pasi I dergohet kontrata firmoset vuloset dhe procedohet me sr)</span></span>
-                </td>
-            </tr>
-            <tr style="height:93.5pt;" height="125">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:93.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="125" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">6.&nbsp;&nbsp;&nbsp;&nbsp;E bill aktivizimi behet per personin I cili do marri faturat ne self care(plotesohet formulari per aktivizimin e E BILL vendoset adresa e emailit dhe numri I kontaktit dhe delegohet te dep perkates Credit)</span></span>
-                </td>
-            </tr>
-            <tr style="height:93.5pt;" height="125">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:93.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="125" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">7.&nbsp;&nbsp;&nbsp;&nbsp;Ndryshim administratori( procedohet me sr extrakti dhe id e admin te ri dhe I dergohet sr vetting)</span></span>
-                </td>
-            </tr>
-            <tr style="height:93.5pt;" height="125">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:93.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="125" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">8.&nbsp;&nbsp;&nbsp;&nbsp;Ndryshim nipti(kerkesa behet te nipti I ri,plotesohet kontrata per te gjithe numrat me kushtet perkatese te secilit plan,extrakti,id e admiistratorit dhe kerkesa nga subjekti I vjeter qe lejon kalimin e numrave ne subjektin e ri)</span></span>
-                </td>
-            </tr>
-            <tr style="height:182.5pt;" height="243">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:182.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="243" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">9.&nbsp;&nbsp;&nbsp; </span><font class="font6" style="font-style:normal;text-decoration-line:none;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;"><strong>Numer i ri</strong></span></font></span><br>
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">§&nbsp;&nbsp;Nuk ka asnje numer dhe kerkon ti sygjerojme ne ndonje numer(numri I ri kerkohet ne CRM nese eshte I lire,I dergohet email vetting per konfirmim dhe nese po I jepet klientit dhe procedohet me aktivizimin duke perzgjedhur planin dhe duke plotesuar kontraten hapim sr Subject New Ativation dhe bejme attach dok perkatese)</span></font></span><br>
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:14pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">§&nbsp;&nbsp;Ka nje numer active pa kontrate dhe ne emer individi(pasi behet perzgjedhja e planeve plotesohet kontrata behet kerkesa nga idnividi qe pranon te kaloje ne subject,hapet sr dhe atatchohen te gjitha dok)</span></font></span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</figure>
-</p>
-</div>
-  </div>
-
-  <div class="topic">
-    <div class="topic-title" onclick="toggleContent(this)">3. MNP/PORT IN kalimi I numrave nga One ne Vodafone</div>
-	
-    <div class="topic-content">
-	
-<p>
-<figure class="table" style="width:480pt;">
-    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="639">
-        <colgroup><col style="width:100%;" width="639"></colgroup>
-        <tbody>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border:2pt double rgb(192, 230, 245);font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">1.&nbsp;&nbsp;&nbsp;&nbsp;Numrat duhet te jene jashte kontrate</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">2.&nbsp;&nbsp;&nbsp;&nbsp;Nuk duhet te kene detyrime te operatori actual</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">3.&nbsp;&nbsp;&nbsp;&nbsp;Nese numrat jane te regjistruar si individ ateher kerkesa do te behet si individ nese jane te regjistruar si business do behet si business</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">4.&nbsp;&nbsp;&nbsp;&nbsp;Behet perzgjedhja e planit,afati I kontrates,id ose nipti qe jane te regjistruar te operatori perkates</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">5.&nbsp;&nbsp;&nbsp;&nbsp;Te gjitha proceduar per kalimin e numrit ndiqen nga agjenti</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">6.&nbsp;&nbsp;&nbsp;&nbsp;Pasi plotesohet dokumentacioni perkates nese nipti apo individi nuk ka patur nje lloagri ne Vodafone fillimisht regjistrohet dhe me pas dokumentacioni attachohet ne sr MNP/PORT IN e cila I assegnohet dep Vetting per te pare nese dok eshte ok dhe me pas procedohet me kerkese</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">7.&nbsp;&nbsp;&nbsp;&nbsp;Nese kerkesa aprovohet I dergohet emal vetting ne cc dhe Mnp qe te procedohet me orderin ne daten dhe oren perkatese</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">8.&nbsp;&nbsp;&nbsp;&nbsp;Nese kerkesa nuk procedohet I dergohet &nbsp;email MNP arsyen e refuzimit dhe ndiqet nga Mnp</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">9.&nbsp;&nbsp;&nbsp;&nbsp;Nese refuzohet per detyrime I kerkohet pagesa e fundit qe ka bere</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">10.&nbsp;&nbsp;&nbsp;&nbsp;Nese refuzohet per id mund te jete I regjistruar ne emer apo nipt tj kerkohet id serisht</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">11.&nbsp;&nbsp;&nbsp;&nbsp;Mund te kerkoje perditesim te dhenat e cila behet ne dyqanet e operatorit perkates</span></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl65" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:1px;padding-right:1px;padding-top:1px;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Arial, sans-serif;font-size:12pt;"><span style="-webkit-text-stroke-width:0px;font-variant-caps:normal;font-variant-ligatures:normal;orphans:2;text-align:start;text-decoration-color:initial;text-decoration-style:initial;text-decoration-thickness:initial;widows:2;">12.&nbsp;&nbsp;&nbsp;&nbsp;Detyrime kontraktuale( numri nuk kalon sepse eshte Brenda kontrates)</span></span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</figure>
-</p>
-</div>
-  </div>
-
-  <div class="topic">
-    <div class="topic-title" onclick="toggleContent(this)">4. Procesi i rinovimit te kontrates</div>
-    <div class="topic-content">
-	
-	<figure class="table" style="width:480pt;">
-    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="639">
-        <colgroup><col style="width:100%;" width="639"></colgroup>
-        <tbody>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border:2pt double rgb(192, 230, 245);font-style:normal;font-weight:400;height:63.0pt;padding-left:48px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Wingdings;font-size:12pt;"><span>§</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Procedohet me order (kur sygjermi eshte ne Pega dhe klienti dakordeson me sygjerimin dhe procedohet dirket nga ne,klientit I dergohet kontrata e cila gjenerohet direct nga sistemi)</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:48px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Wingdings;font-size:12pt;"><span>§</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Me marreveshje mund te behet nese ka 2 numra&nbsp; &nbsp;e mesiper,behet perllogaritja me skemen e offer tool e cila percakton bonusin qe perfiton klienti dhe afatin e kontrates,pergatitet marreveshja percaktohet ku do e perdori buxhetin Neptun apo Vodafone dhe I dergohet klientit per firme</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:63.0pt;" height="84">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:63.0pt;padding-left:48px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="84" width="639">
-                    <span style="color:black;font-family:Wingdings;font-size:12pt;"><span>§</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Me SR ku I sygjeron planet standarte pa discount plotesohet kontrata I dergohet klientit dhe hapet sr me subject RENEWAL</span></font></span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</figure></div>
-  </div>
-  
-    <div class="topic">
-    <div class="topic-title" onclick="toggleContent(this)">5. Si aktivizohet nje kontrate e re</div>
-    <div class="topic-content">
-	<figure class="table" style="width:480pt;">
-    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="639">
-        <colgroup><col style="width:100%;" width="639"></colgroup>
-        <tbody>
-            <tr style="height:44.0pt;" height="59">
-                <td class="xl67" style="border:2pt double rgb(192, 230, 245);font-style:normal;height:44.0pt;padding-left:72px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="59" width="639">
-                    <span style="color:black;font-family:Wingdings;font-size:12pt;"><span><strong>Ø</strong></span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font7" style="font-style:normal;text-decoration-line:none;"><span><strong>&nbsp; </strong></span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font8" style="font-style:normal;text-decoration-line:none;"><span><strong>Menyra si procedohet per nje kontrate te re</strong></span></font></span>
-                </td>
-            </tr>
-            <tr style="height:44.0pt;" height="59">
-                <td class="xl68" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:44.0pt;padding-left:156px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="59" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>1.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Plotesohet kontrata</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:44.0pt;" height="59">
-                <td class="xl68" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:44.0pt;padding-left:156px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="59" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>2.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Dergohet tek klienti me WhatsApp ose me email</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:49.5pt;" height="66">
-                <td class="xl68" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:49.5pt;padding-left:156px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="66" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>3.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Pasi e dergon klienti te firmosur vulosur procedohet ne CRM</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:49.5pt;" height="66">
-                <td class="xl67" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;height:49.5pt;padding-left:72px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="66" width="639">
-                    <span style="color:black;font-family:Wingdings;font-size:12pt;"><span><strong>Ø</strong></span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font7" style="font-style:normal;text-decoration-line:none;"><span><strong>&nbsp; </strong></span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font8" style="font-style:normal;text-decoration-line:none;"><span><strong>Kushtet e kontrates</strong></span></font></span>
-                </td>
-            </tr>
-            <tr style="height:65.5pt;" height="87">
-                <td class="xl69" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:65.5pt;padding-left:144px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="87" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>1.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Nese eshte klient I ri dhe nuk eshte I regjistruar ne CRM duhen kushtet e plota 26 pikat</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:65.5pt;" height="87">
-                <td class="xl69" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:65.5pt;padding-left:144px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="87" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>2.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Nese klienti I ka te attachuara nje here kushtet nese me von do procedojme me rinovim apo aktivizim te ri nuk plotesohen me vetem kontrata pa 26 pikat</span></font></span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</figure></div>
-  </div>
-
-    <div class="topic">
-    <div class="topic-title" onclick="toggleContent(this)">6. Kur duhet te perdoret Smart agreement?</div>
-    <div class="topic-content">
-	
-	<figure class="table" style="width:480pt;">
-    <table class="ck-table-resized" style="border-collapse:collapse;" border="0" cellpadding="0" cellspacing="0" width="639">
-        <colgroup><col style="width:100%;" width="639"></colgroup>
-        <tbody>
-            <tr style="height:38.5pt;" height="51">
-                <td class="xl66" style="border:2pt double rgb(192, 230, 245);font-style:normal;font-weight:400;height:38.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="51" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>1.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Klienti duhet te kete 2 ose me shume numra ne llogari</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:38.5pt;" height="51">
-                <td class="xl66" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:38.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="51" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>2.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Cmimet i merr standarte pa discount</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:38.5pt;" height="51">
-                <td class="xl66" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:38.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="51" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>3.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Plotesohet offer tool me planet aktuale dhe me planet e reja qe do te vazhdoje klienti</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:38.5pt;" height="51">
-                <td class="xl66" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:38.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="51" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>4.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Nga offer tool del edhe vlera e buxhetit e cila do vendoset ne marreveshje</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:38.5pt;" height="51">
-                <td class="xl66" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:38.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="51" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>5.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Percaktohet afati i kontrates 18 ose 24 mujore</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:38.5pt;" height="51">
-                <td class="xl66" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:38.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="51" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>6.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Percaktohet se ku do perdoret buxheti Neptun apo Vodafone</span></font></span>
-                </td>
-            </tr>
-            <tr style="height:38.5pt;" height="51">
-                <td class="xl66" style="border-bottom-style:double;border-color:rgb(192, 230, 245);border-left-style:double;border-right-style:double;border-top-style:none;border-width:2pt;font-style:normal;font-weight:400;height:38.5pt;padding-left:1px;padding-right:1px;padding-top:1px;text-align:left;text-decoration-line:none;text-wrap-mode:wrap;vertical-align:middle;white-space-collapse:collapse;width:480pt;" height="51" width="639">
-                    <span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><span>7.</span></span><span style="color:black;font-family:&quot;Times New Roman&quot;, serif;font-size:7pt;"><font class="font6" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></font></span><span style="color:black;font-family:Aptos, sans-serif;font-size:12pt;"><font class="font5" style="font-style:normal;font-weight:400;text-decoration-line:none;"><span>Nese klienti zgjedh Neptun percakton dhe personin qe do perdori buxhetin emer/mbiemer/numer kontakti</span></font></span>
-                </td>
-            </tr>
-        </tbody
-		
-		
-		<p>&nbsp;</p>
-<table style="border-style: solid; width: 741px; border-color: #c4c0c0; height: 652px;" width="741">
-<tbody>
-<tr style="background-color: #d21c19;">
-<td style="height: 46px; width: 45.6354px;">
-<p><span style="color: #ffffff;"><strong>Nr</strong></span></p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p><span style="color: #ffffff;"><strong>Dyqani</strong></span></p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p><span style="color: #ffffff;"><strong>Adresa e dyqanit</strong></span></p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p><span style="color: #ffffff;"><strong>Qyteti</strong></span></p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>1</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop TEG</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Tirana East Gate, Lunder, Kati&nbsp; 0</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Tirane</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>2</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop Blloku</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Rruga Ibrahim Rugova 42</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Tirane</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>3</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop Rinas</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p><a href="https://eur03.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fsafe%3Dactive%26sca_esv%3D636238c710bc0fc7%26cs%3D0%26output%3Dsearch%26q%3DTirana%2BInternational%2BAirport%26ludocid%3D5932579872220284635%26lsig%3DAB86z5WAlS5q-paSow0_CEk19PkW%26sa%3DX%26ved%3D2ahUKEwiC8se4q5-KAxVk_7sIHanNNcgQ8G0oAHoECBQQAQ&amp;data=05%7C02%7Cilirjan.isaraj%40vodafone.com%7C276f86c333724007a32308dda3757fc5%7C68283f3b84874c86adb3a5228f18b893%7C0%7C0%7C638846447246873421%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=gmPsea1jLx%2BHBsEZmgrjSV%2BKXTi14T1NvCDmDMAl7%2BY%3D&amp;reserved=0">Tirana International Airport</a>, Terminali i ri</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Tirane</p>
-</td>
-</tr>
-<tr style="height: 64px;">
-<td style="height: 64px; width: 45.6354px;">
-<p>4</p>
-</td>
-<td style="height: 64px; width: 163.792px;">
-<p>VF Shop 21 Dhjetori</p>
-</td>
-<td style="height: 64px; width: 364.167px;">
-<p>Pjesa "C" e lokalit gjelltore, Unaza ndodhur ne rrugen "Muhamet Gjollesha&rdquo;</p>
-</td>
-<td style="height: 64px; width: 142.74px;">
-<p>Tirane</p>
-</td>
-</tr>
-<tr style="height: 64px;">
-<td style="height: 64px; width: 45.6354px;">
-<p>5</p>
-</td>
-<td style="height: 64px; width: 163.792px;">
-<p>VF Shop Stacioni I trenit</p>
-</td>
-<td style="height: 64px; width: 364.167px;">
-<p>Bulevardi Zogu I&rsquo;re</p>
-</td>
-<td style="height: 64px; width: 142.74px;">
-<p>Tirane</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>6</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop Piramida</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Bulevardi D&euml;shmor&euml;t e Kombit 5</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Tirane</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>7</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop Durres</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Rruga Tregtare, Nr.4</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Durres</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>8</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop Elbasan</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Hotel Skampa, Ish-Turizmi</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Elbasan</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>9</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop Fier</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Bulevardi 'Jakov Xoxa', Ish Hotel Turizmi</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Fier</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>10</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shkoder 5</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Bulevardi "Zogu I", Ndertesa Nr. 49</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Shkoder</p>
-</td>
-</tr>
-<tr style="height: 46px;">
-<td style="height: 46px; width: 45.6354px;">
-<p>11</p>
-</td>
-<td style="height: 46px; width: 163.792px;">
-<p>VF Shop Korce 2</p>
-</td>
-<td style="height: 46px; width: 364.167px;">
-<p>Rruga Themistokli Germenji</p>
-</td>
-<td style="height: 46px; width: 142.74px;">
-<p>Korce</p>
-</td>
-</tr>
-<tr style="height: 64px;">
-<td style="height: 64px; width: 45.6354px;">
-<p>12</p>
-</td>
-<td style="height: 64px; width: 163.792px;">
-<p>VF Shop Vlore</p>
-</td>
-<td style="height: 64px; width: 364.167px;">
-<p>Lagja Lef Sallata, Rruga Sadik Zotaj (Blv. Vlore-Skele)</p>
-</td>
-<td style="height: 64px; width: 142.74px;">
-<p>Vlore</p>
-</td>
-</tr>
-</tbody>
-</table>
-		
-		
-    </table>
-</figure></div>
-	
-	
-  </div>
-
-
-
-
-
-    <div class="topic">
-    <div class="topic-title" onclick="toggleContent(this)">5. Si bëhet kalimi te Volton?</div>
-    <div class="topic-content">Procesi është i thjeshtë: plotësoni formularin online ose kontaktoni përmes agjentëve tanë.</div>
-  </div>
-
-
 
   <script>
     function toggleContent(element) {
       const content = element.nextElementSibling;
-      content.style.display = content.style.display === "block" ? "none" : "block";
+      
+      // Toggle the active class on the title
+      element.classList.toggle('active');
+      
+      // Toggle the show class on the content
+      content.classList.toggle('show');
     }
+
+    // Optional: Close other topics when opening a new one (accordion behavior)
+    // Uncomment the code below if you want accordion behavior
+    /*
+    function toggleContent(element) {
+      const allTitles = document.querySelectorAll('.topic-title');
+      const allContents = document.querySelectorAll('.topic-content');
+      const content = element.nextElementSibling;
+      
+      // If clicking on an already open topic, just close it
+      if (element.classList.contains('active')) {
+        element.classList.remove('active');
+        content.classList.remove('show');
+        return;
+      }
+      
+      // Close all topics
+      allTitles.forEach(title => title.classList.remove('active'));
+      allContents.forEach(content => content.classList.remove('show'));
+      
+      // Open the clicked topic
+      element.classList.add('active');
+      content.classList.add('show');
+    }
+    */
   </script>
 
 </body>

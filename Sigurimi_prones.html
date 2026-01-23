@@ -1,451 +1,912 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-  <meta charset="UTF-8">
-  <title>ADC - Kalkulator Sigurimi (Vlera e deklaruar nga klienti)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root {
-      --adc-red: #e30613;
-      --adc-dark: #1f1f1f;
-      --adc-light: #f5f5f5;
-      --adc-border: #dddddd;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Llogaritësi i Sigurimit të Pronës - Albsig</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    * {
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+        :root {
+            --primary: #e02726;
+            --primary-dark: #b81f1e;
+            --secondary: #2c3e50;
+            --light-bg: #f8f9fa;
+            --border: #e0e0e0;
+            --success: #28a745;
+            --text: #333;
+            --text-light: #666;
+        }
 
-    body {
-      margin: 0;
-      background: var(--adc-light);
-      color: #333;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
 
-    .page-wrap {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    .card {
-      background: #fff;
-      max-width: 960px; /* më e gjerë */
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      padding: 24px;
-    }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
 
-    .card-header {
-      border-bottom: 1px solid var(--adc-border);
-      padding-bottom: 10px;
-      margin-bottom: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-    }
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
 
-    .card-header h1 {
-      margin: 0;
-      font-size: 1.2rem;
-      color: var(--adc-dark);
-    }
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
 
-    .tag {
-      font-size: 0.8rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--adc-red);
-      color: var(--adc-red);
-      background: #fff5f5;
-    }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
 
-    h2 {
-      font-size: 1rem;
-      margin: 0 0 12px;
-      color: var(--adc-dark);
-    }
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
 
-    .form-group {
-      margin-bottom: 14px;
-    }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
 
-    label {
-      display: block;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-      font-weight: 500;
-    }
+        .card h2 {
+            color: var(--secondary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+            font-size: 1.5rem;
+        }
 
-    select,
-    input[type="number"],
-    input[type="text"] {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--adc-border);
-      font-size: 0.95rem;
-    }
+        .form-group {
+            margin-bottom: 25px;
+        }
 
-    select:focus,
-    input:focus {
-      outline: none;
-      border-color: var(--adc-red);
-      box-shadow: 0 0 0 1px rgba(227, 6, 19, 0.15);
-    }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
 
-    .help-text {
-      font-size: 0.78rem;
-      color: #777;
-      margin-top: 3px;
-    }
+        select, input[type="number"], input[type="text"], input[type="email"], input[type="tel"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
 
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-      gap: 24px;
-    }
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(224, 39, 38, 0.1);
+        }
 
-    @media (max-width: 768px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-    }
+        .help-text {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            font-style: italic;
+        }
 
-    .results-card {
-      border-radius: 10px;
-      border: 1px solid var(--adc-border);
-      padding: 14px 16px;
-      background: #fafafa;
-    }
+        .hidden {
+            display: none !important;
+        }
 
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 6px;
-    }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
 
-    .result-row span.label {
-      font-size: 0.88rem;
-      color: #555;
-    }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
 
-    .result-row span.value {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
+        .result-row:last-child {
+            border-bottom: none;
+        }
 
-    .result-row.total {
-      border-top: 1px dashed #ccc;
-      padding-top: 8px;
-      margin-top: 8px;
-    }
+        .result-label {
+            font-weight: 500;
+            opacity: 0.9;
+        }
 
-    .result-row.total span.label {
-      font-weight: 600;
-    }
+        .result-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
 
-    .result-row.premium {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--adc-red);
-    }
+        .result-total {
+            background: rgba(255,255,255,0.2);
+            margin: 15px -25px -25px;
+            padding: 20px 25px;
+            border-radius: 0 0 12px 12px;
+        }
 
-    .result-row.premium span.label {
-      color: var(--adc-red);
-      font-size: 0.95rem;
-    }
+        .result-total .result-value {
+            font-size: 1.8rem;
+            color: #fff;
+        }
 
-    .result-row.premium span.value {
-      color: var(--adc-red);
-      font-size: 1.1rem;
-    }
+        .discount-section {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
 
-    .discount-title {
-      margin-top: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #444;
-    }
+        .discount-section h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
 
-    .rate-note {
-      font-size: 0.78rem;
-      color: #666;
-      margin-top: 6px;
-      line-height: 1.4;
-    }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .pill {
-      display: inline-block;
-      background: #fff;
-      border-radius: 999px;
-      padding: 2px 8px;
-      font-size: 0.75rem;
-      border: 1px solid #eee;
-      margin-left: 4px;
-    }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
 
-    .footer-note {
-      margin-top: 14px;
-      font-size: 0.8rem;
-      color: #777;
-    }
-  </style>
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(224, 39, 38, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1a252f;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .btn-whatsapp:hover {
+            background: #1da851;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-item {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-type {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .history-date {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .history-details {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #dc3545;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .card {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+    </style>
 </head>
 <body>
-<div class="page-wrap">
-  <div class="card">
-    <div class="card-header">
-      <h1>Kalkulator Sigurimi – Vlera e deklaruar nga klienti</h1>
-      <span class="tag">Zjarri &amp; tërmeti të përfshira në normë</span>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏠 Llogaritësi i Sigurimit të Pronës</h1>
+            <p>Merrni ofertën tuaj të personalizuar në sekonda</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column - Calculator Form -->
+            <div class="card">
+                <h2>Të Dhënat e Pronës</h2>
+                
+                <div class="form-group">
+                    <label for="lloji">Lloji i Pronës <span class="info-badge">I detyrueshëm</span></label>
+                    <select id="lloji">
+                        <option value="apartament">🏢 Apartament</option>
+                        <option value="vila">🏡 Vilë</option>
+                    </select>
+                    <div class="help-text" id="llojiHelp">
+                        Apartament: Vlera deklarohet nga ju. Vilë: Llogaritet automatikisht sipas zonës.
+                    </div>
+                </div>
+
+                <div class="form-group" id="vleraGroup">
+                    <label for="vlera">Vlera e Apartamentit (Lekë)</label>
+                    <input type="text" id="vlera" placeholder="p.sh. 12,000,000">
+                    <div class="help-text">Vlera totale e apartamentit sipas vlerësimit tuaj</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="siperfaqja">Sipërfaqja (m²) <span class="info-badge">I detyrueshëm</span></label>
+                    <input type="number" id="siperfaqja" placeholder="p.sh. 85" min="0" step="0.01">
+                    <div class="help-text" id="siperfaqjaHelp">Sipërfaqja totale e pronës në metra katrorë</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="qyteti">Qyteti <span class="info-badge">Ndikon në çmim</span></label>
+                    <select id="qyteti">
+                        <option value="Tiranë">Tiranë</option>
+                        <option value="Durrës">Durrës</option>
+                        <option value="Vlorë">Vlorë</option>
+                        <option value="Shkodër">Shkodër</option>
+                        <option value="Elbasan">Elbasan</option>
+                        <option value="Korçë">Korçë</option>
+                        <option value="Fier">Fier</option>
+                        <option value="Berat">Berat</option>
+                        <option value="Lushnjë">Lushnjë</option>
+                        <option value="Kavajë">Kavajë</option>
+                        <option value="Pogradec">Pogradec</option>
+                        <option value="Gjirokastër">Gjirokastër</option>
+                        <option value="Kukës">Kukës</option>
+                        <option value="Lezhë">Lezhë</option>
+                        <option value="Sarandë">Sarandë</option>
+                    </select>
+                    <div class="help-text">Durrës & Vlorë kanë tarifa më të larta për vila (180,000 Lek/m²)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobilimi">Vlera e Mobilimit (Lekë) <span style="color: #999; font-weight: normal;">(Opsionale)</span></label>
+                    <input type="text" id="mobilimi" placeholder="p.sh. 1,500,000">
+                    <div class="help-text">Mobilje, pajisje elektronike, dekorime etj.</div>
+                </div>
+            </div>
+
+            <!-- Right Column - Results -->
+            <div class="card">
+                <h2>Rezultati i Llogaritjes</h2>
+                
+                <div class="result-box">
+                    <div class="result-row">
+                        <span class="result-label">Vlera e Strukturës:</span>
+                        <span class="result-value" id="displayStruktura">0 Lekë</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Vlera e Mobilimit:</span>
+                        <span class="result-value" id="displayMobilimi">0 Lekë</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Sipërfaqja:</span>
+                        <span class="result-value" id="displaySiperfaqja">0 m²</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Çmimi për m²:</span>
+                        <span class="result-value" id="displayCmimi">0 Lekë/m²</span>
+                    </div>
+                    
+                    <div class="result-total">
+                        <div class="result-row">
+                            <span class="result-label">TOTALI I SIGURUAR:</span>
+                            <span class="result-value" id="displayTotal">0 Lekë</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="result-row">
+                        <span class="result-label">Prima Bazë (Vjetore):</span>
+                        <span class="result-value" id="displayPrima">0 Lekë</span>
+                    </div>
+                </div>
+
+                <div class="discount-section">
+                    <h3>💰 Prima me Zbritje</h3>
+                    <div class="result-row">
+                        <span class="result-label">Me 20% zbritje:</span>
+                        <span class="result-value" id="display20">0 Lekë</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Me 30% zbritje:</span>
+                        <span class="result-value" id="display30">0 Lekë</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+
+                <div class="action-buttons no-print">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        🖨️ Print
+                    </button>
+                    <button class="btn btn-secondary" onclick="generatePDF()">
+                        📄 Shkarko PDF
+                    </button>
+                    <button class="btn btn-whatsapp" onclick="sendWhatsApp()">
+                        💬 WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="card no-print" style="margin-top: 30px;">
+            <h2>📧 Kontakto Specialistin</h2>
+            <div class="form-group">
+                <label for="emri">Emri dhe Mbiemri</label>
+                <input type="text" id="emri" placeholder="p.sh. Artan Hoxha">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="p.sh. artan@email.com">
+            </div>
+            <div class="form-group">
+                <label for="telefoni">Numri i Telefonit</label>
+                <input type="tel" id="telefoni" placeholder="p.sh. +355 69 123 4567">
+            </div>
+            <button class="btn btn-success" onclick="sendEmail()" id="btnSend">
+                📨 Dërgo Kërkesën
+            </button>
+            <div id="emailMessage"></div>
+        </div>
+
+        <!-- History -->
+        <div class="card no-print history-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>📜 Historiku i Llogaritjeve</h2>
+                <button class="btn btn-delete" onclick="clearHistory()">🗑️ Fshi të Gjitha</button>
+            </div>
+            <div id="historyContainer">
+                <p style="color: #999; text-align: center; padding: 20px;">Asnjë llogaritje ende...</p>
+            </div>
+        </div>
     </div>
 
-    <div class="layout">
-      <!-- Forma -->
-      <div>
-        <h2>Të dhënat e pronës</h2>
+    <script>
+        // EmailJS Configuration - VENDOS KREDENCIALET E TUA
+        const EMAIL_CONFIG = {
+            serviceID: 'YOUR_SERVICE_ID',      // Vendos Service ID
+            templateID: 'YOUR_TEMPLATE_ID',    // Vendos Template ID
+            userID: 'YOUR_PUBLIC_KEY'          // Vendos Public Key
+        };
 
-        <div class="form-group">
-          <label for="propertyType">Lloji i pronës</label>
-          <select id="propertyType">
-            <option value="apartament">Apartament</option>
-            <option value="vile">Vilë</option>
-          </select>
-          <div class="help-text" id="typeHelp">
-            Apartament – vlera totale deklarohet nga klienti.<br>
-            Vilë – vlera e strukturës llogaritet me koston 90 000 lek/m².
-          </div>
-        </div>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init(EMAIL_CONFIG.userID);
+        })();
 
-        <div class="form-group" id="propertyValueGroup">
-          <label for="propertyValue">Vlera e apartamentit (lek)</label>
-          <input type="text" id="propertyValue" placeholder="p.sh. 12,000,000">
-          <div class="help-text">
-            Vlera totale e apartamentit sipas deklarimit të klientit.
-          </div>
-        </div>
+        const PREMIUM_RATE = 0.0016;
+        const VILLA_COST_TIRANA = 90000;
+        const VILLA_COST_COASTAL = 180000;
 
-        <div class="form-group">
-          <label for="surface">Sipërfaqja e pronës (m²)</label>
-          <input type="number" id="surface" min="0" step="0.01" placeholder="p.sh. 82">
-          <div class="help-text" id="surfaceHelp">
-            Përdoret për të llogaritur çmimin për m² dhe vlerën e vilës (90 000 lek/m²).
-          </div>
-        </div>
+        let myChart = null;
 
-        <div class="form-group">
-          <label for="contentsValue">Vlera e mobilimit &amp; pajisjeve (lek)</label>
-          <input type="text" id="contentsValue" placeholder="p.sh. 1,200,000">
-          <div class="help-text">
-            Mobilim, elektroshtepiake dhe pajisje të tjera brenda pronës.
-          </div>
-        </div>
-      </div>
+        // Elements
+        const llojiSelect = document.getElementById('lloji');
+        const vleraGroup = document.getElementById('vleraGroup');
+        const vleraInput = document.getElementById('vlera');
+        const siperfaqjaInput = document.getElementById('siperfaqja');
+        const qytetiSelect = document.getElementById('qyteti');
+        const mobilimiInput = document.getElementById('mobilimi');
 
-      <!-- Rezultatet -->
-      <div>
-        <h2>Rezultati i llogaritjes</h2>
+        // Parse number from formatted string
+        function parseNumber(str) {
+            if (!str) return 0;
+            return parseFloat(String(str).replace(/,/g, '').replace(/\s/g, '')) || 0;
+        }
 
-        <div class="results-card">
-          <div class="result-row">
-            <span class="label">Vlera e strukturës (lek)</span>
-            <span class="value" id="structureValueDisplay">-</span>
-          </div>
-          <div class="result-row">
-            <span class="label">Vlera e mobilimit (lek)</span>
-            <span class="value" id="contentsValueDisplay">-</span>
-          </div>
-          <div class="result-row">
-            <span class="label">Sipërfaqja (m²)</span>
-            <span class="value" id="surfaceDisplay">-</span>
-          </div>
-          <div class="result-row">
-            <span class="label">Çmimi për m² (lek)</span>
-            <span class="value" id="pricePerM2Display">-</span>
-          </div>
-          <div class="result-row total">
-            <span class="label">Vlera totale e siguruar (lek)</span>
-            <span class="value" id="totalValueDisplay">-</span>
-          </div>
-          <div class="result-row premium">
-            <span class="label">Prima vjetore</span>
-            <span class="value" id="premiumDisplay">-</span>
-          </div>
+        // Format number with thousand separators
+        function formatNumber(num, decimals = 0) {
+            if (num === null || num === undefined || isNaN(num)) return '0';
+            return Number(num).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
 
-          <div class="discount-title">Prima me zbritje</div>
-          <div class="result-row">
-            <span class="label">Prima me 20% zbritje</span>
-            <span class="value" id="premium20Display">-</span>
-          </div>
-          <div class="result-row">
-            <span class="label">Prima me 30% zbritje</span>
-            <span class="value" id="premium30Display">-</span>
-          </div>
+        // Update UI based on property type
+        function updateUI() {
+            const lloji = llojiSelect.value;
+            if (lloji === 'apartament') {
+                vleraGroup.classList.remove('hidden');
+                document.getElementById('llojiHelp').textContent = 
+                    'Apartament: Ju deklaroni vlerën totale të pronës.';
+            } else {
+                vleraGroup.classList.add('hidden');
+                document.getElementById('llojiHelp').textContent = 
+                    'Vilë: Vlera llogaritet automatikisht sipas zonës (90,000-180,000 Lek/m²).';
+            }
+            calculate();
+        }
 
-          <div class="rate-note">
-            Prima bazë llogaritet si <strong>Prima × vlera totale e siguruar</strong>,
-            më pas aplikohet zbritja përkatëse.
-            <span class="pill">zjarr</span>
-            <span class="pill">tërmet</span>
-            <span class="pill">rreziqe të tjera</span>
-          </div>
-        </div>
+        // Main calculation
+        function calculate() {
+            const lloji = llojiSelect.value;
+            const siperfaqja = parseNumber(siperfaqjaInput.value);
+            const qyteti = qytetiSelect.value;
+            const mobilimi = parseNumber(mobilimiInput.value);
 
-        <div class="footer-note">
-          Për vilat, vlera e strukturës llogaritet me koston e ndërtimit 90 000 lek/m².
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+            let vleraStruktura = 0;
+            let cmimi = 0;
 
-<script>
-  const PREMIUM_RATE = 0.0016;
-  const VILLA_COST_PER_M2 = 90000;
+            if (lloji === 'apartament') {
+                vleraStruktura = parseNumber(vleraInput.value);
+                cmimi = siperfaqja > 0 ? vleraStruktura / siperfaqja : 0;
+            } else {
+                // Vila
+                const coastalCities = ['Durrës', 'Vlorë'];
+                cmimi = coastalCities.includes(qyteti) ? VILLA_COST_COASTAL : VILLA_COST_TIRANA;
+                vleraStruktura = siperfaqja * cmimi;
+            }
 
-  const propertyTypeSelect = document.getElementById('propertyType');
-  const propertyValueGroup = document.getElementById('propertyValueGroup');
-  const propertyValueInput = document.getElementById('propertyValue');
-  const surfaceInput = document.getElementById('surface');
-  const contentsInput = document.getElementById('contentsValue');
+            const totali = vleraStruktura + mobilimi;
+            const prima = totali * PREMIUM_RATE;
+            const prima20 = prima * 0.8;
+            const prima30 = prima * 0.7;
 
-  const structureValueDisplay = document.getElementById('structureValueDisplay');
-  const contentsValueDisplay = document.getElementById('contentsValueDisplay');
-  const surfaceDisplay = document.getElementById('surfaceDisplay');
-  const pricePerM2Display = document.getElementById('pricePerM2Display');
-  const totalValueDisplay = document.getElementById('totalValueDisplay');
-  const premiumDisplay = document.getElementById('premiumDisplay');
-  const premium20Display = document.getElementById('premium20Display');
-  const premium30Display = document.getElementById('premium30Display');
+            // Update displays
+            document.getElementById('displayStruktura').textContent = formatNumber(vleraStruktura) + ' Lekë';
+            document.getElementById('displayMobilimi').textContent = formatNumber(mobilimi) + ' Lekë';
+            document.getElementById('displaySiperfaqja').textContent = formatNumber(siperfaqja, 2) + ' m²';
+            document.getElementById('displayCmimi').textContent = formatNumber(cmimi) + ' Lekë/m²';
+            document.getElementById('displayTotal').textContent = formatNumber(totali) + ' Lekë';
+            document.getElementById('displayPrima').textContent = formatNumber(prima, 2) + ' Lekë';
+            document.getElementById('display20').textContent = formatNumber(prima20, 2) + ' Lekë';
+            document.getElementById('display30').textContent = formatNumber(prima30, 2) + ' Lekë';
 
-  const typeHelp = document.getElementById('typeHelp');
-  const surfaceHelp = document.getElementById('surfaceHelp');
+            updateChart(vleraStruktura, mobilimi, prima);
+            saveToHistory();
+        }
 
-  function parseNumber(str) {
-    if (!str) return 0;
-    str = String(str)
-      .replace(/\s+/g, '')
-      .replace(/,/g, '')   // presje si ndarës mijëshe
-      .replace(/\./g, '.'); // pika si dhjetore
-    const val = parseFloat(str);
-    return isNaN(val) ? 0 : val;
-  }
+        // Update Chart
+        function updateChart(struktura, mobilimi, prima) {
+            const ctx = document.getElementById('myChart');
+            
+            if (myChart) {
+                myChart.destroy();
+            }
 
-  // Shfaq numrat me presje si ndarës mijëshe
-  function formatLek(num, decimals = 0) {
-    if (num === null || num === undefined || isNaN(num)) return '-';
-    const fixed = Number(num).toFixed(decimals);   // p.sh. "1234567.89"
-    const parts = fixed.split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ','); // 1,234,567
-    return parts.join(decimals > 0 ? '.' : '');
-  }
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Struktura', 'Mobilimi', 'Prima Vjetore'],
+                    datasets: [{
+                        data: [struktura, mobilimi, prima],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + formatNumber(context.parsed) + ' Lekë';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
-  function updateUIForType() {
-    const type = propertyTypeSelect.value;
+        // Save to History
+        function saveToHistory() {
+            const lloji = llojiSelect.value;
+            const qyteti = qytetiSelect.value;
+            const siperfaqja = parseNumber(siperfaqjaInput.value);
+            const totali = parseNumber(document.getElementById('displayTotal').textContent.replace(/[^\d]/g, ''));
+            const prima = parseNumber(document.getElementById('displayPrima').textContent.replace(/[^\d.]/g, ''));
 
-    if (type === 'apartament') {
-      propertyValueGroup.style.display = 'block';
-      typeHelp.innerHTML =
-        "Apartament – vlera totale deklarohet nga klienti.<br>" +
-        "Vilë – vlera e strukturës llogaritet me koston 90 000 lek/m².";
-      surfaceHelp.textContent =
-        "Përdoret për të llogaritur çmimin për m² mbi vlerën e deklaruar.";
-    } else {
-      propertyValueGroup.style.display = 'none';
-      typeHelp.innerHTML =
-        "Vilë – vlera e strukturës llogaritet automatikisht me 90 000 lek/m².";
-      surfaceHelp.textContent =
-        "Përdoret për të llogaritur vlerën e vilës: 90 000 lek × m² dhe çmimin për m².";
-    }
+            if (siperfaqja === 0 || totali === 0) return;
 
-    calculate();
-  }
+            const history = JSON.parse(localStorage.getItem('propertyHistory') || '[]');
+            
+            const entry = {
+                date: new Date().toLocaleString('sq-AL'),
+                lloji: lloji === 'apartament' ? '🏢 Apartament' : '🏡 Vilë',
+                qyteti,
+                siperfaqja,
+                totali,
+                prima,
+                timestamp: Date.now()
+            };
 
-  function resetDisplays(structure, contents, surface, pricePerM2, total, premium, p20, p30) {
-    structureValueDisplay.textContent = structure;
-    contentsValueDisplay.textContent = contents;
-    surfaceDisplay.textContent = surface;
-    pricePerM2Display.textContent = pricePerM2;
-    totalValueDisplay.textContent = total;
-    premiumDisplay.textContent = premium;
-    premium20Display.textContent = p20;
-    premium30Display.textContent = p30;
-  }
+            history.unshift(entry);
+            
+            // Keep only last 10
+            if (history.length > 10) {
+                history.pop();
+            }
 
-  function calculate() {
-    const type = propertyTypeSelect.value;
-    const surface = parseNumber(surfaceInput.value);
-    const contentsVal = parseNumber(contentsInput.value);
-    const declaredValue = parseNumber(propertyValueInput.value);
+            localStorage.setItem('propertyHistory', JSON.stringify(history));
+            displayHistory();
+        }
 
-    let structureValue = 0;
-    let pricePerM2 = 0;
+        // Display History
+        function displayHistory() {
+            const history = JSON.parse(localStorage.getItem('propertyHistory') || '[]');
+            const container = document.getElementById('historyContainer');
 
-    if (type === 'apartament') {
-      if (!surface || !declaredValue) {
-        resetDisplays(
-          declaredValue ? formatLek(declaredValue) : '-',
-          contentsVal ? formatLek(contentsVal) : '-',
-          surface ? formatLek(surface, 2) : '-',
-          '-',
-          '-',
-          '-',
-          '-',
-          '-'
-        );
-        return;
-      }
-      structureValue = declaredValue;
-      pricePerM2 = declaredValue / surface;
-    } else if (type === 'vile') {
-      if (!surface) {
-        resetDisplays(
-          '-',
-          contentsVal ? formatLek(contentsVal) : '-',
-          '-',
-          '-',
-          '-',
-          '-',
-          '-',
-          '-'
-        );
-        return;
-      }
-      structureValue = surface * VILLA_COST_PER_M2;
-      pricePerM2 = VILLA_COST_PER_M2;
-    }
+            if (history.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Asnjë llogaritje ende...</p>';
+                return;
+            }
 
-    const totalValue = structureValue + contentsVal;
-    const premium = totalValue * PREMIUM_RATE;
-    const premium20 = premium * 0.8; // 20% zbritje
-    const premium30 = premium * 0.7; // 30% zbritje
+            container.innerHTML = history.map((item, index) => `
+                <div class="history-item" onclick="loadFromHistory(${index})">
+                    <div class="history-header">
+                        <div>
+                            <span class="history-type">${item.lloji}</span>
+                            <span style="color: #999;">| ${item.qyteti}</span>
+                        </div>
+                        <div>
+                            <span class="history-date">${item.date}</span>
+                            <button class="btn btn-delete" onclick="event.stopPropagation(); deleteHistory(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="history-details">
+                        ${item.siperfaqja} m² | Totali: ${formatNumber(item.totali)} Lekë | Prima: ${formatNumber(item.prima, 2)} Lekë
+                    </div>
+                </div>
+            `).join('');
+        }
 
-    resetDisplays(
-      formatLek(structureValue),
-      contentsVal ? formatLek(contentsVal) : '0',
-      surface ? formatLek(surface, 2) : '-',
-      pricePerM2 ? formatLek(pricePerM2, type === 'apartament' ? 2 : 0) : '-',
-      formatLek(totalValue),
-      formatLek(premium, 2),
-      formatLek(premium20, 2),
-      formatLek(premium30, 2)
-    );
-  }
+        // Load from history
+        function loadFromHistory(index) {
+            const history = JSON.parse(localStorage.getItem('propertyHistory') || '[]');
+            const item = history[index];
 
-  propertyTypeSelect.addEventListener('change', updateUIForType);
-  surfaceInput.addEventListener('input', calculate);
-  contentsInput.addEventListener('input', calculate);
-  propertyValueInput.addEventListener('input', calculate);
+            llojiSelect.value = item.lloji.includes('Apartament') ? 'apartament' : 'vila';
+            qytetiSelect.value = item.qyteti;
+            siperfaqjaInput.value = item.siperfaqja;
+            
+            updateUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-  // Init
-  updateUIForType();
-</script>
+        // Delete history item
+        function deleteHistory(index) {
+            const history = JSON.parse(localStorage.getItem('propertyHistory') || '[]');
+            history.splice(index, 1);
+            localStorage.setItem('propertyHistory', JSON.stringify(history));
+            displayHistory();
+        }
+
+        // Clear all history
+        function clearHistory() {
+            if (confirm('Jeni i sigurt që dëshironi të fshini të gjithë historikun?')) {
+                localStorage.removeItem('propertyHistory');
+                displayHistory();
+            }
+        }
+
+        // Generate PDF
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const lloji = llojiSelect.value === 'apartament' ? 'Apartament' : 'Vilë';
+            const qyteti = qytetiSelect.value;
+            const struktura = document.getElementById('displayStruktura').textContent;
+            const mobilimi = document.getElementById('displayMobilimi').textContent;
+            const totali = document.getElementById('displayTotal').textContent;
+            const prima = document.getElementById('displayPrima').textContent;
+            const prima20 = document.getElementById('display20').textContent;
+            const prima30 = document.getElementById('display30').textContent;
+
+            // Title
+            doc.setFontSize(20);
+            doc.setTextColor(224, 39, 38);
+            doc.text('ALBSIG - Ofertë Sigurim Prone', 105, 20, { align: 'center' });
+
+            // Date
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text('Data: ' + new Date().toLocaleDateString('sq-AL'), 105, 30, { align: 'center' });
+
+            // Details
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            let y = 50;
+
+            doc.text(`Lloji i Pronës: ${lloji}`, 20, y);
+            y += 10;
+            doc.text(`Qyteti: ${qyteti}`, 20, y);
+            y += 10;
+            doc.text(`Vlera e Strukturës: ${struktura}`, 20, y);
+            y += 10;
+            doc.text(`Vlera e Mobilimit: ${mobilimi}`, 20, y);
+            y += 15;
+            
+            doc.setFontSize(14);
+            doc.setTextColor(224, 39, 38);
+            doc.text(`TOTALI I SIGURUAR: ${totali}`, 20, y);
+            
+            y += 20;
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text(`Prima Bazë (Vjetore): ${prima}`, 20, y);
+            y += 15;
+            
+            doc.text('Prima me Zbritje:', 20, y);
+            y += 10;
+            doc.text(`  • Me 20% zbritje: ${prima20}`, 20, y);
+            y += 10;
+            doc.text(`  • Me 30% zbritje: ${prima30}`, 20, y);
+
+            // Footer
+            y = 270;
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text('Albsig - Kompania më e madhe e sigurimeve në Shqipëri', 105, y, { align: 'center' });
+            doc.text('Tel: +355 (0) 44502060 | Email: info@albsig.al', 105, y + 7, { align: 'center' });
+
+            doc.save('Oferte-Sigurim-Prone.pdf');
+        }
+
+        // Send WhatsApp
+        function sendWhatsApp() {
+            const lloji = llojiSelect.value === 'apartament' ? 'Apartament' : 'Vilë';
+            const qyteti = qytetiSelect.value;
+            const totali = document.getElementById('displayTotal').textContent;
+            const prima = document.getElementById('displayPrima').textContent;
+
+            const message = `Përshëndetje! Dëshiroj informacion për sigurim prone:\n\n` +
+                `Lloji: ${lloji}\n` +
+                `Qyteti: ${qyteti}\n` +
+                `Vlera Totale: ${totali}\n` +
+                `Prima Vjetore: ${prima}\n\n` +
+                `Faleminderit!`;
+
+            const whatsappURL = `https://wa.me/355694060414?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        // Send Email
+        async function sendEmail() {
+            const emri = document.getElementById('emri').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const telefoni = document.getElementById('telefoni').value.trim();
+
+            if (!emri || !email || !telefoni) {
+                showMessage('Ju lutemi plotësoni të gjitha fushat!', 'error');
+                return;
+            }
+
+            const btnSend = document.getElementById('btnSend');
+            btnSend.innerHTML = '<span class="loading"></span> Duke dërguar...';
+            btnSend.disabled = true;
+
+            const lloji = llojiSelect.value === 'apartament' ? 'Apartament' : 'Vilë';
+            const qyteti = qytetiSelect.value;
+            const struktura = document.getElementById('displayStruktura').textContent;
+            const mobilimi = document.getElementById('displayMobilimi').textContent;
+            const totali = document.getElementById('displayTotal').textContent;
+            const prima = document.getElementById('displayPrima').textContent;
+            const prima20 = document.getElementById('display20').textContent;
+            const prima30 = document.getElementById('display30').textContent;
+
+            const templateParams = {
+                from_name: emri,
+                from_email: email,
+                from_phone: telefoni,
+                property_type: lloji,
+                city: qyteti,
+                calculation_details: `
+Vlera e Strukturës: ${struktura}
+Vlera e Mobilimit: ${mobilimi}
+Totali i Siguruar: ${totali}
+
+Prima Bazë: ${prima}
+Prima me 20% zbritje: ${prima20}
+Prima me 30% zbritje: ${prima30}
+                `
+            };
+
+            try {
+                await emailjs.send(
+                    EMAIL_CONFIG.serviceID,
+                    EMAIL_CONFIG.templateID,
+                    templateParams
+                );
+                
+                showMessage('✅ Kërkesa u dërgua me sukses! Do të kontaktoheni së shpejti.', 'success');
+                
+                // Clear form
+                document.getElementById('emri').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('telefoni').value = '';
+            } catch (error) {
+                console.error('Email error:', error);
+                showMessage('❌ Ndodhi një gabim. Ju lutemi provoni përsëri ose na kontaktoni direkt.', 'error');
+            } finally {
+                btnSend.innerHTML = '📨 Dërgo Kërkesën';
+                btnSend.disabled = false;
+            }
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('emailMessage');
+            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.textContent = text;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Event Listeners
+        llojiSelect.addEventListener('change', updateUI);
+        vleraInput.addEventListener('input', calculate);
+        siperfaqjaInput.addEventListener('input', calculate);
+        qytetiSelect.addEventListener('change', calculate);
+        mobilimiInput.addEventListener('input', calculate);
+
+        // Initialize
+        updateUI();
+        displayHistory();
+    </script>
 </body>
 </html>

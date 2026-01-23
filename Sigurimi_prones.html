@@ -347,6 +347,138 @@
             font-size: 0.75rem;
             margin-left: 8px;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h3 {
+            color: var(--secondary);
+            font-size: 1.3rem;
+        }
+
+        .close-modal {
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .discount-option {
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .discount-option:hover {
+            border-color: var(--primary);
+            background-color: rgba(224, 39, 38, 0.05);
+            transform: translateX(5px);
+        }
+
+        .discount-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(224, 39, 38, 0.1);
+            box-shadow: 0 3px 10px rgba(224, 39, 38, 0.2);
+        }
+
+        .discount-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .discount-details {
+            flex: 1;
+            margin: 0 15px;
+        }
+
+        .discount-title {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .discount-price {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -472,7 +604,7 @@
                     <button class="btn btn-primary" onclick="window.print()">
                         🖨️ Print
                     </button>
-                    <button class="btn btn-secondary" onclick="generatePDF()">
+                    <button class="btn btn-secondary" onclick="showPDFModal()">
                         📄 Shkarko PDF
                     </button>
                     <button class="btn btn-whatsapp" onclick="sendWhatsApp()">
@@ -515,6 +647,49 @@
         </div>
     </div>
 
+    <!-- PDF Discount Selection Modal -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📄 Zgjidhni Zbritjen për PDF</h3>
+                <button class="close-modal" onclick="closePDFModal()">&times;</button>
+            </div>
+            
+            <div class="discount-option" onclick="selectDiscount('none')">
+                <input type="radio" name="discount" id="discountNone" value="none">
+                <div class="discount-details">
+                    <div class="discount-title">Pa Zbritje</div>
+                    <div class="discount-price" id="priceNone">0 Lekë</div>
+                </div>
+            </div>
+
+            <div class="discount-option" onclick="selectDiscount('20')">
+                <input type="radio" name="discount" id="discount20" value="20">
+                <div class="discount-details">
+                    <div class="discount-title">Me 20% Zbritje</div>
+                    <div class="discount-price" id="price20">0 Lekë</div>
+                </div>
+            </div>
+
+            <div class="discount-option" onclick="selectDiscount('30')">
+                <input type="radio" name="discount" id="discount30" value="30">
+                <div class="discount-details">
+                    <div class="discount-title">Me 30% Zbritje</div>
+                    <div class="discount-price" id="price30">0 Lekë</div>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closePDFModal()">
+                    ❌ Anulo
+                </button>
+                <button class="btn btn-primary" onclick="confirmPDFGeneration()">
+                    ✅ Gjenero PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // EmailJS Configuration - VENDOS KREDENCIALET E TUA
         const EMAIL_CONFIG = {
@@ -533,6 +708,7 @@
         const VILLA_COST_COASTAL = 180000;
 
         let myChart = null;
+        let selectedDiscount = 'none';
 
         // Elements
         const llojiSelect = document.getElementById('lloji');
@@ -548,10 +724,21 @@
             return parseFloat(String(str).replace(/,/g, '').replace(/\s/g, '')) || 0;
         }
 
-        // Format number with thousand separators
-        function formatNumber(num, decimals = 0) {
-            if (num === null || num === undefined || isNaN(num)) return '0';
-            return Number(num).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        // Format number with thousand separators and decimals
+        function formatNumber(num, decimals = 2) {
+            if (num === null || num === undefined || isNaN(num)) return '0.00';
+            
+            // Round to specified decimals
+            const rounded = Number(num).toFixed(decimals);
+            
+            // Split into integer and decimal parts
+            const parts = rounded.split('.');
+            
+            // Add thousand separators to integer part
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            // Join back together
+            return parts.join('.');
         }
 
         // Update UI based on property type
@@ -594,15 +781,20 @@
             const prima20 = prima * 0.8;
             const prima30 = prima * 0.7;
 
-            // Update displays
+            // Update displays with decimal precision
             document.getElementById('displayStruktura').textContent = formatNumber(vleraStruktura) + ' Lekë';
             document.getElementById('displayMobilimi').textContent = formatNumber(mobilimi) + ' Lekë';
-            document.getElementById('displaySiperfaqja').textContent = formatNumber(siperfaqja, 2) + ' m²';
+            document.getElementById('displaySiperfaqja').textContent = formatNumber(siperfaqja) + ' m²';
             document.getElementById('displayCmimi').textContent = formatNumber(cmimi) + ' Lekë/m²';
             document.getElementById('displayTotal').textContent = formatNumber(totali) + ' Lekë';
-            document.getElementById('displayPrima').textContent = formatNumber(prima, 2) + ' Lekë';
-            document.getElementById('display20').textContent = formatNumber(prima20, 2) + ' Lekë';
-            document.getElementById('display30').textContent = formatNumber(prima30, 2) + ' Lekë';
+            document.getElementById('displayPrima').textContent = formatNumber(prima) + ' Lekë';
+            document.getElementById('display20').textContent = formatNumber(prima20) + ' Lekë';
+            document.getElementById('display30').textContent = formatNumber(prima30) + ' Lekë';
+
+            // Update modal prices
+            document.getElementById('priceNone').textContent = formatNumber(prima) + ' Lekë';
+            document.getElementById('price20').textContent = formatNumber(prima20) + ' Lekë';
+            document.getElementById('price30').textContent = formatNumber(prima30) + ' Lekë';
 
             updateChart(vleraStruktura, mobilimi, prima);
             saveToHistory();
@@ -654,8 +846,11 @@
             const lloji = llojiSelect.value;
             const qyteti = qytetiSelect.value;
             const siperfaqja = parseNumber(siperfaqjaInput.value);
-            const totali = parseNumber(document.getElementById('displayTotal').textContent.replace(/[^\d]/g, ''));
-            const prima = parseNumber(document.getElementById('displayPrima').textContent.replace(/[^\d.]/g, ''));
+            const totalText = document.getElementById('displayTotal').textContent;
+            const primaText = document.getElementById('displayPrima').textContent;
+            
+            const totali = parseNumber(totalText.replace(/[^\d.]/g, ''));
+            const prima = parseNumber(primaText.replace(/[^\d.]/g, ''));
 
             if (siperfaqja === 0 || totali === 0) return;
 
@@ -705,7 +900,7 @@
                         </div>
                     </div>
                     <div class="history-details">
-                        ${item.siperfaqja} m² | Totali: ${formatNumber(item.totali)} Lekë | Prima: ${formatNumber(item.prima, 2)} Lekë
+                        ${formatNumber(item.siperfaqja)} m² | Totali: ${formatNumber(item.totali)} Lekë | Prima: ${formatNumber(item.prima)} Lekë
                     </div>
                 </div>
             `).join('');
@@ -740,8 +935,68 @@
             }
         }
 
-        // Generate PDF
-        function generatePDF() {
+        // Show PDF Modal
+        function showPDFModal() {
+            // Reset selection
+            selectedDiscount = 'none';
+            document.getElementById('discountNone').checked = true;
+            
+            // Remove all selected classes
+            document.querySelectorAll('.discount-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected to first option
+            document.querySelector('.discount-option').classList.add('selected');
+            
+            // Show modal
+            document.getElementById('pdfModal').style.display = 'block';
+        }
+
+        // Close PDF Modal
+        function closePDFModal() {
+            document.getElementById('pdfModal').style.display = 'none';
+        }
+
+        // Select discount
+        function selectDiscount(type) {
+            selectedDiscount = type;
+            
+            // Update radio buttons
+            document.getElementById('discountNone').checked = (type === 'none');
+            document.getElementById('discount20').checked = (type === '20');
+            document.getElementById('discount30').checked = (type === '30');
+            
+            // Update selected class
+            document.querySelectorAll('.discount-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            if (type === 'none') {
+                document.querySelectorAll('.discount-option')[0].classList.add('selected');
+            } else if (type === '20') {
+                document.querySelectorAll('.discount-option')[1].classList.add('selected');
+            } else {
+                document.querySelectorAll('.discount-option')[2].classList.add('selected');
+            }
+        }
+
+        // Confirm PDF Generation
+        function confirmPDFGeneration() {
+            closePDFModal();
+            generatePDF(selectedDiscount);
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('pdfModal');
+            if (event.target == modal) {
+                closePDFModal();
+            }
+        }
+
+        // Generate PDF with selected discount
+        function generatePDF(discountType = 'none') {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -750,9 +1005,21 @@
             const struktura = document.getElementById('displayStruktura').textContent;
             const mobilimi = document.getElementById('displayMobilimi').textContent;
             const totali = document.getElementById('displayTotal').textContent;
-            const prima = document.getElementById('displayPrima').textContent;
+            const primaBase = document.getElementById('displayPrima').textContent;
             const prima20 = document.getElementById('display20').textContent;
             const prima30 = document.getElementById('display30').textContent;
+
+            // Determine which price to show
+            let primaFinal = primaBase;
+            let discountLabel = '';
+            
+            if (discountType === '20') {
+                primaFinal = prima20;
+                discountLabel = ' (me 20% zbritje)';
+            } else if (discountType === '30') {
+                primaFinal = prima30;
+                discountLabel = ' (me 30% zbritje)';
+            }
 
             // Title
             doc.setFontSize(20);
@@ -785,14 +1052,16 @@
             y += 20;
             doc.setFontSize(12);
             doc.setTextColor(0);
-            doc.text(`Prima Bazë (Vjetore): ${prima}`, 20, y);
-            y += 15;
             
-            doc.text('Prima me Zbritje:', 20, y);
-            y += 10;
-            doc.text(`  • Me 20% zbritje: ${prima20}`, 20, y);
-            y += 10;
-            doc.text(`  • Me 30% zbritje: ${prima30}`, 20, y);
+            if (discountType === 'none') {
+                doc.text(`Prima Vjetore: ${primaFinal}`, 20, y);
+            } else {
+                doc.text(`Prima Vjetore${discountLabel}: ${primaFinal}`, 20, y);
+                y += 10;
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.text(`(Prima bazë: ${primaBase})`, 20, y);
+            }
 
             // Footer
             y = 270;
@@ -801,7 +1070,13 @@
             doc.text('Albsig - Kompania më e madhe e sigurimeve në Shqipëri', 105, y, { align: 'center' });
             doc.text('Tel: +355 (0) 44502060 | Email: info@albsig.al', 105, y + 7, { align: 'center' });
 
-            doc.save('Oferte-Sigurim-Prone.pdf');
+            // Save with appropriate filename
+            let filename = 'Oferte-Sigurim-Prone';
+            if (discountType === '20') filename += '-20prc';
+            if (discountType === '30') filename += '-30prc';
+            filename += '.pdf';
+            
+            doc.save(filename);
         }
 
         // Send WhatsApp

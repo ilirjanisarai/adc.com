@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Llogaritësi i Sigurimit të Pronës - Albsig</title>
+    <title>Llogaritësi i Sigurimit të Pronës - ADC Albsig</title>
     
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -70,6 +70,9 @@
         @media (max-width: 968px) {
             .main-content {
                 grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.8rem;
             }
         }
 
@@ -191,6 +194,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            justify-content: center;
         }
 
         .btn-primary {
@@ -264,6 +268,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .history-type {
@@ -348,136 +354,14 @@
             margin-left: 8px;
         }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .modal-header h3 {
-            color: var(--secondary);
-            font-size: 1.3rem;
-        }
-
-        .close-modal {
-            font-size: 28px;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .close-modal:hover {
-            color: var(--primary);
-            transform: rotate(90deg);
-        }
-
-        .discount-option {
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .discount-option:hover {
-            border-color: var(--primary);
-            background-color: rgba(224, 39, 38, 0.05);
-            transform: translateX(5px);
-        }
-
-        .discount-option.selected {
-            border-color: var(--primary);
-            background-color: rgba(224, 39, 38, 0.1);
-            box-shadow: 0 3px 10px rgba(224, 39, 38, 0.2);
-        }
-
-        .discount-option input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .discount-details {
-            flex: 1;
-            margin: 0 15px;
-        }
-
-        .discount-title {
-            font-weight: 600;
-            color: var(--secondary);
-            margin-bottom: 5px;
-        }
-
-        .discount-price {
-            font-size: 1.2rem;
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-buttons .btn {
-            flex: 1;
+        .zone-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #1565c0;
+            border-left: 3px solid #2196f3;
         }
     </style>
 </head>
@@ -486,7 +370,7 @@
         <!-- Header -->
         <div class="header">
             <h1>🏠 Llogaritësi i Sigurimit të Pronës</h1>
-            <p>Merrni ofertën tuaj të personalizuar në sekonda</p>
+            <p>Merrni ofertën tuaj të personalizuar në sekonda - ADC Albsig</p>
         </div>
 
         <!-- Main Content -->
@@ -504,18 +388,6 @@
                     <div class="help-text" id="llojiHelp">
                         Apartament: Vlera deklarohet nga ju. Vilë: Llogaritet automatikisht sipas zonës.
                     </div>
-                </div>
-
-                <div class="form-group" id="vleraGroup">
-                    <label for="vlera">Vlera e Apartamentit (Lekë)</label>
-                    <input type="text" id="vlera" placeholder="p.sh. 12,000,000">
-                    <div class="help-text">Vlera totale e apartamentit sipas vlerësimit tuaj</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="siperfaqja">Sipërfaqja (m²) <span class="info-badge">I detyrueshëm</span></label>
-                    <input type="number" id="siperfaqja" placeholder="p.sh. 85" min="0" step="0.01">
-                    <div class="help-text" id="siperfaqjaHelp">Sipërfaqja totale e pronës në metra katrorë</div>
                 </div>
 
                 <div class="form-group">
@@ -536,8 +408,43 @@
                         <option value="Kukës">Kukës</option>
                         <option value="Lezhë">Lezhë</option>
                         <option value="Sarandë">Sarandë</option>
+                        <option value="Krujë">Krujë</option>
+                        <option value="Tepelenë">Tepelenë</option>
+                        <option value="Tropojë">Tropojë</option>
+                        <option value="Dibër">Dibër</option>
                     </select>
-                    <div class="help-text">Durrës & Vlorë kanë tarifa më të larta për vila (180,000 Lek/m²)</div>
+                    <div class="help-text">Zgjidhni qytetin ku ndodhet prona</div>
+                </div>
+
+                <div class="form-group hidden" id="zonaGroup">
+                    <label for="zona">Zona në Tiranë <span class="info-badge">E detyrueshme</span></label>
+                    <select id="zona">
+                        <option value="zona1">Zona 1 - 108,000 Lek/m²</option>
+                        <option value="zona2">Zona 2 - 180,000 Lek/m²</option>
+                        <option value="zona3">Zona 3 - 84,000 Lek/m²</option>
+                        <option value="zona4">Zona 4 - 78,000 Lek/m²</option>
+                        <option value="zona5">Zona 5 - 180,000 Lek/m²</option>
+                        <option value="zona6">Zona 6 - 78,000 Lek/m²</option>
+                        <option value="zona7">Zona 7 - 120,000 Lek/m²</option>
+                        <option value="zona8">Zona 8 - 120,000 Lek/m²</option>
+                        <option value="zona9">Zona 9 - 144,000 Lek/m²</option>
+                        <option value="zona10">Zona 10 - 168,000 Lek/m²</option>
+                        <option value="zona11">Zona 11 - 96,000 Lek/m²</option>
+                        <option value="teTjera">Zona të tjera - 60,000 Lek/m²</option>
+                    </select>
+                    <div class="zone-info" id="zoneInfo"></div>
+                </div>
+
+                <div class="form-group" id="vleraGroup">
+                    <label for="vlera">Vlera e Pronës (Lekë) <span class="info-badge">Sipas vlerësimit tuaj</span></label>
+                    <input type="text" id="vlera" placeholder="p.sh. 12,000,000">
+                    <div class="help-text">Sa mendoni se vlen prona juaj? (për apartamente)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="siperfaqja">Sipërfaqja (m²) <span class="info-badge">I detyrueshëm</span></label>
+                    <input type="number" id="siperfaqja" placeholder="p.sh. 85" min="0" step="0.01">
+                    <div class="help-text" id="siperfaqjaHelp">Sipërfaqja totale e pronës në metra katrorë</div>
                 </div>
 
                 <div class="form-group">
@@ -552,6 +459,14 @@
                 <h2>Rezultati i Llogaritjes</h2>
                 
                 <div class="result-box">
+                    <div class="result-row">
+                        <span class="result-label">Lloji:</span>
+                        <span class="result-value" id="displayLloji">-</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Qyteti/Zona:</span>
+                        <span class="result-value" id="displayQyteti">-</span>
+                    </div>
                     <div class="result-row">
                         <span class="result-label">Vlera e Strukturës:</span>
                         <span class="result-value" id="displayStruktura">0 Lekë</span>
@@ -582,6 +497,10 @@
                         <span class="result-label">Prima Bazë (Vjetore):</span>
                         <span class="result-value" id="displayPrima">0 Lekë</span>
                     </div>
+                    <div class="result-row">
+                        <span class="result-label">Tarifa:</span>
+                        <span class="result-value" id="displayTarifa">0%</span>
+                    </div>
                 </div>
 
                 <div class="discount-section">
@@ -604,8 +523,8 @@
                     <button class="btn btn-primary" onclick="window.print()">
                         🖨️ Print
                     </button>
-                    <button class="btn btn-secondary" onclick="showPDFModal()">
-                        📄 Shkarko PDF
+                    <button class="btn btn-secondary" onclick="generatePDF()">
+                        📄 PDF
                     </button>
                     <button class="btn btn-whatsapp" onclick="sendWhatsApp()">
                         💬 WhatsApp
@@ -637,55 +556,12 @@
 
         <!-- History -->
         <div class="card no-print history-section">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>📜 Historiku i Llogaritjeve</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <h2 style="margin: 0;">📜 Historiku i Llogaritjeve</h2>
                 <button class="btn btn-delete" onclick="clearHistory()">🗑️ Fshi të Gjitha</button>
             </div>
-            <div id="historyContainer">
+            <div id="historyContainer" style="margin-top: 20px;">
                 <p style="color: #999; text-align: center; padding: 20px;">Asnjë llogaritje ende...</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- PDF Discount Selection Modal -->
-    <div id="pdfModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>📄 Zgjidhni Zbritjen për PDF</h3>
-                <button class="close-modal" onclick="closePDFModal()">&times;</button>
-            </div>
-            
-            <div class="discount-option" onclick="selectDiscount('none')">
-                <input type="radio" name="discount" id="discountNone" value="none">
-                <div class="discount-details">
-                    <div class="discount-title">Pa Zbritje</div>
-                    <div class="discount-price" id="priceNone">0 Lekë</div>
-                </div>
-            </div>
-
-            <div class="discount-option" onclick="selectDiscount('20')">
-                <input type="radio" name="discount" id="discount20" value="20">
-                <div class="discount-details">
-                    <div class="discount-title">Me 20% Zbritje</div>
-                    <div class="discount-price" id="price20">0 Lekë</div>
-                </div>
-            </div>
-
-            <div class="discount-option" onclick="selectDiscount('30')">
-                <input type="radio" name="discount" id="discount30" value="30">
-                <div class="discount-details">
-                    <div class="discount-title">Me 30% Zbritje</div>
-                    <div class="discount-price" id="price30">0 Lekë</div>
-                </div>
-            </div>
-
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closePDFModal()">
-                    ❌ Anulo
-                </button>
-                <button class="btn btn-primary" onclick="confirmPDFGeneration()">
-                    ✅ Gjenero PDF
-                </button>
             </div>
         </div>
     </div>
@@ -703,19 +579,77 @@
             emailjs.init(EMAIL_CONFIG.userID);
         })();
 
-        const PREMIUM_RATE = 0.0016;
-        const VILLA_COST_TIRANA = 90000;
-        const VILLA_COST_COASTAL = 180000;
+        // Pricing data based on Excel
+        const PRICING = {
+            apartament: {
+                'Tiranë': {
+                    zona1: { price: 108000, rate: 0.001920 },
+                    zona2: { price: 180000, rate: 0.001920 },
+                    zona3: { price: 84000, rate: 0.001920 },
+                    zona4: { price: 78000, rate: 0.001920 },
+                    zona5: { price: 180000, rate: 0.001920 },
+                    zona6: { price: 78000, rate: 0.001920 },
+                    zona7: { price: 120000, rate: 0.001920 },
+                    zona8: { price: 120000, rate: 0.001920 },
+                    zona9: { price: 144000, rate: 0.001920 },
+                    zona10: { price: 168000, rate: 0.001920 },
+                    zona11: { price: 96000, rate: 0.001920 },
+                    teTjera: { price: 60000, rate: 0.001920 }
+                },
+                'Sarandë': { price: 180000, rate: 0.001920 },
+                'Vlorë': { price: 96000, rate: 0.001920 },
+                'Durrës': { price: 84000, rate: 0.001920 },
+                'Shkodër': { price: 69600, rate: 0.001440 },
+                'Lezhë': { price: 67200, rate: 0.001440 },
+                'Elbasan': { price: 60000, rate: 0.001680 },
+                'Korçë': { price: 60000, rate: 0.001680 },
+                'Pogradec': { price: 60000, rate: 0.001680 },
+                'Kukës': { price: 60000, rate: 0.001680 },
+                'Lushnjë': { price: 60000, rate: 0.001680 },
+                'Krujë': { price: 58800, rate: 0.001680 },
+                'Dibër': { price: 58800, rate: 0.001680 },
+                'Gjirokastër': { price: 56400, rate: 0.001680 },
+                'Berat': { price: 49200, rate: 0.001680 },
+                'Fier': { price: 48000, rate: 0.001440 },
+                'Tepelenë': { price: 38400, rate: 0.001680 },
+                'Tropojë': { price: 33600, rate: 0.001680 },
+                'Kavajë': { price: 60000, rate: 0.001680 }
+            },
+            vila: {
+                'Durrës': { price: 180000, rate: 0.001920 },
+                'Vlorë': { price: 180000, rate: 0.001920 },
+                'Sarandë': { price: 180000, rate: 0.001920 },
+                default: { price: 90000, rate: 0.001920 }
+            }
+        };
+
+        // Zone descriptions
+        const ZONE_DESCRIPTIONS = {
+            zona1: 'Kinema "Ali Demi", Fusha e Sportit, fshati Shkozë, Depo e Ujit, Poligrafiku, Shkoza, Autotraktorët, Lana-Bregas, Linzë, Sauk',
+            zona2: 'Piramida, Stadiumi "Qemal Stafa", Pazari i Ri, 9-katëshet, Shkolla "Avni Rustemi", Ministria e Jashtme, Ambulanca nr.1, Bërryli, Shkolla e Baletit, Ambasada Amerikane, Qyteti "Studenti", Fakulteti Ekonomik, Varrezat e Dëshmorëve',
+            zona3: 'Xhamllëku, rruga "Bardhyl", rruga "Kongresi i Manastirit", Bulevardi "Zhan D\'Ark", Porcelani, IK V, Kinostudio, rruga "Hoxha Tahsim", Lana e vjetër, fshati Linzë',
+            zona4: 'Kompleksi i spitaleve, SHIK, Oxhaku, Allias i ri, fshati Tufinë, Allias, rruga "Njazi Meka", Bregu i Lumit, rruga "Myslym Keta", "5 Maji"',
+            zona5: 'Ish-Blloku, Libri Universitar, Stadiumi "Selman Stermasi", Liqeni Artificial, Kopshti Botanik, rruga "Komuna e Parisit", blloku "Vasil Shanto", Selitë e Vogël',
+            zona6: 'Shkolla Teknologjike, Kombinati, Vaqar, Selitë, Yzberisht, Sharrë',
+            zona7: 'Ish-Ekspozita "Shqipëria Sot", Blloku i Ambasadave, Fakulteti i Inxhinierisë së Ndërtimit, NSHRAK, Unaza e Re, Fabrika e Miellit, ish-Fusha e Aviacionit, Yzberisht',
+            zona8: 'Selvia, rruga "Tafajt", Medreseja, farmacia nr.10, Tregu Industrial, uzina "Dinamo", Bregu i Lumit',
+            zona9: 'Piazza, Blloku përgjatë "Zogu I", Rruga e Barrikadave, rruga "Fortuzi", "Sulejman Pasha" deri te "Mine Peza", Stacioni i trenit, Hipoteka, Bregu i Lumit, Politeknikumi, rruga "Siri Kodra"',
+            zona10: 'PTT, ish-Lidhja e Shkrimtarëve, Rruga "Myslym Shyri", Drejtoria e Policisë, Kisha katolike, Blloku i Ambasadave, Prokuroria, Rruga e Durrësit',
+            zona11: 'Zogu i Zi, ish-Shkolla e Partisë, ish-Uzina Tirana, Laprakë, Drejtoria e Doganave, Spitali Ushtarak, Bregu i lumit, Fushë Mëzes, Don Bosko',
+            teTjera: 'Zona të tjera të Tiranës që nuk përfshihen në zonat e mësipërme'
+        };
 
         let myChart = null;
-        let selectedDiscount = 'none';
 
         // Elements
         const llojiSelect = document.getElementById('lloji');
+        const qytetiSelect = document.getElementById('qyteti');
+        const zonaGroup = document.getElementById('zonaGroup');
+        const zonaSelect = document.getElementById('zona');
+        const zoneInfo = document.getElementById('zoneInfo');
         const vleraGroup = document.getElementById('vleraGroup');
         const vleraInput = document.getElementById('vlera');
         const siperfaqjaInput = document.getElementById('siperfaqja');
-        const qytetiSelect = document.getElementById('qyteti');
         const mobilimiInput = document.getElementById('mobilimi');
 
         // Parse number from formatted string
@@ -724,77 +658,126 @@
             return parseFloat(String(str).replace(/,/g, '').replace(/\s/g, '')) || 0;
         }
 
-        // Format number with thousand separators and decimals
-        function formatNumber(num, decimals = 2) {
-            if (num === null || num === undefined || isNaN(num)) return '0.00';
-            
-            // Round to specified decimals
-            const rounded = Number(num).toFixed(decimals);
-            
-            // Split into integer and decimal parts
-            const parts = rounded.split('.');
-            
-            // Add thousand separators to integer part
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            
-            // Join back together
-            return parts.join('.');
+        // Format number with thousand separators
+        function formatNumber(num, decimals = 0) {
+            if (num === null || num === undefined || isNaN(num)) return '0';
+            return Number(num).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
-        // Update UI based on property type
+        // Update UI based on selections
         function updateUI() {
             const lloji = llojiSelect.value;
+            const qyteti = qytetiSelect.value;
+
+            // Show/hide zona selector for Tiranë apartament
+            if (lloji === 'apartament' && qyteti === 'Tiranë') {
+                zonaGroup.classList.remove('hidden');
+                updateZoneInfo();
+            } else {
+                zonaGroup.classList.add('hidden');
+            }
+
+            // Show/hide vlera input
             if (lloji === 'apartament') {
                 vleraGroup.classList.remove('hidden');
                 document.getElementById('llojiHelp').textContent = 
-                    'Apartament: Ju deklaroni vlerën totale të pronës.';
+                    'Apartament: Ju deklaroni vlerën e pronës sipas vlerësimit tuaj.';
             } else {
                 vleraGroup.classList.add('hidden');
                 document.getElementById('llojiHelp').textContent = 
-                    'Vilë: Vlera llogaritet automatikisht sipas zonës (90,000-180,000 Lek/m²).';
+                    'Vilë: Vlera llogaritet automatikisht (90,000 ose 180,000 Lek/m² sipas zonës).';
             }
+
             calculate();
+        }
+
+        // Update zone information
+        function updateZoneInfo() {
+            const zona = zonaSelect.value;
+            if (ZONE_DESCRIPTIONS[zona]) {
+                zoneInfo.textContent = '📍 ' + ZONE_DESCRIPTIONS[zona];
+            }
         }
 
         // Main calculation
         function calculate() {
             const lloji = llojiSelect.value;
-            const siperfaqja = parseNumber(siperfaqjaInput.value);
             const qyteti = qytetiSelect.value;
+            const siperfaqja = parseNumber(siperfaqjaInput.value);
             const mobilimi = parseNumber(mobilimiInput.value);
 
             let vleraStruktura = 0;
             let cmimi = 0;
+            let tarifa = 0;
 
             if (lloji === 'apartament') {
-                vleraStruktura = parseNumber(vleraInput.value);
-                cmimi = siperfaqja > 0 ? vleraStruktura / siperfaqja : 0;
+                const vleraDeklaruar = parseNumber(vleraInput.value);
+                
+                if (qyteti === 'Tiranë') {
+                    const zona = zonaSelect.value;
+                    const zoneData = PRICING.apartament['Tiranë'][zona];
+                    cmimi = zoneData.price;
+                    tarifa = zoneData.rate;
+                    
+                    // Nëse ka vlerë të deklaruar, përdore atë, përndryshe llogarite
+                    if (vleraDeklaruar > 0) {
+                        vleraStruktura = vleraDeklaruar;
+                        if (siperfaqja > 0) {
+                            cmimi = vleraStruktura / siperfaqja;
+                        }
+                    } else if (siperfaqja > 0) {
+                        vleraStruktura = siperfaqja * cmimi;
+                    }
+                } else {
+                    const cityData = PRICING.apartament[qyteti];
+                    if (cityData) {
+                        cmimi = cityData.price;
+                        tarifa = cityData.rate;
+                        
+                        // Nëse ka vlerë të deklaruar, përdore atë
+                        if (vleraDeklaruar > 0) {
+                            vleraStruktura = vleraDeklaruar;
+                            if (siperfaqja > 0) {
+                                cmimi = vleraStruktura / siperfaqja;
+                            }
+                        } else if (siperfaqja > 0) {
+                            vleraStruktura = siperfaqja * cmimi;
+                        }
+                    }
+                }
             } else {
                 // Vila
-                const coastalCities = ['Durrës', 'Vlorë'];
-                cmimi = coastalCities.includes(qyteti) ? VILLA_COST_COASTAL : VILLA_COST_TIRANA;
+                const vilaData = PRICING.vila[qyteti] || PRICING.vila.default;
+                cmimi = vilaData.price;
+                tarifa = vilaData.rate;
                 vleraStruktura = siperfaqja * cmimi;
             }
 
             const totali = vleraStruktura + mobilimi;
-            const prima = totali * PREMIUM_RATE;
+            const prima = totali * tarifa;
             const prima20 = prima * 0.8;
             const prima30 = prima * 0.7;
 
-            // Update displays with decimal precision
+            // Update displays
+            document.getElementById('displayLloji').textContent = 
+                lloji === 'apartament' ? '🏢 Apartament' : '🏡 Vilë';
+            
+            let qytetiDisplay = qyteti;
+            if (lloji === 'apartament' && qyteti === 'Tiranë') {
+                const zonaText = zonaSelect.options[zonaSelect.selectedIndex].text;
+                qytetiDisplay = 'Tiranë - ' + zonaText.split(' - ')[0];
+            }
+            document.getElementById('displayQyteti').textContent = qytetiDisplay;
+            
             document.getElementById('displayStruktura').textContent = formatNumber(vleraStruktura) + ' Lekë';
             document.getElementById('displayMobilimi').textContent = formatNumber(mobilimi) + ' Lekë';
-            document.getElementById('displaySiperfaqja').textContent = formatNumber(siperfaqja) + ' m²';
-            document.getElementById('displayCmimi').textContent = formatNumber(cmimi) + ' Lekë/m²';
+            document.getElementById('displaySiperfaqja').textContent = formatNumber(siperfaqja, 2) + ' m²';
+            document.getElementById('displayCmimi').textContent = formatNumber(cmimi, 2) + ' Lekë/m²';
             document.getElementById('displayTotal').textContent = formatNumber(totali) + ' Lekë';
-            document.getElementById('displayPrima').textContent = formatNumber(prima) + ' Lekë';
-            document.getElementById('display20').textContent = formatNumber(prima20) + ' Lekë';
-            document.getElementById('display30').textContent = formatNumber(prima30) + ' Lekë';
-
-            // Update modal prices
-            document.getElementById('priceNone').textContent = formatNumber(prima) + ' Lekë';
-            document.getElementById('price20').textContent = formatNumber(prima20) + ' Lekë';
-            document.getElementById('price30').textContent = formatNumber(prima30) + ' Lekë';
+            document.getElementById('displayTarifa').textContent = (tarifa * 100).toFixed(4) + '%';
+            document.getElementById('displayPrima').textContent = formatNumber(prima, 2) + ' Lekë';
+            document.getElementById('display20').textContent = formatNumber(prima20, 2) + ' Lekë';
+            document.getElementById('display30').textContent = formatNumber(prima30, 2) + ' Lekë';
 
             updateChart(vleraStruktura, mobilimi, prima);
             saveToHistory();
@@ -846,20 +829,23 @@
             const lloji = llojiSelect.value;
             const qyteti = qytetiSelect.value;
             const siperfaqja = parseNumber(siperfaqjaInput.value);
-            const totalText = document.getElementById('displayTotal').textContent;
-            const primaText = document.getElementById('displayPrima').textContent;
-            
-            const totali = parseNumber(totalText.replace(/[^\d.]/g, ''));
-            const prima = parseNumber(primaText.replace(/[^\d.]/g, ''));
+            const totali = parseNumber(document.getElementById('displayTotal').textContent.replace(/[^\d]/g, ''));
+            const prima = parseNumber(document.getElementById('displayPrima').textContent.replace(/[^\d.]/g, ''));
 
             if (siperfaqja === 0 || totali === 0) return;
+
+            let qytetiDisplay = qyteti;
+            if (lloji === 'apartament' && qyteti === 'Tiranë') {
+                const zonaText = zonaSelect.options[zonaSelect.selectedIndex].text;
+                qytetiDisplay = 'Tiranë - ' + zonaText.split(' - ')[0];
+            }
 
             const history = JSON.parse(localStorage.getItem('propertyHistory') || '[]');
             
             const entry = {
                 date: new Date().toLocaleString('sq-AL'),
                 lloji: lloji === 'apartament' ? '🏢 Apartament' : '🏡 Vilë',
-                qyteti,
+                qyteti: qytetiDisplay,
                 siperfaqja,
                 totali,
                 prima,
@@ -892,30 +878,22 @@
                     <div class="history-header">
                         <div>
                             <span class="history-type">${item.lloji}</span>
-                            <span style="color: #999;">| ${item.qyteti}</span>
+                            <span style="color: #999;"> | ${item.qyteti}</span>
                         </div>
-                        <div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="history-date">${item.date}</span>
                             <button class="btn btn-delete" onclick="event.stopPropagation(); deleteHistory(${index})">🗑️</button>
                         </div>
                     </div>
                     <div class="history-details">
-                        ${formatNumber(item.siperfaqja)} m² | Totali: ${formatNumber(item.totali)} Lekë | Prima: ${formatNumber(item.prima)} Lekë
+                        ${formatNumber(item.siperfaqja, 2)} m² | Totali: ${formatNumber(item.totali)} Lekë | Prima: ${formatNumber(item.prima, 2)} Lekë
                     </div>
                 </div>
             `).join('');
         }
 
-        // Load from history
+        // Load from history (simplified - just scrolls to top)
         function loadFromHistory(index) {
-            const history = JSON.parse(localStorage.getItem('propertyHistory') || '[]');
-            const item = history[index];
-
-            llojiSelect.value = item.lloji.includes('Apartament') ? 'apartament' : 'vila';
-            qytetiSelect.value = item.qyteti;
-            siperfaqjaInput.value = item.siperfaqja;
-            
-            updateUI();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -935,96 +913,26 @@
             }
         }
 
-        // Show PDF Modal
-        function showPDFModal() {
-            // Reset selection
-            selectedDiscount = 'none';
-            document.getElementById('discountNone').checked = true;
-            
-            // Remove all selected classes
-            document.querySelectorAll('.discount-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            
-            // Add selected to first option
-            document.querySelector('.discount-option').classList.add('selected');
-            
-            // Show modal
-            document.getElementById('pdfModal').style.display = 'block';
-        }
-
-        // Close PDF Modal
-        function closePDFModal() {
-            document.getElementById('pdfModal').style.display = 'none';
-        }
-
-        // Select discount
-        function selectDiscount(type) {
-            selectedDiscount = type;
-            
-            // Update radio buttons
-            document.getElementById('discountNone').checked = (type === 'none');
-            document.getElementById('discount20').checked = (type === '20');
-            document.getElementById('discount30').checked = (type === '30');
-            
-            // Update selected class
-            document.querySelectorAll('.discount-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            
-            if (type === 'none') {
-                document.querySelectorAll('.discount-option')[0].classList.add('selected');
-            } else if (type === '20') {
-                document.querySelectorAll('.discount-option')[1].classList.add('selected');
-            } else {
-                document.querySelectorAll('.discount-option')[2].classList.add('selected');
-            }
-        }
-
-        // Confirm PDF Generation
-        function confirmPDFGeneration() {
-            closePDFModal();
-            generatePDF(selectedDiscount);
-        }
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('pdfModal');
-            if (event.target == modal) {
-                closePDFModal();
-            }
-        }
-
-        // Generate PDF with selected discount
-        function generatePDF(discountType = 'none') {
+        // Generate PDF
+        function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            const lloji = llojiSelect.value === 'apartament' ? 'Apartament' : 'Vilë';
-            const qyteti = qytetiSelect.value;
+            const lloji = document.getElementById('displayLloji').textContent;
+            const qyteti = document.getElementById('displayQyteti').textContent;
             const struktura = document.getElementById('displayStruktura').textContent;
             const mobilimi = document.getElementById('displayMobilimi').textContent;
+            const siperfaqja = document.getElementById('displaySiperfaqja').textContent;
             const totali = document.getElementById('displayTotal').textContent;
-            const primaBase = document.getElementById('displayPrima').textContent;
+            const prima = document.getElementById('displayPrima').textContent;
             const prima20 = document.getElementById('display20').textContent;
             const prima30 = document.getElementById('display30').textContent;
-
-            // Determine which price to show
-            let primaFinal = primaBase;
-            let discountLabel = '';
-            
-            if (discountType === '20') {
-                primaFinal = prima20;
-                discountLabel = ' (me 20% zbritje)';
-            } else if (discountType === '30') {
-                primaFinal = prima30;
-                discountLabel = ' (me 30% zbritje)';
-            }
+            const tarifa = document.getElementById('displayTarifa').textContent;
 
             // Title
             doc.setFontSize(20);
             doc.setTextColor(224, 39, 38);
-            doc.text('ALBSIG - Ofertë Sigurim Prone', 105, 20, { align: 'center' });
+            doc.text('ADC ALBSIG - Ofertë Sigurim Prone', 105, 20, { align: 'center' });
 
             // Date
             doc.setFontSize(10);
@@ -1038,7 +946,9 @@
 
             doc.text(`Lloji i Pronës: ${lloji}`, 20, y);
             y += 10;
-            doc.text(`Qyteti: ${qyteti}`, 20, y);
+            doc.text(`Lokacioni: ${qyteti}`, 20, y);
+            y += 10;
+            doc.text(`Sipërfaqja: ${siperfaqja}`, 20, y);
             y += 10;
             doc.text(`Vlera e Strukturës: ${struktura}`, 20, y);
             y += 10;
@@ -1049,46 +959,40 @@
             doc.setTextColor(224, 39, 38);
             doc.text(`TOTALI I SIGURUAR: ${totali}`, 20, y);
             
-            y += 20;
+            y += 15;
             doc.setFontSize(12);
             doc.setTextColor(0);
+            doc.text(`Tarifa: ${tarifa}`, 20, y);
+            y += 10;
+            doc.text(`Prima Bazë (Vjetore): ${prima}`, 20, y);
+            y += 15;
             
-            if (discountType === 'none') {
-                doc.text(`Prima Vjetore: ${primaFinal}`, 20, y);
-            } else {
-                doc.text(`Prima Vjetore${discountLabel}: ${primaFinal}`, 20, y);
-                y += 10;
-                doc.setFontSize(10);
-                doc.setTextColor(100);
-                doc.text(`(Prima bazë: ${primaBase})`, 20, y);
-            }
+            doc.text('Prima me Zbritje:', 20, y);
+            y += 10;
+            doc.text(`  • Me 20% zbritje: ${prima20}`, 20, y);
+            y += 10;
+            doc.text(`  • Me 30% zbritje: ${prima30}`, 20, y);
 
             // Footer
             y = 270;
             doc.setFontSize(10);
             doc.setTextColor(100);
-            doc.text('Albsig - Kompania më e madhe e sigurimeve në Shqipëri', 105, y, { align: 'center' });
+            doc.text('ADC Albsig - Kompania më e madhe e sigurimeve në Shqipëri', 105, y, { align: 'center' });
             doc.text('Tel: +355 (0) 44502060 | Email: info@albsig.al', 105, y + 7, { align: 'center' });
 
-            // Save with appropriate filename
-            let filename = 'Oferte-Sigurim-Prone';
-            if (discountType === '20') filename += '-20prc';
-            if (discountType === '30') filename += '-30prc';
-            filename += '.pdf';
-            
-            doc.save(filename);
+            doc.save('Oferte-Sigurim-Prone-ADC.pdf');
         }
 
         // Send WhatsApp
         function sendWhatsApp() {
-            const lloji = llojiSelect.value === 'apartament' ? 'Apartament' : 'Vilë';
-            const qyteti = qytetiSelect.value;
+            const lloji = document.getElementById('displayLloji').textContent;
+            const qyteti = document.getElementById('displayQyteti').textContent;
             const totali = document.getElementById('displayTotal').textContent;
             const prima = document.getElementById('displayPrima').textContent;
 
             const message = `Përshëndetje! Dëshiroj informacion për sigurim prone:\n\n` +
                 `Lloji: ${lloji}\n` +
-                `Qyteti: ${qyteti}\n` +
+                `Lokacioni: ${qyteti}\n` +
                 `Vlera Totale: ${totali}\n` +
                 `Prima Vjetore: ${prima}\n\n` +
                 `Faleminderit!`;
@@ -1112,8 +1016,8 @@
             btnSend.innerHTML = '<span class="loading"></span> Duke dërguar...';
             btnSend.disabled = true;
 
-            const lloji = llojiSelect.value === 'apartament' ? 'Apartament' : 'Vilë';
-            const qyteti = qytetiSelect.value;
+            const lloji = document.getElementById('displayLloji').textContent;
+            const qyteti = document.getElementById('displayQyteti').textContent;
             const struktura = document.getElementById('displayStruktura').textContent;
             const mobilimi = document.getElementById('displayMobilimi').textContent;
             const totali = document.getElementById('displayTotal').textContent;
@@ -1174,9 +1078,13 @@ Prima me 30% zbritje: ${prima30}
 
         // Event Listeners
         llojiSelect.addEventListener('change', updateUI);
+        qytetiSelect.addEventListener('change', updateUI);
+        zonaSelect.addEventListener('change', () => {
+            updateZoneInfo();
+            calculate();
+        });
         vleraInput.addEventListener('input', calculate);
         siperfaqjaInput.addEventListener('input', calculate);
-        qytetiSelect.addEventListener('change', calculate);
         mobilimiInput.addEventListener('input', calculate);
 
         // Initialize

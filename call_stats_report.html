@@ -3,239 +3,350 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Call Stats → Raport + Excel (Multi-file + Filtra + Grafike + Periudha)</title>
+  <title>ADC Call Center — Raport Ditor + Excel</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 
   <style>
-    body { background:#f6f7fb; }
-    .card { border:0; box-shadow: 0 6px 20px rgba(0,0,0,0.06); border-radius: 14px; }
-    .muted { color:#6c757d; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    table.dataTable thead th { white-space: nowrap; }
-    td { vertical-align: top; }
-    .wrap { max-width: 520px; white-space: normal !important; }
-    .pill { display:inline-block; padding:.2rem .5rem; border-radius:999px; background:#eef2ff; }
-    .smallcaps { font-variant: all-small-caps; letter-spacing: .04em; }
-    canvas { max-height: 320px; }
+    :root {
+      --bg: #f0f2f7;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --accent2: #7c3aed;
+      --accent-light: #eff3ff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #059669;
+      --danger: #dc2626;
+      --orange: #ea580c;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      margin: 0;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .app-header h1 { font-size: 1.5rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+    .app-header .sub { color: #94a3b8; font-size: 0.85rem; margin-top: 0.25rem; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-title .badge-num {
+      background: var(--accent);
+      color: #fff;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* KPI */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; }
+    .kpi-box {
+      background: var(--accent-light);
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+    }
+    .kpi-box .label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-box .val { font-size: 1.1rem; font-weight: 700; margin-top: 0.1rem; }
+
+    /* Filters row */
+    .filter-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: end; }
+    .filter-row .fg { flex: 1; min-width: 140px; }
+    .filter-row label { font-size: 0.72rem; color: var(--muted); display: block; margin-bottom: 0.15rem; }
+
+    /* Tabs */
+    .tab-bar { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Checkbox group for combined campaigns */
+    .campaign-check-group { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.5rem; }
+    .campaign-check-group label {
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    /* Table overrides */
+    table.dataTable thead th { white-space: nowrap; font-size: 0.8rem; }
+    table.dataTable tbody td { font-size: 0.82rem; vertical-align: top; }
+    canvas { max-height: 300px; }
+
+    /* Status summary table */
+    .summary-tbl { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
+    .summary-tbl th { text-align: left; padding: 0.35rem 0.5rem; border-bottom: 2px solid var(--border); font-weight: 600; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .summary-tbl td { padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); }
+    .summary-tbl .text-end { text-align: right; }
+
+    .pill { display:inline-block; padding:.15rem .4rem; border-radius:999px; background: var(--accent-light); font-size: 0.8rem; }
+
+    .btn-accent { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+    .btn-accent:hover { background: #1d4ed8; color: #fff; }
+    .btn-success2 { background: var(--success); color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+    .btn-success2:hover { background: #047857; color: #fff; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-orange { background: var(--orange); color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+    .btn-orange:hover { background: #c2410c; color: #fff; }
+
+    .alert-info { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 0.75rem; font-size: 0.82rem; color: #0369a1; }
   </style>
 </head>
 
 <body>
-  <div class="container-fluid p-4">
-    <div class="d-flex flex-wrap gap-3 align-items-end justify-content-between mb-3">
-      <div>
-        <h1 class="h3 m-0">Call Stats → Raport + Excel</h1>
-        <div class="muted">
-          Ngarko disa <span class="pill mono">.csv/.xlsx</span> me statistika thirrjesh dhe gjenero:
-          filtra sipas <b>campaign</b>, <b>group</b>, <b>list</b>, <b>status</b>, + <b>periudhë</b> (ditore/javore/mujore/interval),
-          grafiqe (pie/bar/line) + eksport Excel.
-        </div>
-      </div>
-      <div class="d-flex gap-2">
-        <a class="btn btn-outline-secondary btn-sm" href="#" id="downloadSample">Shkarko shembull CSV</a>
-      </div>
+  <div class="app-header">
+    <h1>ADC Call Center — Raport Ditor</h1>
+    <div class="sub">Ngarko CSV-të e agjentëve → gjenero raport automatik me sheet-e sipas shërbimit, agjentit, dhe totalit</div>
+  </div>
+
+  <div class="container-fluid px-3 pb-4">
+
+    <!-- Tab navigation -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="tabUpload">Ngarko & Filtro</button>
+      <button class="tab-btn" data-tab="tabSummary">Përmbledhje & Grafike</button>
+      <button class="tab-btn" data-tab="tabDetails">Detaje (Preview)</button>
+      <button class="tab-btn" data-tab="tabDailyReport">Raport Ditor (Auto Excel)</button>
     </div>
 
-    <div class="row g-3 mb-3">
-      <div class="col-12 col-lg-5">
-        <div class="card p-3">
-          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
-            <div class="fw-semibold">1) Ngarko fajlat</div>
-            <div class="muted small">Mund të ngarkosh disa njëherësh</div>
-          </div>
-
-          <div class="mt-2">
-            <input type="file" id="fileInput" class="form-control" multiple
-                   accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
-          </div>
-
-          <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
-            <button id="parseBtn" class="btn btn-primary" disabled>Gjenero raportin</button>
-            <button id="exportXlsxBtn" class="btn btn-success" disabled>Shkarko Excel (i filtruar)</button>
-            <button id="resetBtn" class="btn btn-outline-danger" disabled>Reset</button>
-          </div>
-
-          <div class="mt-3 small muted">
-            <div><span class="smallcaps">Kolonat në Excel</span>:
-              <span class="mono">date_time, length, status, phone, campaign, group, list, lead, hangup_reason</span>
+    <!-- TAB 1: Upload & Filter -->
+    <div class="tab-panel active" id="tabUpload">
+      <div class="row g-3">
+        <div class="col-12 col-lg-6">
+          <div class="card">
+            <div class="card-title"><span class="badge-num">1</span> Ngarko fajlat CSV/XLSX</div>
+            <input type="file" id="fileInput" class="form-control form-control-sm" multiple
+                   accept=".csv,.xlsx,.xls"/>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <button id="parseBtn" class="btn-accent" disabled>Gjenero raportin</button>
+              <button id="exportXlsxBtn" class="btn-success2" disabled>Shkarko Excel (i filtruar)</button>
+              <button id="exportDailyBtn" class="btn-orange" disabled>Gjenero Raport Ditor</button>
+              <button id="resetBtn" class="btn-outline" disabled>Reset</button>
+            </div>
+            <div class="mt-2" style="font-size:0.75rem; color:var(--muted)">
+              Kolonat e pritura: <span class="mono">#, DATE/TIME, LENGTH, STATUS, PHONE, CAMPAIGN, GROUP, LIST, LEAD, HANGUP REASON</span>
             </div>
           </div>
-
-          <hr class="my-3"/>
-
-          <div class="fw-semibold mb-2">2) Filtrat</div>
-          <div class="row g-2">
-            <div class="col-12 col-md-6">
-              <label class="muted small">Campaign</label>
-              <select id="campaignFilter" class="form-select form-select-sm" disabled>
-                <option value="">Të gjitha</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="muted small">Group</label>
-              <select id="groupFilter" class="form-select form-select-sm" disabled>
-                <option value="">Të gjitha</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="muted small">List</label>
-              <select id="listFilter" class="form-select form-select-sm" disabled>
-                <option value="">Të gjitha</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="muted small">Status</label>
-              <select id="statusFilter" class="form-select form-select-sm" disabled>
-                <option value="">Të gjitha</option>
-              </select>
+        </div>
+        <div class="col-12 col-lg-6">
+          <div class="card">
+            <div class="card-title"><span class="badge-num">2</span> Filtrat</div>
+            <div class="filter-row">
+              <div class="fg">
+                <label>Campaign (Agjent)</label>
+                <select id="campaignFilter" class="form-select form-select-sm" disabled><option value="">Të gjitha</option></select>
+              </div>
+              <div class="fg">
+                <label>Group</label>
+                <select id="groupFilter" class="form-select form-select-sm" disabled><option value="">Të gjitha</option></select>
+              </div>
+              <div class="fg">
+                <label>List</label>
+                <select id="listFilter" class="form-select form-select-sm" disabled><option value="">Të gjitha</option></select>
+              </div>
+              <div class="fg">
+                <label>Status</label>
+                <select id="statusFilter" class="form-select form-select-sm" disabled><option value="">Të gjitha</option></select>
+              </div>
             </div>
 
-            <div class="col-12">
-              <label class="muted small">Periudha (DATE/TIME)</label>
-              <select id="periodType" class="form-select form-select-sm" disabled>
-                <option value="all">Të gjitha</option>
-                <option value="daily">Ditore (zgjidh datën)</option>
-                <option value="weekly">Javore (java e datës)</option>
-                <option value="monthly">Mujore (muaji i datës)</option>
-                <option value="custom">Interval (nga—deri)</option>
-              </select>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="muted small">Data (për ditore/javore/mujore)</label>
-              <input id="periodDate" type="date" class="form-control form-control-sm" disabled />
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="muted small">Interval (custom)</label>
-              <div class="d-flex gap-2">
+            <div class="filter-row mt-2">
+              <div class="fg">
+                <label>Periudha</label>
+                <select id="periodType" class="form-select form-select-sm" disabled>
+                  <option value="all">Të gjitha</option>
+                  <option value="daily">Ditore</option>
+                  <option value="weekly">Javore</option>
+                  <option value="monthly">Mujore</option>
+                  <option value="custom">Interval</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Data</label>
+                <input id="periodDate" type="date" class="form-control form-control-sm" disabled />
+              </div>
+              <div class="fg">
+                <label>Nga</label>
                 <input id="startDate" type="date" class="form-control form-control-sm" disabled />
+              </div>
+              <div class="fg">
+                <label>Deri</label>
                 <input id="endDate" type="date" class="form-control form-control-sm" disabled />
               </div>
             </div>
 
-            <div class="col-12">
-              <div class="muted small" id="activePeriodLabel"></div>
-            </div>
-          </div>
+            <div style="font-size:0.75rem; color:var(--muted); margin-top:0.5rem;" id="activePeriodLabel"></div>
+            <div style="font-size:0.75rem; color:var(--muted);" id="filteredCount"></div>
 
-          <div class="muted small mt-2" id="filteredCount"></div>
-        </div>
-      </div>
+            <hr style="border-color:var(--border); margin:0.75rem 0"/>
 
-      <div class="col-12 col-lg-7">
-        <div class="card p-3">
-          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
-            <div class="fw-semibold">3) Përmbledhje + Grafike</div>
-            <div class="d-flex gap-2 align-items-center">
-              <label class="muted small">Grafiku:</label>
-              <select id="chartType" class="form-select form-select-sm" style="max-width:160px;" disabled>
-                <option value="pie">Pie (Status)</option>
-                <option value="bar">Shtylla (Status)</option>
-                <option value="line">Linear (në kohë)</option>
-              </select>
+            <div class="card-title" style="margin-bottom:0.4rem"><span class="badge-num">★</span> Raport i kombinuar (multi-fushata)</div>
+            <div style="font-size:0.78rem; color:var(--muted); margin-bottom:0.4rem;">Zgjidh disa fushata njëherësh për raport të kombinuar:</div>
+            <div class="campaign-check-group" id="campaignCheckGroup">
+              <div style="font-size:0.78rem; color:var(--muted);">Ngarko fajlat fillimisht...</div>
             </div>
-          </div>
-
-          <div class="row g-2 mt-1">
-            <div class="col-6 col-md-3">
-              <div class="p-2 rounded-3 bg-light">
-                <div class="muted small">Thirrje</div>
-                <div class="h4 m-0" id="kpiRows">—</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="p-2 rounded-3 bg-light">
-                <div class="muted small">Status unik</div>
-                <div class="h4 m-0" id="kpiStatuses">—</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="p-2 rounded-3 bg-light">
-                <div class="muted small">Nga data</div>
-                <div class="h6 m-0" id="kpiMinDate">—</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="p-2 rounded-3 bg-light">
-                <div class="muted small">Deri më</div>
-                <div class="h6 m-0" id="kpiMaxDate">—</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-4">
-              <div class="p-2 rounded-3 bg-light">
-                <div class="muted small">Kohëzgjatja totale</div>
-                <div class="h6 m-0" id="kpiTotalDuration">—</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-4">
-              <div class="p-2 rounded-3 bg-light">
-                <div class="muted small">Mesatarja (sek)</div>
-                <div class="h6 m-0" id="kpiAvgDuration">—</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-4">
-              <div class="p-2 rounded-3 bg-light">
-                <div class="muted small">Campaigns unik</div>
-                <div class="h6 m-0" id="kpiCampaigns">—</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-3">
-            <canvas id="chartCanvas"></canvas>
-          </div>
-
-          <div class="mt-3">
-            <table class="table table-sm table-striped mb-0" id="statusSummaryTable">
-              <thead>
-                <tr>
-                  <th>Status</th>
-                  <th class="text-end">Numër</th>
-                  <th class="text-end">%</th>
-                  <th class="text-end">Kohëzgjatja tot.</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td colspan="4" class="muted">—</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="muted small mt-2">
-            Linear: agregohet nga <span class="mono">DATE/TIME</span> sipas ditës (YYYY-MM-DD).
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card p-3">
-      <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
-        <div class="fw-semibold">4) Detaje (preview)</div>
-        <div class="muted small">Kërko në tabelë, filtro sipas Campaign/Group/List/Status/Periudhë, pastaj "Shkarko Excel (i filtruar)"</div>
+    <!-- TAB 2: Summary & Charts -->
+    <div class="tab-panel" id="tabSummary">
+      <div class="card">
+        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-2">
+          <div class="card-title mb-0"><span class="badge-num">3</span> Përmbledhje + Grafike</div>
+          <div class="d-flex gap-2 align-items-center">
+            <label style="font-size:0.75rem; color:var(--muted);">Grafiku:</label>
+            <select id="chartType" class="form-select form-select-sm" style="max-width:160px;" disabled>
+              <option value="pie">Pie (Status)</option>
+              <option value="bar">Shtylla (Status)</option>
+              <option value="line">Linear (në kohë)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi-box"><div class="label">Thirrje</div><div class="val" id="kpiRows">—</div></div>
+          <div class="kpi-box"><div class="label">Status unik</div><div class="val" id="kpiStatuses">—</div></div>
+          <div class="kpi-box"><div class="label">Nga data</div><div class="val" id="kpiMinDate">—</div></div>
+          <div class="kpi-box"><div class="label">Deri më</div><div class="val" id="kpiMaxDate">—</div></div>
+          <div class="kpi-box"><div class="label">Kohëzgjatja totale</div><div class="val" id="kpiTotalDuration">—</div></div>
+          <div class="kpi-box"><div class="label">Mesatarja (sek)</div><div class="val" id="kpiAvgDuration">—</div></div>
+          <div class="kpi-box"><div class="label">Campaigns</div><div class="val" id="kpiCampaigns">—</div></div>
+        </div>
+
+        <div class="mt-3"><canvas id="chartCanvas"></canvas></div>
+
+        <div class="mt-3">
+          <table class="summary-tbl" id="statusSummaryTable">
+            <thead>
+              <tr><th>Status</th><th class="text-end">Numër</th><th class="text-end">%</th><th class="text-end">Kohëzgjatja</th></tr>
+            </thead>
+            <tbody><tr><td colspan="4" style="color:var(--muted)">—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Details -->
+    <div class="tab-panel" id="tabDetails">
+      <div class="card">
+        <div class="card-title"><span class="badge-num">4</span> Detaje (preview)</div>
+        <div class="table-responsive">
+          <table id="detailsTable" class="display table table-striped table-hover" style="width:100%">
+            <thead>
+              <tr>
+                <th>#</th><th>DATE/TIME</th><th>LENGTH</th><th>STATUS</th><th>PHONE</th>
+                <th>CAMPAIGN</th><th>AGJENTI</th><th>GROUP</th><th>LIST</th><th>LEAD</th>
+                <th>HANGUP REASON</th><th>SOURCE FILE</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Daily Report Auto-Generation -->
+    <div class="tab-panel" id="tabDailyReport">
+      <div class="card">
+        <div class="card-title"><span class="badge-num">5</span> Raport Ditor — Gjenero Excel automatikisht</div>
+        <div class="alert-info mb-3">
+          Gjeneron Excel me sheet-e: <strong>Fix-Rezidencial, Telco-B2B, Albsig, Volton, SetUp, Agent Performance, Total Calls</strong>.
+          Zgjidh një ditë të vetme ose një interval datash — raporti do të ketë <b>kolona për çdo ditë</b> plus totalin.
+        </div>
+
+        <div class="filter-row mb-2">
+          <div class="fg">
+            <label>Mënyra e raportit</label>
+            <select id="dailyReportMode" class="form-select form-select-sm">
+              <option value="single">Ditë e vetme</option>
+              <option value="range">Interval (nga — deri)</option>
+              <option value="weekly">Javore (zgjidh datën)</option>
+              <option value="monthly">Mujore (zgjidh datën)</option>
+              <option value="all">Të gjitha datat</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Data / Data bazë</label>
+            <input id="dailyReportDate" type="date" class="form-control form-control-sm"/>
+          </div>
+          <div class="fg">
+            <label>Nga (interval)</label>
+            <input id="dailyReportStart" type="date" class="form-control form-control-sm" disabled/>
+          </div>
+          <div class="fg">
+            <label>Deri (interval)</label>
+            <input id="dailyReportEnd" type="date" class="form-control form-control-sm" disabled/>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          <button id="exportDailyBtn2" class="btn-orange" disabled>Gjenero Raport Excel</button>
+        </div>
+        <div class="mt-2" style="font-size:0.75rem; color:var(--muted);" id="dailyReportStatus"></div>
       </div>
 
-      <div class="table-responsive">
-        <table id="detailsTable" class="display table table-striped table-hover" style="width:100%">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>DATE/TIME</th>
-              <th>LENGTH</th>
-              <th>STATUS</th>
-              <th>PHONE</th>
-              <th>CAMPAIGN</th>
-              <th>GROUP</th>
-              <th>LIST</th>
-              <th>LEAD</th>
-              <th>HANGUP REASON</th>
-              <th>SOURCE FILE</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="card mt-2">
+        <div class="card-title">Mapping: Fushatat → Agjentë → Shërbime</div>
+        <div class="table-responsive">
+          <table class="summary-tbl">
+            <thead><tr><th>Kodi</th><th>Agjenti</th><th>Shërbimi</th><th>Sheet</th></tr></thead>
+            <tbody id="mappingTableBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -246,688 +357,886 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <script>
-    // --- Status mapping (codes -> labels)
+    // ==========================================
+    // CAMPAIGN → AGENT → SERVICE MAPPING
+    // ==========================================
+    const CAMPAIGN_MAP = {
+      "11111":   { agent: "Oksana",   service: "Rezidencial",  sheet: "Fix-Rezidencial" },
+      "1007":    { agent: "Sebi",     service: "Rezidencial",  sheet: "Fix-Rezidencial" },
+      "10071":   { agent: "Sebi",     service: "SetUp",        sheet: "SetUp" },
+      "1610251": { agent: "Alesja",   service: "Telco-B2B",    sheet: "Telco-B2B" },
+      "1610252": { agent: "Xhesi",    service: "Telco-B2B",    sheet: "Telco-B2B" },
+      "1610253": { agent: "Marinela", service: "Telco-B2B",    sheet: "Telco-B2B" },
+      "201025":  { agent: "Ornela",   service: "Albsig",       sheet: "Albsig" },
+      "211025":  { agent: "Arjola",   service: "Telco-B2B",    sheet: "Telco-B2B" },
+      "4455":    { agent: "Sebi",     service: "Volton",       sheet: "Volton" },
+      "7777":    { agent: "Ornela",   service: "Albsig",       sheet: "Albsig" },
+      "8888":    { agent: "Albina",   service: "Telco-B2B",    sheet: "Telco-B2B" },
+    };
+
+    function campaignLabel(code) {
+      const c = (code || "").trim();
+      const m = CAMPAIGN_MAP[c];
+      if (m) return `${c} — ${m.agent} (${m.service})`;
+      return c || "(bosh)";
+    }
+    function agentName(code) {
+      const c = (code || "").trim();
+      return CAMPAIGN_MAP[c]?.agent || c || "—";
+    }
+    function serviceName(code) {
+      const c = (code || "").trim();
+      return CAMPAIGN_MAP[c]?.service || "Tjetër";
+    }
+    function sheetName(code) {
+      const c = (code || "").trim();
+      return CAMPAIGN_MAP[c]?.sheet || "Tjetër";
+    }
+
+    // ==========================================
+    // STATUS MAPPING
+    // ==========================================
     const STATUS_MAP = {
-      "ACTCo": "Klient ekzistues VF-AL/Albsig",
-      "Albsig": "Recepsion",
+      "ACTCo": "Kontrate aktive Vodafone",
+      "Albsig": "Albsig customer",
       "Alb3ig": "Sigurim me banke",
       "Albs1g": "Nuk ka nje prone te tij",
       "Albs2g": "Nuk disponon dokumentat",
       "B": "Busy",
-      "CALLBK": "Kerkon te telefonohet here tjeter",
-      "DC": "Numer i pavlefshem",
+      "CALLBK": "Call Back",
+      "DC": "Disconnected Number",
       "DISPO": "Disposition",
-      "N": "Nuk pergjigjet",
-      "NEW": "Ne pritje per tu kontaktuar",
-      "NI": "Nuk shpreh interes",
-      "Oferte": "Oferta te derguara",
+      "N": "No Answer",
+      "NEW": "New Lead",
+      "NI": "Not Interested",
+      "Oferte": "Oferte e derguar",
+      "SALE": "Sale Made",
+      "Setup": "Not interested-small business",
+      "Setup1": "Switched off",
       "Setup2": "Switched off",
+      "Setup3": "Will think about",
+      "Setup4": "Ka IT Support",
       "VFMob": "New Connection-Lead",
       "VFMo1": "Mobile Upgrade",
       "VFMo2": "Rinovim me te njejtat kushte",
       "VFMo3": "Downgrade",
-      "Voda1": "Klient ekzistues VF-AL/Albsig",
-      "Voda2": "Do ta mendoj",
-      "Voda3": "Zone pa mbulim fix",
+      "Voda1": "Kontrate aktive Vodafone",
+      "Voda2": "Will think about",
+      "Voda3": "No coverage fix",
       "Voda4": "Problem me Internetin-Coax",
       "Voda5": "Trajtim Klienti",
       "Voda6": "Te pakenaqur me Vodafone",
       "Voda7": "Telefonate prezantuese",
-      "Setup": "Not interested-small business",
-      "Setup1": "Nuk pergjigjet",
-      "Setup3": "Will think about",
-      "Setup4": "Ka IT Support",
-      "XALB": "Kontrate aktive - operator tjeter"
+      "XALB": "Kontrate aktive operator tjeter",
+      "XFER": "Call Transferred"
     };
     function mapStatus(code) {
       const c = (code || "").trim();
       return STATUS_MAP[c] || c || "(bosh)";
     }
+    function statusCode(code) {
+      return (code || "").trim();
+    }
 
-    // ---------- Helpers ----------
+    // "Answered" statuses (everything except B, DC, N, NEW, Setup1, Setup2)
+    const NOT_ANSWERED_CODES = new Set(["B", "DC", "N", "NEW", "Setup1", "Setup2"]);
+    function isAnswered(statusRaw) {
+      return !NOT_ANSWERED_CODES.has((statusRaw || "").trim());
+    }
+
+    // ==========================================
+    // STATUS CATEGORIZATION for each sheet type
+    // ==========================================
+    // Fix-Rezidencial answered categories
+    const REZIDENCIAL_ANSWERED = {
+      "Kontrate aktive Vodafone": "Kontrate aktive Vodafone",
+      "Not Interested": "Not Interested",
+      "Kontrate aktive operator tjeter": "Kontrate aktive operator tjeter",
+      "Will think about": "Will think about",
+      "Call Back": "Telefono me vone",
+      "New Connection-Lead": "New connection",
+      "Te pakenaqur me Vodafone": "Te pa kenaqur me Vodafone",
+      "No coverage fix": "No coverage fix",
+      "Telefonate prezantuese": "Telefonate prezantuese",
+      "Trajtim Klienti": "Trajtim Klienti",
+      "Mobile Upgrade": "Mobile Upgrade",
+      "Rinovim me te njejtat kushte": "Rinovim",
+      "Downgrade": "Downgrade",
+    };
+    const REZIDENCIAL_NOT_ANSWERED = {
+      "Disconnected Number": "Invalid number",
+      "Busy": "Busy",
+      "No Answer": "No Answer",
+    };
+
+    // Telco-B2B answered categories
+    const B2B_ANSWERED = {
+      "Kontrate aktive Vodafone": "Kontrate aktive me Vodafone",
+      "Call Back": "Call Back",
+      "Not Interested": "Not Interested",
+      "Oferte e derguar": "Ju dergua oferta vodafone",
+      "Will think about": "Will Think About",
+      "Trajtim Klienti": "Trajtim Klienti",
+      "New Connection-Lead": "Rinovim + New connection",
+      "No coverage fix": "No coverage fix",
+      "Te pakenaqur me Vodafone": "Te pakenaqur me Vodafone",
+      "Kontrate aktive operator tjeter": "Kontrate aktive operator tjeter",
+      "Telefonate prezantuese": "Telefonate prezantuese",
+      "Mobile Upgrade": "Mobile Upgrade",
+      "Sale Made": "Sale",
+    };
+    const B2B_NOT_ANSWERED = {
+      "Busy": "Busy",
+      "Disconnected Number": "Invalid number",
+      "No Answer": "Not Answered",
+      "Switched off": "Switched off",
+    };
+
+    // Albsig answered categories
+    const ALBSIG_ANSWERED = {
+      "Albsig customer": "Albsig customer",
+      "Nuk ka nje prone te tij": "Nuk ka nje prone te tij",
+      "Nuk disponon dokumentat": "Nuk ka dokumente",
+      "Call Back": "Call Back",
+      "Not Interested": "Not Interested",
+      "Kontrate aktive operator tjeter": "Kotrate me kompani tjeter",
+      "Will think about": "Will think about",
+      "Oferte e derguar": "Oferte e derguar",
+      "Sigurim me banke": "Sigurim me banke/Nuk merret",
+      "New Lead": "New lead",
+    };
+    const ALBSIG_NOT_ANSWERED = {
+      "Busy": "Busy",
+      "Disconnected Number": "Disconnected Number",
+      "No Answer": "No Answer",
+    };
+
+    // ==========================================
+    // HELPERS
+    // ==========================================
     function toSafeString(v) {
       if (v === null || v === undefined) return '';
       return String(v);
     }
-
     function formatDuration(seconds) {
       const s = parseInt(seconds) || 0;
       if (s < 60) return `${s}s`;
-      const m = Math.floor(s / 60);
-      const sec = s % 60;
+      const m = Math.floor(s / 60), sec = s % 60;
       if (m < 60) return `${m}m ${sec}s`;
-      const h = Math.floor(m / 60);
-      const min = m % 60;
+      const h = Math.floor(m / 60), min = m % 60;
       return `${h}h ${min}m ${sec}s`;
     }
-
     function parseDateLike(s) {
+      if (s instanceof Date) return isNaN(s.getTime()) ? null : s;
       const t = toSafeString(s).trim();
       if (!t) return null;
-      const iso = t.replace(' ', 'T');
-      const d = new Date(iso);
-      return isNaN(d.getTime()) ? null : d;
+      // M/D/YYYY H:MM(:SS)
+      const usMatch = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+      if (usMatch) {
+        const [, month, day, year, hour, min, sec] = usMatch;
+        const d = new Date(parseInt(year), parseInt(month)-1, parseInt(day), parseInt(hour), parseInt(min), parseInt(sec||'0'));
+        if (!isNaN(d.getTime())) return d;
+      }
+      // YYYY-MM-DD HH:MM:SS
+      const iso = t.replace(/\s+/g, 'T');
+      let d = new Date(iso);
+      if (!isNaN(d.getTime())) return d;
+      // DD.MM.YYYY
+      const euMatch = t.match(/^(\d{1,2})[\.-](\d{1,2})[\.-](\d{4})\s*(.*)$/);
+      if (euMatch) {
+        const [, day, month, year, time] = euMatch;
+        d = new Date(`${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}T${time || '00:00:00'}`);
+        if (!isNaN(d.getTime())) return d;
+      }
+      // Excel serial
+      const num = parseFloat(t);
+      if (!isNaN(num) && num > 25000 && num < 100000) {
+        const excelEpoch = new Date(1899, 11, 30);
+        d = new Date(excelEpoch.getTime() + num * 86400000);
+        if (!isNaN(d.getTime())) return d;
+      }
+      return null;
     }
-
     function dayKeyFromDate(d) {
-      const pad = (n)=>String(n).padStart(2,'0');
+      const pad=(n)=>String(n).padStart(2,'0');
       return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
     }
-
     function escapeHtml(str) {
-      return String(str)
-        .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
-        .replaceAll('"','&quot;').replaceAll("'","&#39;");
+      return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
     }
-
     function stripHtml(html) {
       const div = document.createElement('div');
       div.innerHTML = html;
       return (div.textContent || div.innerText || '').trim();
     }
 
-    // ---------- Period filter logic (DataTables ext.search) ----------
-    const periodFilter = { mode: 'all', start: null, end: null };
-
-    function startOfDay(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
-    function endOfDay(d) { const x = new Date(d); x.setHours(23,59,59,999); return x; }
-
+    // Period helpers
+    function startOfDay(d) { const x=new Date(d); x.setHours(0,0,0,0); return x; }
+    function endOfDay(d) { const x=new Date(d); x.setHours(23,59,59,999); return x; }
     function startOfWeekMonday(d) {
-      const x = startOfDay(d);
-      const day = x.getDay();
-      const diff = (day === 0 ? -6 : 1 - day);
-      x.setDate(x.getDate() + diff);
-      return x;
+      const x=startOfDay(d); const day=x.getDay(); x.setDate(x.getDate()+(day===0?-6:1-day)); return x;
     }
-    function endOfWeekSunday(d) {
-      const s = startOfWeekMonday(d);
-      const e = new Date(s);
-      e.setDate(e.getDate() + 6);
-      return endOfDay(e);
-    }
-    function startOfMonth(d) {
-      const x = startOfDay(d);
-      x.setDate(1);
-      return x;
-    }
-    function endOfMonth(d) {
-      const x = new Date(d);
-      x.setHours(0,0,0,0);
-      x.setMonth(x.getMonth() + 1, 1);
-      x.setDate(x.getDate() - 1);
-      x.setHours(23,59,59,999);
-      return x;
-    }
-    function fmtDateOnly(d) {
-      if (!d) return '';
-      const pad=(n)=>String(n).padStart(2,'0');
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    }
+    function endOfWeekSunday(d) { const s=startOfWeekMonday(d); const e=new Date(s); e.setDate(e.getDate()+6); return endOfDay(e); }
+    function startOfMonth(d) { const x=startOfDay(d); x.setDate(1); return x; }
+    function endOfMonth(d) { const x=new Date(d); x.setHours(0,0,0,0); x.setMonth(x.getMonth()+1,1); x.setDate(x.getDate()-1); x.setHours(23,59,59,999); return x; }
+    function fmtDateOnly(d) { if (!d) return ''; const pad=(n)=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
 
-    // DataTables custom filter: column 1 is DATE/TIME
-    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+    // ==========================================
+    // PERIOD FILTER (DataTables ext.search)
+    // ==========================================
+    const periodFilter = { mode:'all', start:null, end:null };
+    $.fn.dataTable.ext.search.push(function(settings, data) {
+      if (settings.nTable.id !== 'detailsTable') return true;
       if (periodFilter.mode === 'all') return true;
-      const t = data[1];
-      const d = parseDateLike(stripHtml(t));
+      if (!periodFilter.start && !periodFilter.end) return true;
+      const d = parseDateLike(stripHtml(data[1]));
       if (!d) return false;
       if (periodFilter.start && d < periodFilter.start) return false;
       if (periodFilter.end && d > periodFilter.end) return false;
       return true;
     });
 
+    // Combined campaign filter
+    let combinedCampaigns = new Set(); // empty = all
+    $.fn.dataTable.ext.search.push(function(settings, data) {
+      if (settings.nTable.id !== 'detailsTable') return true;
+      if (combinedCampaigns.size === 0) return true;
+      const camp = stripHtml(data[5]).split(' — ')[0].trim(); // extract code from "code — agent"
+      return combinedCampaigns.has(camp);
+    });
+
     function setPeriodRange(start, end, label) {
-      periodFilter.start = start;
-      periodFilter.end = end;
+      periodFilter.start = start; periodFilter.end = end;
       document.getElementById('activePeriodLabel').textContent = label || '';
     }
-
     function syncPeriodControls() {
       const mode = document.getElementById('periodType').value || 'all';
-      const periodDate = document.getElementById('periodDate');
-      const startDate = document.getElementById('startDate');
-      const endDate = document.getElementById('endDate');
-
-      if (mode === 'daily' || mode === 'weekly' || mode === 'monthly') {
-        periodDate.disabled = false;
-        startDate.disabled = true;
-        endDate.disabled = true;
-      } else if (mode === 'custom') {
-        periodDate.disabled = true;
-        startDate.disabled = false;
-        endDate.disabled = false;
-      } else {
-        periodDate.disabled = true;
-        startDate.disabled = true;
-        endDate.disabled = true;
-      }
+      document.getElementById('periodDate').disabled = !(mode==='daily'||mode==='weekly'||mode==='monthly');
+      document.getElementById('startDate').disabled = mode !== 'custom';
+      document.getElementById('endDate').disabled = mode !== 'custom';
     }
-
     function applyPeriodFilter() {
-      const periodType = document.getElementById('periodType');
-      const periodDate = document.getElementById('periodDate');
-      const startDate = document.getElementById('startDate');
-      const endDate = document.getElementById('endDate');
-
-      const mode = periodType.value || 'all';
+      const mode = document.getElementById('periodType').value || 'all';
       periodFilter.mode = mode;
-
-      if (mode === 'all') {
-        setPeriodRange(null, null, '');
-        if (dt) dt.draw();
-        return;
-      }
-
+      if (mode === 'all') { setPeriodRange(null,null,''); if(dt)dt.draw(); return; }
       if (mode === 'custom') {
-        const s = startDate.value ? new Date(startDate.value + 'T00:00:00') : null;
-        const e = endDate.value ? new Date(endDate.value + 'T00:00:00') : null;
-        if (!s || !e) {
-          setPeriodRange(null, null, 'Zgjidh "nga" dhe "deri" për intervalin.');
-          if (dt) dt.draw();
-          return;
-        }
-        const start = startOfDay(s);
-        const end = endOfDay(e);
-        setPeriodRange(start, end, `Interval: ${fmtDateOnly(start)} → ${fmtDateOnly(end)}`);
-        if (dt) dt.draw();
-        return;
+        const s = document.getElementById('startDate').value, e = document.getElementById('endDate').value;
+        if (!s||!e) { setPeriodRange(null,null,'Zgjidh "nga" dhe "deri".'); if(dt)dt.draw(); return; }
+        setPeriodRange(startOfDay(new Date(s+'T00:00:00')), endOfDay(new Date(e+'T00:00:00')),
+          `Interval: ${s} → ${e}`);
+        if(dt)dt.draw(); return;
       }
-
-      if (!periodDate.value) {
-        setPeriodRange(null, null, 'Zgjidh një datë për periudhën.');
-        if (dt) dt.draw();
-        return;
-      }
-
-      const base = new Date(periodDate.value + 'T00:00:00');
-
-      if (mode === 'daily') {
-        const start = startOfDay(base);
-        const end = endOfDay(base);
-        setPeriodRange(start, end, `Ditore: ${fmtDateOnly(start)}`);
-      } else if (mode === 'weekly') {
-        const start = startOfWeekMonday(base);
-        const end = endOfWeekSunday(base);
-        setPeriodRange(start, end, `Javore: ${fmtDateOnly(start)} → ${fmtDateOnly(end)}`);
-      } else if (mode === 'monthly') {
-        const start = startOfMonth(base);
-        const end = endOfMonth(base);
-        const label = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}`;
-        setPeriodRange(start, end, `Mujore: ${label}`);
-      } else {
-        setPeriodRange(null, null, '');
-      }
-
-      if (dt) dt.draw();
+      const pv = document.getElementById('periodDate').value;
+      if (!pv) { setPeriodRange(null,null,'Zgjidh një datë.'); if(dt)dt.draw(); return; }
+      const base = new Date(pv+'T00:00:00');
+      if (mode==='daily') setPeriodRange(startOfDay(base),endOfDay(base),`Ditore: ${fmtDateOnly(base)}`);
+      else if (mode==='weekly') { const s=startOfWeekMonday(base),e=endOfWeekSunday(base); setPeriodRange(s,e,`Javore: ${fmtDateOnly(s)} → ${fmtDateOnly(e)}`); }
+      else if (mode==='monthly') { const s=startOfMonth(base),e=endOfMonth(base); setPeriodRange(s,e,`Mujore: ${s.getFullYear()}-${String(s.getMonth()+1).padStart(2,'0')}`); }
+      if(dt)dt.draw();
     }
 
-    // ---------- Parse CSV/Excel ----------
+    // ==========================================
+    // PARSE CSV/XLSX
+    // ==========================================
     async function parseFile(file) {
       const ext = file.name.split('.').pop().toLowerCase();
-      
-      if (ext === 'csv') {
-        const text = await file.text();
-        return parseCSV(text);
-      } else if (ext === 'xlsx' || ext === 'xls') {
-        const buffer = await file.arrayBuffer();
-        const workbook = XLSX.read(buffer, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+      if (ext === 'csv') return parseCSV(await file.text());
+      if (ext === 'xlsx' || ext === 'xls') {
+        const wb = XLSX.read(await file.arrayBuffer(), {type:'array', cellDates:true});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:'', rawNumbers:false});
+        for (let i=0;i<data.length;i++) for (let j=0;j<data[i].length;j++) {
+          const v=data[i][j];
+          if (v instanceof Date && !isNaN(v.getTime())) {
+            const pad=(n)=>String(n).padStart(2,'0');
+            data[i][j]=`${v.getFullYear()}-${pad(v.getMonth()+1)}-${pad(v.getDate())} ${pad(v.getHours())}:${pad(v.getMinutes())}:${pad(v.getSeconds())}`;
+          }
+        }
         return parseArrayData(data);
       }
       throw new Error('Unsupported file type');
     }
-
     function parseCSV(text) {
-      const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
-      if (lines.length < 2) throw new Error('CSV file is too short');
-      
-      // Skip first line if it's a title, find the header row
-      let headerIdx = 0;
-      for (let i = 0; i < Math.min(3, lines.length); i++) {
-        if (lines[i].includes('DATE/TIME') || lines[i].includes('#')) {
-          headerIdx = i;
-          break;
+      const lines = text.split(/\r?\n/).filter(l=>l.trim()!=='');
+      if (lines.length<2) throw new Error('CSV too short');
+      let headerIdx=0;
+      for (let i=0;i<Math.min(3,lines.length);i++) { if(lines[i].includes('DATE/TIME')||lines[i].includes('#')){headerIdx=i;break;} }
+      const rows=[];
+      for (let i=headerIdx+1;i<lines.length;i++) {
+        const parts=[]; let cur='',inQ=false;
+        for (let j=0;j<lines[i].length;j++) {
+          const c=lines[i][j];
+          if(c==='"')inQ=!inQ; else if(c===','&&!inQ){parts.push(cur.trim());cur='';} else cur+=c;
         }
+        parts.push(cur.trim());
+        if(parts.length>=10)rows.push(parts);
       }
-      
-      const rows = [];
-      for (let i = headerIdx + 1; i < lines.length; i++) {
-        // Simple CSV parsing (handles quoted fields)
-        const parts = [];
-        let current = '';
-        let inQuotes = false;
-        
-        for (let j = 0; j < lines[i].length; j++) {
-          const c = lines[i][j];
-          if (c === '"') {
-            inQuotes = !inQuotes;
-          } else if (c === ',' && !inQuotes) {
-            parts.push(current.trim());
-            current = '';
-          } else {
-            current += c;
-          }
-        }
-        parts.push(current.trim());
-        
-        if (parts.length >= 10) { // Skip empty rows
-          rows.push(parts);
-        }
-      }
-      
       return rows;
     }
-
     function parseArrayData(data) {
-      if (data.length < 2) throw new Error('Not enough data rows');
-      
-      // Find header row
-      let headerIdx = 0;
-      for (let i = 0; i < Math.min(3, data.length); i++) {
-        const row = data[i].map(v => String(v || ''));
-        if (row.some(c => c.includes('DATE/TIME') || c === '#')) {
-          headerIdx = i;
-          break;
-        }
-      }
-      
-      return data.slice(headerIdx + 1).filter(row => 
-        row.length >= 10 && row.some(v => v !== '' && v !== null)
-      );
+      if(data.length<2)throw new Error('Not enough rows');
+      let hdr=0;
+      for(let i=0;i<Math.min(3,data.length);i++){const r=data[i].map(v=>String(v||''));if(r.some(c=>c.includes('DATE/TIME')||c==='#')){hdr=i;break;}}
+      return data.slice(hdr+1).filter(r=>r.length>=10&&r.some(v=>v!==''&&v!==null));
     }
 
     function pickRowForUI(parts, sourceFileName) {
-      // parts: ["", "1", "2026-01-15 12:08:23", "141", "DISPO", "0686074552", "1610251", "ADMIN", "1610251", "23720", "CALLER"]
+      const campaignCode = toSafeString(parts[6]||'').trim();
+      const statusRaw = toSafeString(parts[4]||'').trim();
       return {
-        num: toSafeString(parts[1] || '').trim(),
-        date_time: toSafeString(parts[2] || '').trim(),
-        length: toSafeString(parts[3] || '').trim(),
-        status: mapStatus(toSafeString(parts[4] || '').trim()),
-        phone: toSafeString(parts[5] || '').trim(),
-        campaign: toSafeString(parts[6] || '').trim(),
-        group: toSafeString(parts[7] || '').trim(),
-        list: toSafeString(parts[8] || '').trim(),
-        lead: toSafeString(parts[9] || '').trim(),
-        hangup_reason: toSafeString(parts[10] || '').trim(),
+        num: toSafeString(parts[1]||'').trim(),
+        date_time: toSafeString(parts[2]||'').trim(),
+        length: toSafeString(parts[3]||'').trim(),
+        status_raw: statusRaw,
+        status: mapStatus(statusRaw),
+        phone: toSafeString(parts[5]||'').trim(),
+        campaign_code: campaignCode,
+        campaign: campaignLabel(campaignCode),
+        agent: agentName(campaignCode),
+        group: toSafeString(parts[7]||'').trim(),
+        list: toSafeString(parts[8]||'').trim(),
+        lead: toSafeString(parts[9]||'').trim(),
+        hangup_reason: toSafeString(parts[10]||'').trim(),
         source_file: sourceFileName || ''
       };
     }
 
-    function exportShape(rowUI) {
-      return {
-        date_time: rowUI.date_time,
-        length: rowUI.length,
-        status: rowUI.status,
-        phone: rowUI.phone,
-        campaign: rowUI.campaign,
-        group: rowUI.group,
-        list: rowUI.list,
-        lead: rowUI.lead,
-        hangup_reason: rowUI.hangup_reason
-      };
-    }
-
-    // ---------- App State ----------
+    // ==========================================
+    // APP STATE
+    // ==========================================
     let rowsUI = [];
     let dt = null;
     let chart = null;
 
-    const fileInput = document.getElementById('fileInput');
-    const parseBtn = document.getElementById('parseBtn');
-    const exportXlsxBtn = document.getElementById('exportXlsxBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const statusFilter = document.getElementById('statusFilter');
-    const campaignFilter = document.getElementById('campaignFilter');
-    const groupFilter = document.getElementById('groupFilter');
-    const listFilter = document.getElementById('listFilter');
-    const chartType = document.getElementById('chartType');
+    const EL = id => document.getElementById(id);
 
-    const periodType = document.getElementById('periodType');
-    const periodDate = document.getElementById('periodDate');
-    const startDate = document.getElementById('startDate');
-    const endDate = document.getElementById('endDate');
-
-    fileInput.addEventListener('change', () => {
-      const files = fileInput.files;
-      const enabled = !!files && files.length > 0;
-      parseBtn.disabled = !enabled;
-      resetBtn.disabled = !enabled;
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        btn.classList.add('active');
+        EL(btn.dataset.tab).classList.add('active');
+      });
     });
 
-    resetBtn.addEventListener('click', () => {
-      fileInput.value = '';
-      parseBtn.disabled = true;
-      exportXlsxBtn.disabled = true;
-      resetBtn.disabled = true;
-
-      statusFilter.disabled = true;
-      campaignFilter.disabled = true;
-      groupFilter.disabled = true;
-      listFilter.disabled = true;
-      chartType.disabled = true;
-
-      periodType.disabled = true;
-      periodDate.disabled = true;
-      startDate.disabled = true;
-      endDate.disabled = true;
-
-      statusFilter.innerHTML = '<option value="">Të gjitha</option>';
-      campaignFilter.innerHTML = '<option value="">Të gjitha</option>';
-      groupFilter.innerHTML = '<option value="">Të gjitha</option>';
-      listFilter.innerHTML = '<option value="">Të gjitha</option>';
-      periodType.value = 'all';
-      periodDate.value = '';
-      startDate.value = '';
-      endDate.value = '';
-      document.getElementById('activePeriodLabel').textContent = '';
-
-      periodFilter.mode = 'all';
-      periodFilter.start = null;
-      periodFilter.end = null;
-
-      document.getElementById('kpiRows').textContent = '—';
-      document.getElementById('kpiStatuses').textContent = '—';
-      document.getElementById('kpiMinDate').textContent = '—';
-      document.getElementById('kpiMaxDate').textContent = '—';
-      document.getElementById('kpiTotalDuration').textContent = '—';
-      document.getElementById('kpiAvgDuration').textContent = '—';
-      document.getElementById('kpiCampaigns').textContent = '—';
-      document.getElementById('filteredCount').textContent = '';
-
-      const tbody = document.querySelector('#statusSummaryTable tbody');
-      tbody.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>';
-
-      rowsUI = [];
-      if (dt) { dt.destroy(); dt = null; }
-      document.querySelector('#detailsTable tbody').innerHTML = '';
-
-      if (chart) { chart.destroy(); chart = null; }
-      const ctx = document.getElementById('chartCanvas').getContext('2d');
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    // Populate mapping table
+    const mapBody = EL('mappingTableBody');
+    Object.entries(CAMPAIGN_MAP).forEach(([code, info]) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td class="mono">${code}</td><td>${info.agent}</td><td>${info.service}</td><td>${info.sheet}</td>`;
+      mapBody.appendChild(tr);
     });
 
-    parseBtn.addEventListener('click', async () => {
-      const files = Array.from(fileInput.files || []);
-      if (!files.length) return;
+    // File input
+    EL('fileInput').addEventListener('change', () => {
+      const f = EL('fileInput').files;
+      EL('parseBtn').disabled = !f||!f.length;
+      EL('resetBtn').disabled = !f||!f.length;
+    });
 
-      rowsUI = [];
+    // Reset
+    EL('resetBtn').addEventListener('click', () => {
+      EL('fileInput').value = '';
+      ['parseBtn','exportXlsxBtn','exportDailyBtn','exportDailyBtn2','resetBtn'].forEach(id=>EL(id).disabled=true);
+      ['campaignFilter','groupFilter','listFilter','statusFilter','chartType','periodType'].forEach(id=>{EL(id).disabled=true;});
+      ['periodDate','startDate','endDate'].forEach(id=>{EL(id).disabled=true;EL(id).value='';});
+      ['campaignFilter','groupFilter','listFilter','statusFilter'].forEach(id=>EL(id).innerHTML='<option value="">Të gjitha</option>');
+      EL('periodType').value='all';
+      EL('activePeriodLabel').textContent='';
+      periodFilter.mode='all'; periodFilter.start=null; periodFilter.end=null;
+      combinedCampaigns.clear();
+      EL('campaignCheckGroup').innerHTML='<div style="font-size:0.78rem;color:var(--muted);">Ngarko fajlat fillimisht...</div>';
+      ['kpiRows','kpiStatuses','kpiMinDate','kpiMaxDate','kpiTotalDuration','kpiAvgDuration','kpiCampaigns'].forEach(id=>EL(id).textContent='—');
+      EL('filteredCount').textContent='';
+      document.querySelector('#statusSummaryTable tbody').innerHTML='<tr><td colspan="4" style="color:var(--muted)">—</td></tr>';
+      rowsUI=[];
+      if(dt){dt.destroy();dt=null;} document.querySelector('#detailsTable tbody').innerHTML='';
+      if(chart){chart.destroy();chart=null;} EL('chartCanvas').getContext('2d').clearRect(0,0,9999,9999);
+    });
+
+    // Parse
+    EL('parseBtn').addEventListener('click', async () => {
+      const files = Array.from(EL('fileInput').files||[]);
+      if(!files.length) return;
+      rowsUI=[];
       for (const f of files) {
         try {
           const rows = await parseFile(f);
-          const mapped = rows.map(r => pickRowForUI(r, f.name));
-          rowsUI.push(...mapped);
-        } catch (e) {
-          alert(`Gabim në "${f.name}": ${e.message || String(e)}`);
-          return;
-        }
+          rowsUI.push(...rows.map(r=>pickRowForUI(r, f.name)));
+        } catch(e) { alert(`Gabim: "${f.name}": ${e.message}`); return; }
       }
-
       buildTable(rowsUI);
       setupFilters(rowsUI);
-
-      exportXlsxBtn.disabled = false;
-      resetBtn.disabled = false;
-
-      statusFilter.disabled = false;
-      campaignFilter.disabled = false;
-      groupFilter.disabled = false;
-      listFilter.disabled = false;
-      chartType.disabled = false;
-
-      periodType.disabled = false;
-      syncPeriodControls();
-      applyPeriodFilter();
-      refreshSummaryAndCharts();
+      ['exportXlsxBtn','exportDailyBtn','exportDailyBtn2','resetBtn'].forEach(id=>EL(id).disabled=false);
+      ['campaignFilter','groupFilter','listFilter','statusFilter','chartType','periodType'].forEach(id=>EL(id).disabled=false);
+      syncPeriodControls(); applyPeriodFilter(); refreshSummaryAndCharts();
     });
 
     function buildTable(allRows) {
       const tbody = document.querySelector('#detailsTable tbody');
-      tbody.innerHTML = allRows.map(r => `
-        <tr>
-          <td class="mono">${escapeHtml(r.num)}</td>
-          <td class="mono">${escapeHtml(r.date_time)}</td>
-          <td class="mono">${escapeHtml(r.length)}</td>
-          <td class="mono">${escapeHtml(r.status)}</td>
-          <td class="mono">${escapeHtml(r.phone)}</td>
-          <td class="mono">${escapeHtml(r.campaign)}</td>
-          <td class="mono">${escapeHtml(r.group)}</td>
-          <td class="mono">${escapeHtml(r.list)}</td>
-          <td class="mono">${escapeHtml(r.lead)}</td>
-          <td class="mono">${escapeHtml(r.hangup_reason)}</td>
-          <td class="mono">${escapeHtml(r.source_file)}</td>
-        </tr>
-      `).join('');
-
-      if (dt) dt.destroy();
-      dt = $('#detailsTable').DataTable({
-        pageLength: 10,
-        lengthMenu: [[10,25,50,100,-1],[10,25,50,100,'All']],
-        scrollX: true,
-        order: [[1, 'desc']] // Sort by date descending
-      });
-
-      dt.on('draw', () => {
-        updateFilteredCount();
-        refreshSummaryAndCharts();
-      });
-      dt.on('search.dt', () => {
-        updateFilteredCount();
-        refreshSummaryAndCharts();
-      });
-
+      tbody.innerHTML = allRows.map(r=>`<tr>
+        <td class="mono">${escapeHtml(r.num)}</td>
+        <td class="mono">${escapeHtml(r.date_time)}</td>
+        <td class="mono">${escapeHtml(r.length)}</td>
+        <td class="mono">${escapeHtml(r.status)}</td>
+        <td class="mono">${escapeHtml(r.phone)}</td>
+        <td class="mono">${escapeHtml(r.campaign)}</td>
+        <td>${escapeHtml(r.agent)}</td>
+        <td class="mono">${escapeHtml(r.group)}</td>
+        <td class="mono">${escapeHtml(r.list)}</td>
+        <td class="mono">${escapeHtml(r.lead)}</td>
+        <td class="mono">${escapeHtml(r.hangup_reason)}</td>
+        <td class="mono">${escapeHtml(r.source_file)}</td>
+      </tr>`).join('');
+      if(dt)dt.destroy();
+      dt=$('#detailsTable').DataTable({pageLength:15,lengthMenu:[[15,25,50,100,-1],[15,25,50,100,'All']],scrollX:true,order:[[1,'desc']]});
+      dt.on('draw search.dt', ()=>{updateFilteredCount();refreshSummaryAndCharts();});
       updateFilteredCount();
     }
 
     function setupFilters(allRows) {
-      const uniq = (arr) => Array.from(new Set(arr.map(v => (v||'').trim() || '(bosh)'))).sort();
-      fillSelect(campaignFilter, uniq(allRows.map(r => r.campaign)));
-      fillSelect(groupFilter, uniq(allRows.map(r => r.group)));
-      fillSelect(listFilter, uniq(allRows.map(r => r.list)));
-      fillSelect(statusFilter, uniq(allRows.map(r => r.status)));
+      const uniq=(arr)=>Array.from(new Set(arr.map(v=>(v||'').trim()||'(bosh)'))).sort();
+      fillSelect(EL('campaignFilter'), uniq(allRows.map(r=>r.campaign)));
+      fillSelect(EL('groupFilter'), uniq(allRows.map(r=>r.group)));
+      fillSelect(EL('listFilter'), uniq(allRows.map(r=>r.list)));
+      fillSelect(EL('statusFilter'), uniq(allRows.map(r=>r.status)));
 
-      // DataTables columns: 3=status, 5=campaign, 6=group, 7=list
-      campaignFilter.onchange = () => applyExactFilter(5, campaignFilter.value);
-      groupFilter.onchange = () => applyExactFilter(6, groupFilter.value);
-      listFilter.onchange = () => applyExactFilter(7, listFilter.value);
-      statusFilter.onchange = () => applyExactFilter(3, statusFilter.value);
+      // Campaign checkboxes for combined reports
+      const campCodes = [...new Set(allRows.map(r=>r.campaign_code).filter(Boolean))].sort();
+      const grp = EL('campaignCheckGroup');
+      grp.innerHTML = '';
+      campCodes.forEach(code => {
+        const lbl = document.createElement('label');
+        const cb = document.createElement('input');
+        cb.type='checkbox'; cb.value=code;
+        cb.addEventListener('change', applyCombinedFilter);
+        lbl.appendChild(cb);
+        lbl.appendChild(document.createTextNode(' ' + campaignLabel(code)));
+        grp.appendChild(lbl);
+      });
 
-      chartType.onchange = () => refreshSummaryAndCharts();
+      EL('campaignFilter').onchange = () => applyExactFilter(5, EL('campaignFilter').value);
+      EL('groupFilter').onchange = () => applyExactFilter(7, EL('groupFilter').value);
+      EL('listFilter').onchange = () => applyExactFilter(8, EL('listFilter').value);
+      EL('statusFilter').onchange = () => applyExactFilter(3, EL('statusFilter').value);
+      EL('chartType').onchange = () => refreshSummaryAndCharts();
+      EL('periodType').onchange = () => {syncPeriodControls();applyPeriodFilter();};
+      EL('periodDate').onchange = () => applyPeriodFilter();
+      EL('startDate').onchange = () => applyPeriodFilter();
+      EL('endDate').onchange = () => applyPeriodFilter();
+    }
 
-      periodType.onchange = () => { syncPeriodControls(); applyPeriodFilter(); };
-      periodDate.onchange = () => applyPeriodFilter();
-      startDate.onchange = () => applyPeriodFilter();
-      endDate.onchange = () => applyPeriodFilter();
+    function applyCombinedFilter() {
+      const checked = [...document.querySelectorAll('#campaignCheckGroup input:checked')].map(cb=>cb.value);
+      combinedCampaigns = new Set(checked);
+      // Clear the dropdown filter when using checkboxes
+      if (checked.length > 0) {
+        EL('campaignFilter').value = '';
+        if(dt) dt.column(5).search('');
+      }
+      if(dt) dt.draw();
     }
 
     function fillSelect(sel, values) {
-      sel.innerHTML = '<option value="">Të gjitha</option>';
-      for (const v of values) {
-        const opt = document.createElement('option');
-        opt.value = v; opt.textContent = v;
-        sel.appendChild(opt);
-      }
+      sel.innerHTML='<option value="">Të gjitha</option>';
+      values.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});
     }
-
     function applyExactFilter(colIdx, val) {
-      if (!dt) return;
-      if (!val) dt.column(colIdx).search('').draw();
-      else dt.column(colIdx).search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false).draw();
+      if(!dt)return;
+      // Clear combined checkboxes when using dropdown
+      if (colIdx === 5) {
+        combinedCampaigns.clear();
+        document.querySelectorAll('#campaignCheckGroup input').forEach(cb=>cb.checked=false);
+      }
+      if(!val)dt.column(colIdx).search('').draw();
+      else dt.column(colIdx).search('^'+$.fn.dataTable.util.escapeRegex(val)+'$',true,false).draw();
     }
-
     function updateFilteredCount() {
-      if (!dt) return;
-      const filtered = dt.rows({search:'applied'}).count();
-      document.getElementById('filteredCount').textContent = `Thirrje (pas filtrave/kërkimit): ${filtered}`;
+      if(!dt)return;
+      EL('filteredCount').textContent=`Thirrje (pas filtrave): ${dt.rows({search:'applied'}).count()}`;
     }
 
     function getFilteredUIRows() {
-      if (!dt) return [];
-      const data = dt.rows({search:'applied'}).data().toArray();
-      return data.map(arr => ({
-        num: stripHtml(arr[0]),
-        date_time: stripHtml(arr[1]),
-        length: stripHtml(arr[2]),
-        status: stripHtml(arr[3]),
-        phone: stripHtml(arr[4]),
-        campaign: stripHtml(arr[5]),
-        group: stripHtml(arr[6]),
-        list: stripHtml(arr[7]),
-        lead: stripHtml(arr[8]),
-        hangup_reason: stripHtml(arr[9]),
-        source_file: stripHtml(arr[10]),
+      if(!dt)return [];
+      return dt.rows({search:'applied'}).data().toArray().map(arr=>({
+        num:stripHtml(arr[0]), date_time:stripHtml(arr[1]), length:stripHtml(arr[2]),
+        status:stripHtml(arr[3]), phone:stripHtml(arr[4]), campaign:stripHtml(arr[5]),
+        agent:stripHtml(arr[6]), group:stripHtml(arr[7]), list:stripHtml(arr[8]),
+        lead:stripHtml(arr[9]), hangup_reason:stripHtml(arr[10]), source_file:stripHtml(arr[11]),
       }));
     }
 
     function refreshSummaryAndCharts() {
-      const rows = getFilteredUIRows();
-      buildSummary(rows);
-      renderChart(rows);
+      const rows=getFilteredUIRows(); buildSummary(rows); renderChart(rows);
     }
 
     function buildSummary(rows) {
-      const total = rows.length;
-      document.getElementById('kpiRows').textContent = total;
+      const total=rows.length;
+      EL('kpiRows').textContent=total;
+      const dates=rows.map(r=>parseDateLike(r.date_time)).filter(Boolean);
+      const minD=dates.length?new Date(Math.min(...dates)):null;
+      const maxD=dates.length?new Date(Math.max(...dates)):null;
+      const fmt=(d)=>d?d.toISOString().slice(0,16).replace('T',' '):'—';
+      EL('kpiMinDate').textContent=fmt(minD);
+      EL('kpiMaxDate').textContent=fmt(maxD);
+      const totalDur=rows.reduce((s,r)=>s+(parseInt(r.length)||0),0);
+      EL('kpiTotalDuration').textContent=formatDuration(totalDur);
+      EL('kpiAvgDuration').textContent=total>0?Math.round(totalDur/total):'—';
+      const camps=new Set(rows.map(r=>r.campaign).filter(Boolean));
+      EL('kpiCampaigns').textContent=camps.size;
 
-      const dates = rows.map(r => parseDateLike(r.date_time)).filter(Boolean);
-      const minD = dates.length ? new Date(Math.min(...dates)) : null;
-      const maxD = dates.length ? new Date(Math.max(...dates)) : null;
-      const fmt = (d) => d ? d.toISOString().slice(0,16).replace('T',' ') : '—';
-      document.getElementById('kpiMinDate').textContent = fmt(minD);
-      document.getElementById('kpiMaxDate').textContent = fmt(maxD);
+      const counts={}, durations={};
+      rows.forEach(r=>{const s=(r.status||'').trim()||'(bosh)';counts[s]=(counts[s]||0)+1;durations[s]=(durations[s]||0)+(parseInt(r.length)||0);});
+      const keys=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+      EL('kpiStatuses').textContent=keys.length;
 
-      const totalDuration = rows.reduce((sum, r) => sum + (parseInt(r.length) || 0), 0);
-      const avgDuration = total > 0 ? Math.round(totalDuration / total) : 0;
-      document.getElementById('kpiTotalDuration').textContent = formatDuration(totalDuration);
-      document.getElementById('kpiAvgDuration').textContent = avgDuration;
-
-      const campaigns = new Set(rows.map(r => r.campaign).filter(Boolean));
-      document.getElementById('kpiCampaigns').textContent = campaigns.size;
-
-      const counts = {};
-      const durations = {};
-      for (const r of rows) {
-        const s = (r.status || '').trim() || '(bosh)';
-        counts[s] = (counts[s] || 0) + 1;
-        durations[s] = (durations[s] || 0) + (parseInt(r.length) || 0);
-      }
-      const statusKeys = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
-      document.getElementById('kpiStatuses').textContent = statusKeys.length;
-
-      const tbody = document.querySelector('#statusSummaryTable tbody');
-      tbody.innerHTML = '';
-      for (const s of statusKeys) {
-        const n = counts[s];
-        const pct = total ? (n*100/total) : 0;
-        const dur = formatDuration(durations[s]);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td class="mono">${escapeHtml(s)}</td><td class="text-end">${n}</td><td class="text-end">${pct.toFixed(1)}%</td><td class="text-end mono">${dur}</td>`;
+      const tbody=document.querySelector('#statusSummaryTable tbody');
+      tbody.innerHTML='';
+      keys.forEach(s=>{
+        const n=counts[s],pct=total?(n*100/total):0;
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td class="mono">${escapeHtml(s)}</td><td class="text-end">${n}</td><td class="text-end">${pct.toFixed(1)}%</td><td class="text-end mono">${formatDuration(durations[s])}</td>`;
         tbody.appendChild(tr);
-      }
-      if (!statusKeys.length) tbody.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>';
+      });
+      if(!keys.length)tbody.innerHTML='<tr><td colspan="4" style="color:var(--muted)">—</td></tr>';
     }
 
     function renderChart(rows) {
-      const type = chartType.value || 'pie';
-      const ctx = document.getElementById('chartCanvas').getContext('2d');
-      if (chart) { chart.destroy(); chart = null; }
-
-      if (!rows.length) {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      const type=EL('chartType').value||'pie';
+      const ctx=EL('chartCanvas').getContext('2d');
+      if(chart){chart.destroy();chart=null;}
+      if(!rows.length){ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);return;}
+      if(type==='line') {
+        const byDay={};
+        rows.forEach(r=>{const d=parseDateLike(r.date_time);if(d){const k=dayKeyFromDate(d);byDay[k]=(byDay[k]||0)+1;}});
+        const labels=Object.keys(byDay).sort(), values=labels.map(l=>byDay[l]);
+        chart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Thirrje/ditë',data:values,tension:0.2,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.1)',fill:true}]},
+          options:{responsive:true,plugins:{legend:{display:true}},scales:{x:{ticks:{maxRotation:0,autoSkip:true}}}}});
         return;
       }
-
-      if (type === 'line') {
-        const byDay = {};
-        for (const r of rows) {
-          const d = parseDateLike(r.date_time);
-          if (!d) continue;
-          const k = dayKeyFromDate(d);
-          byDay[k] = (byDay[k] || 0) + 1;
-        }
-        const labels = Object.keys(byDay).sort();
-        const values = labels.map(l => byDay[l]);
-
-        chart = new Chart(ctx, {
-          type: 'line',
-          data: { labels, datasets: [{ label: 'Thirrje (në ditë)', data: values, tension: 0.2 }] },
-          options: {
-            responsive: true,
-            plugins: { legend: { display: true } },
-            scales: { x: { ticks: { maxRotation: 0, autoSkip: true } } }
-          }
-        });
-        return;
-      }
-
-      const counts = {};
-      for (const r of rows) {
-        const s = (r.status || '').trim() || '(bosh)';
-        counts[s] = (counts[s] || 0) + 1;
-      }
-      const labels = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).slice(0, 20);
-      const values = labels.map(l => counts[l]);
-
-      chart = new Chart(ctx, {
-        type: type === 'bar' ? 'bar' : 'pie',
-        data: { labels, datasets: [{ label: 'Numër', data: values }] },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: type !== 'bar' } },
-          scales: type === 'bar' ? { x: { ticks: { autoSkip: false } }, y: { beginAtZero: true } } : {}
-        }
-      });
+      const counts={};
+      rows.forEach(r=>{const s=(r.status||'').trim()||'(bosh)';counts[s]=(counts[s]||0)+1;});
+      const labels=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).slice(0,20), values=labels.map(l=>counts[l]);
+      const colors=['#2563eb','#7c3aed','#059669','#ea580c','#dc2626','#0891b2','#d97706','#4f46e5','#be185d','#065f46','#92400e','#1e40af','#9333ea','#b91c1c','#047857','#c2410c','#7c2d12','#6d28d9','#991b1b','#115e59'];
+      chart=new Chart(ctx,{type:type==='bar'?'bar':'pie',
+        data:{labels,datasets:[{label:'Numër',data:values,backgroundColor:colors.slice(0,labels.length)}]},
+        options:{responsive:true,plugins:{legend:{display:type!=='bar'}},scales:type==='bar'?{x:{ticks:{autoSkip:false}},y:{beginAtZero:true}}:{}}});
     }
 
-    exportXlsxBtn.addEventListener('click', () => {
-      if (!dt) return;
-
-      const rows = getFilteredUIRows().map(exportShape);
-      if (!rows.length) { alert('Nuk ka rreshta për eksport (pas filtrave).'); return; }
-
-      const ws = XLSX.utils.json_to_sheet(rows, {
-        header: ['date_time','length','status','phone','campaign','group','list','lead','hangup_reason']
-      });
-      ws['!cols'] = [{wch:20},{wch:8},{wch:30},{wch:15},{wch:12},{wch:12},{wch:12},{wch:12},{wch:15}];
-
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Calls');
-
-      const counts = {};
-      const durations = {};
-      for (const r of getFilteredUIRows()) {
-        const s = (r.status || '').trim() || '(bosh)';
-        counts[s] = (counts[s] || 0) + 1;
-        durations[s] = (durations[s] || 0) + (parseInt(r.length) || 0);
-      }
-      const summaryArr = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).map(k => ({
-        status:k, 
-        count:counts[k],
-        total_duration: formatDuration(durations[k])
+    // ==========================================
+    // EXPORT FILTERED EXCEL
+    // ==========================================
+    EL('exportXlsxBtn').addEventListener('click', () => {
+      if(!dt)return;
+      const rows=getFilteredUIRows().map(r=>({
+        date_time:r.date_time, length:r.length, status:r.status, phone:r.phone,
+        campaign:r.campaign, agent:r.agent, group:r.group, list:r.list, lead:r.lead, hangup_reason:r.hangup_reason
       }));
-      const ws2 = XLSX.utils.json_to_sheet(summaryArr, { header: ['status','count','total_duration'] });
-      ws2['!cols'] = [{wch:30},{wch:10},{wch:15}];
-      XLSX.utils.book_append_sheet(wb, ws2, 'Përmbledhje');
-
-      const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-      XLSX.writeFile(wb, `call_stats_export_${ts}.xlsx`);
+      if(!rows.length){alert('Nuk ka rreshta.');return;}
+      const ws=XLSX.utils.json_to_sheet(rows);
+      ws['!cols']=[{wch:20},{wch:8},{wch:30},{wch:15},{wch:25},{wch:12},{wch:12},{wch:12},{wch:12},{wch:15}];
+      const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,'Calls');
+      XLSX.writeFile(wb,`call_stats_filtered_${new Date().toISOString().slice(0,10)}.xlsx`);
     });
 
-    document.getElementById('downloadSample').addEventListener('click', (e) => {
+    // ==========================================
+    // DAILY REPORT EXCEL GENERATOR
+    // ==========================================
+    // ==========================================
+    // DAILY REPORT MODE CONTROLS
+    // ==========================================
+    EL('dailyReportMode').addEventListener('change', () => {
+      const mode = EL('dailyReportMode').value;
+      EL('dailyReportDate').disabled = (mode === 'all');
+      EL('dailyReportStart').disabled = (mode !== 'range');
+      EL('dailyReportEnd').disabled = (mode !== 'range');
+    });
+
+    // ==========================================
+    // DAILY REPORT EXCEL GENERATOR (MULTI-DAY COLUMNS)
+    // ==========================================
+    function getReportDateRange() {
+      const mode = EL('dailyReportMode').value;
+      const dateVal = EL('dailyReportDate').value;
+
+      if (mode === 'all') return { start: null, end: null, label: 'Të gjitha' };
+
+      if (mode === 'range') {
+        const s = EL('dailyReportStart').value;
+        const e = EL('dailyReportEnd').value;
+        if (!s || !e) { alert('Zgjidh "Nga" dhe "Deri" për intervalin.'); return null; }
+        return { start: startOfDay(new Date(s+'T00:00:00')), end: endOfDay(new Date(e+'T00:00:00')), label: `${s} — ${e}` };
+      }
+
+      if (!dateVal) { alert('Zgjidh një datë.'); return null; }
+      const base = new Date(dateVal + 'T00:00:00');
+
+      if (mode === 'single') return { start: startOfDay(base), end: endOfDay(base), label: fmtDateOnly(base) };
+      if (mode === 'weekly') return { start: startOfWeekMonday(base), end: endOfWeekSunday(base), label: `Java ${fmtDateOnly(startOfWeekMonday(base))} — ${fmtDateOnly(endOfWeekSunday(base))}` };
+      if (mode === 'monthly') return { start: startOfMonth(base), end: endOfMonth(base), label: `${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}` };
+      return null;
+    }
+
+    // Get sorted unique day keys from rows
+    function getUniqueDays(rows) {
+      const days = new Set();
+      rows.forEach(r => {
+        const d = parseDateLike(r.date_time);
+        if (d) days.add(dayKeyFromDate(d));
+      });
+      return [...days].sort();
+    }
+
+    // Group rows by day key
+    function groupByDay(rows) {
+      const map = {};
+      rows.forEach(r => {
+        const d = parseDateLike(r.date_time);
+        if (!d) return;
+        const k = dayKeyFromDate(d);
+        if (!map[k]) map[k] = [];
+        map[k].push(r);
+      });
+      return map;
+    }
+
+    function generateDailyReport() {
+      if (!rowsUI.length) { alert('Ngarko fajlat fillimisht.'); return; }
+
+      const range = getReportDateRange();
+      if (!range) return;
+
+      // Filter rows
+      let reportRows = rowsUI;
+      if (range.start && range.end) {
+        reportRows = rowsUI.filter(r => {
+          const d = parseDateLike(r.date_time);
+          return d && d >= range.start && d <= range.end;
+        });
+      }
+      if (!reportRows.length) { alert('Nuk ka thirrje për këtë periudhë.'); return; }
+
+      const days = getUniqueDays(reportRows);
+      const isSingleDay = days.length === 1;
+      const wb = XLSX.utils.book_new();
+
+      // Helpers
+      function countByStatus(rows) {
+        const c = {}; rows.forEach(r => { const s=r.status; c[s]=(c[s]||0)+1; }); return c;
+      }
+      function splitAnswered(rows) {
+        return { answered: rows.filter(r=>isAnswered(r.status_raw)), notAnswered: rows.filter(r=>!isAnswered(r.status_raw)) };
+      }
+      function countByDay(rows, days) {
+        const byDay = groupByDay(rows);
+        return days.map(d => (byDay[d] || []).length);
+      }
+      function countByStatusAndDay(rows, days) {
+        const byDay = groupByDay(rows);
+        const allStatuses = {};
+        rows.forEach(r => { allStatuses[r.status] = true; });
+        const statusKeys = Object.keys(allStatuses).sort((a,b) => {
+          const ca = rows.filter(r=>r.status===a).length;
+          const cb = rows.filter(r=>r.status===b).length;
+          return cb - ca;
+        });
+        const result = {};
+        statusKeys.forEach(s => {
+          result[s] = days.map(d => (byDay[d]||[]).filter(r=>r.status===s).length);
+        });
+        return { statusKeys, result };
+      }
+      // Sum array
+      function sumArr(arr) { return arr.reduce((a,b)=>a+b, 0); }
+      // Make header row with dates
+      function dateHeaders(prefix, days) {
+        return [...prefix, ...days, 'Total'];
+      }
+      // Make data row
+      function dataRow(prefix, dayValues) {
+        return [...prefix, ...dayValues, sumArr(dayValues)];
+      }
+
+      // ---- Sheet: Fix-Rezidencial ----
+      (function() {
+        const svcRows = reportRows.filter(r => serviceName(r.campaign_code) === 'Rezidencial');
+        const split = splitAnswered(svcRows);
+        const ansSD = countByStatusAndDay(split.answered, days);
+        const notSD = countByStatusAndDay(split.notAnswered, days);
+
+        const data = [dateHeaders(['Outbound Calling Stats', ''], days)];
+        data.push(dateHeaders(['Answered', 'Description'], days.map(()=>'')));
+        ansSD.statusKeys.forEach(s => { data.push(dataRow(['', s], ansSD.result[s])); });
+        data.push(dataRow(['Total answered', ''], countByDay(split.answered, days)));
+        data.push([]);
+        data.push(dateHeaders(['Not Answered', 'Description'], days.map(()=>'')));
+        notSD.statusKeys.forEach(s => { data.push(dataRow(['', s], notSD.result[s])); });
+        data.push(dataRow(['Total not answered', ''], countByDay(split.notAnswered, days)));
+        data.push([]);
+        data.push(dataRow(['Total attempts', ''], countByDay(svcRows, days)));
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [{wch:20},{wch:35}, ...days.map(()=>({wch:12})), {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'Fix-Rezidencial');
+      })();
+
+      // ---- Sheet: Telco-B2B ----
+      (function() {
+        const svcRows = reportRows.filter(r => serviceName(r.campaign_code) === 'Telco-B2B');
+        const split = splitAnswered(svcRows);
+        const ansSD = countByStatusAndDay(split.answered, days);
+        const notSD = countByStatusAndDay(split.notAnswered, days);
+
+        const data = [dateHeaders(['STATUS', 'DESCRIPTION'], days)];
+        data.push(dateHeaders(['Answered', ''], days.map(()=>'')));
+        ansSD.statusKeys.forEach(s => { data.push(dataRow(['', s], ansSD.result[s])); });
+        data.push(dataRow(['Total answered', ''], countByDay(split.answered, days)));
+        data.push([]);
+        notSD.statusKeys.forEach(s => { data.push(dataRow(['Not answered', s], notSD.result[s])); });
+        data.push(dataRow(['Total not answered', ''], countByDay(split.notAnswered, days)));
+        data.push([]);
+        data.push(dataRow(['Total attempts', ''], countByDay(svcRows, days)));
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [{wch:20},{wch:35}, ...days.map(()=>({wch:12})), {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'Telco-B2B');
+      })();
+
+      // ---- Sheet: Albsig ----
+      (function() {
+        const svcRows = reportRows.filter(r => serviceName(r.campaign_code) === 'Albsig');
+        const split = splitAnswered(svcRows);
+        const ansSD = countByStatusAndDay(split.answered, days);
+        const notSD = countByStatusAndDay(split.notAnswered, days);
+
+        const data = [dateHeaders(['Status', 'DESCRIPTION'], days)];
+        ansSD.statusKeys.forEach(s => { data.push(dataRow(['Answered', s], ansSD.result[s])); });
+        data.push(dataRow(['Total answered', ''], countByDay(split.answered, days)));
+        data.push([]);
+        notSD.statusKeys.forEach(s => { data.push(dataRow(['Not answered', s], notSD.result[s])); });
+        data.push(dataRow(['Total not answered', ''], countByDay(split.notAnswered, days)));
+        data.push([]);
+        data.push(dataRow(['Total attempts', ''], countByDay(svcRows, days)));
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [{wch:20},{wch:35}, ...days.map(()=>({wch:12})), {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'Albsig');
+      })();
+
+      // ---- Sheet: Volton ----
+      (function() {
+        const svcRows = reportRows.filter(r => serviceName(r.campaign_code) === 'Volton');
+        const split = splitAnswered(svcRows);
+        const ansSD = countByStatusAndDay(split.answered, days);
+
+        const data = [dateHeaders(['Volton total contacts'], days)];
+        data.push(dataRow(['Answered calls'], countByDay(split.answered, days)));
+        data.push(dataRow(['Not answered'], countByDay(split.notAnswered, days)));
+        data.push(dataRow(['Total calls Volton'], countByDay(svcRows, days)));
+        data.push([]);
+        data.push(dateHeaders(['Answered Calls Insight'], days.map(()=>'')));
+        ansSD.statusKeys.forEach(s => { data.push(dataRow([s], ansSD.result[s])); });
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [{wch:35}, ...days.map(()=>({wch:12})), {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'Volton');
+      })();
+
+      // ---- Sheet: SetUp ----
+      (function() {
+        const svcRows = reportRows.filter(r => serviceName(r.campaign_code) === 'SetUp');
+        const split = splitAnswered(svcRows);
+        const ansSD = countByStatusAndDay(split.answered, days);
+
+        const data = [dateHeaders(['Setup total contacts'], days)];
+        data.push(dataRow(['Setup Answered Calls'], countByDay(split.answered, days)));
+        data.push(dataRow(['Setup Not Answered'], countByDay(split.notAnswered, days)));
+        data.push(dataRow(['Total calls setup'], countByDay(svcRows, days)));
+        data.push([]);
+        data.push(dateHeaders(['Answered Calls Insight'], days.map(()=>'')));
+        ansSD.statusKeys.forEach(s => { data.push(dataRow([s], ansSD.result[s])); });
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [{wch:35}, ...days.map(()=>({wch:12})), {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'SetUp');
+      })();
+
+      // ---- Sheet: Agent Performance ----
+      (function() {
+        const agents = [...new Set(reportRows.map(r=>r.agent))].filter(a=>a&&a!=='—').sort();
+        const data = [dateHeaders(['', 'Agent'], days)];
+
+        agents.forEach(agent => {
+          const agentRows = reportRows.filter(r => r.agent === agent);
+          const split = splitAnswered(agentRows);
+          data.push([]);
+          data.push(dateHeaders(['', agent], days.map(()=>'')));
+          data.push(dataRow(['', 'Answered'], countByDay(split.answered, days)));
+          data.push(dataRow(['', 'Not Answered'], countByDay(split.notAnswered, days)));
+          data.push(dataRow(['', 'Total'], countByDay(agentRows, days)));
+        });
+
+        // Grand total
+        const allAns = reportRows.filter(r=>isAnswered(r.status_raw));
+        const allNot = reportRows.filter(r=>!isAnswered(r.status_raw));
+        data.push([]);
+        data.push(dateHeaders(['', 'Total calls - all agents'], days.map(()=>'')));
+        data.push(dataRow(['', 'Answered'], countByDay(allAns, days)));
+        data.push(dataRow(['', 'Not Answered'], countByDay(allNot, days)));
+        data.push(dataRow(['', 'Total'], countByDay(reportRows, days)));
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [{wch:5},{wch:25}, ...days.map(()=>({wch:12})), {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'Agent Performance');
+      })();
+
+      // ---- Sheet: Total Calls ----
+      (function() {
+        const services = ['Rezidencial', 'Telco-B2B', 'Albsig', 'SetUp', 'Volton'];
+        const data = [dateHeaders(['Outbound Calls', ''], days)];
+
+        services.forEach(svc => {
+          const svcRows = reportRows.filter(r => serviceName(r.campaign_code) === svc);
+          const split = splitAnswered(svcRows);
+          const label = svc === 'Telco-B2B' ? 'B2B' : svc;
+          data.push(dataRow([label, 'Total answered'], countByDay(split.answered, days)));
+          data.push(dataRow(['', 'Not answered'], countByDay(split.notAnswered, days)));
+          data.push(dataRow(['', 'Total'], countByDay(svcRows, days)));
+          data.push([]);
+        });
+
+        const allAns = reportRows.filter(r=>isAnswered(r.status_raw));
+        const allNot = reportRows.filter(r=>!isAnswered(r.status_raw));
+        data.push(dataRow(['Total - all services', 'Total answered'], countByDay(allAns, days)));
+        data.push(dataRow(['', 'Not answered'], countByDay(allNot, days)));
+        data.push(dataRow(['', 'Total attempts'], countByDay(reportRows, days)));
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = [{wch:28},{wch:18}, ...days.map(()=>({wch:12})), {wch:10}];
+        XLSX.utils.book_append_sheet(wb, ws, 'Total Calls');
+      })();
+
+      const filename = `Daily_Report_${range.label.replace(/[^a-zA-Z0-9\-]/g,'_')}.xlsx`;
+      XLSX.writeFile(wb, filename);
+      EL('dailyReportStatus').textContent = `✓ Raporti u gjenerua: ${filename} — ${reportRows.length} thirrje, ${days.length} ditë`;
+    }
+
+    EL('exportDailyBtn').addEventListener('click', generateDailyReport);
+    EL('exportDailyBtn2').addEventListener('click', generateDailyReport);
+
+    // Download sample
+    document.getElementById('downloadSample')?.addEventListener('click', (e) => {
       e.preventDefault();
-      const sample =
-`"Outbound Calls for this Time Period: (10000 record limit)"
+      const sample = `"Outbound Calls for this Time Period: (10000 record limit)"
 "","#","DATE/TIME","LENGTH","STATUS","PHONE","CAMPAIGN","GROUP","LIST","LEAD","HANGUP REASON"
-"","1","2026-01-15 12:08:23","141","DISPO","0686074552","1610251","ADMIN","1610251","23720","CALLER"
-"","2","2026-01-15 12:04:37","33","NI","0686074099","1610251","ADMIN","1610251","23719","CALLER"
-"","3","2026-01-15 12:03:22","53","DC","0686070310","1610251","","1610251","23718","AGENT"
-"","4","2026-01-15 12:00:35","161","N","0686068655","1610251","ADMIN","1610251","23717","CALLER"
-"","5","2026-01-15 11:55:34","88","NI","0686062342","1610251","ADMIN","1610251","23716","CALLER"`;
-      const blob = new Blob([sample], {type:'text/csv;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'sample_call_stats.csv';
+"","1","2/10/2026 17:19","0","N","0675910867","211025","ADMIN","211025","32972","AGENT"
+"","2","2/10/2026 17:18","4","N","0676000179","211025","ADMIN","211025","32971","AGENT"
+"","3","2/10/2026 17:15","69","XALB","0676044339","211025","ADMIN","211025","32970","AGENT"`;
+      const blob = new Blob([sample], {type:'text/csv'});
+      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sample.csv';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      URL.revokeObjectURL(url);
     });
   </script>
 </body>

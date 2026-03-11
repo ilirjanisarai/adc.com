@@ -28,7 +28,7 @@
       margin-bottom: 10px;
     }
     .container {
-      max-width: 980px;
+      max-width: 1100px;
       margin: 0 auto;
       background: var(--adc-card);
       padding: 20px;
@@ -95,7 +95,7 @@
       border: 1px solid #ddd;
       padding: 6px;
       resize: vertical;
-      display: none; /* vendose 'block' nëse do ta shohësh tekstin e plotë */
+      display: none;
     }
   </style>
 </head>
@@ -130,7 +130,6 @@
   </div>
 
   <script>
-    // Konfigurimi i pdf.js
     if (window['pdfjsLib']) {
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -146,7 +145,52 @@
 
     let extractedRows = [];
 
-    // Lexim PDF -> tekst
+    // Lista e qyteteve shqiptare për njohje
+    const ALBANIAN_CITIES = [
+      'tiranë','tirana','tirane',
+      'durrës','durres','durresi',
+      'vlorë','vlore','vlora',
+      'shkodër','shkoder','shkodra',
+      'elbasan',
+      'fier',
+      'korçë','korce','korca',
+      'berat',
+      'lushnjë','lushnje',
+      'kavajë','kavaje',
+      'gjirokastër','gjirokaster','gjirokastra',
+      'sarandë','sarande',
+      'lezhë','lezhe',
+      'pogradec',
+      'kukës','kukes',
+      'peshkopi',
+      'permet','përmet',
+      'gramsh',
+      'librazhd',
+      'tropojë','tropoje',
+      'dibër','diber',
+      'mat','burrel',
+      'bulqizë','bulqize',
+      'çorovodë','corovode',
+      'tepelenë','tepelene',
+      'delvinë','delvine',
+      'himarë','himare',
+      'roskovec',
+      'patos',
+      'ballsh',
+      'cerrik',
+      'prrenjas',
+      'krujë','kruje',
+      'laç','lac',
+      'mamurras',
+      'shijak',
+      'vorë','vore',
+      'kamëz','kamez',
+      'kombinat',
+      'fushë-krujë','fushe-kruje','fushe kruje',
+      'milot',
+      'rubik',
+    ];
+
     async function readPdfAsText(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -155,7 +199,6 @@
             const typedArray = new Uint8Array(e.target.result);
             const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
             let fullText = '';
-
             for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
               const page = await pdf.getPage(pageNum);
               const content = await page.getTextContent();
@@ -172,90 +215,135 @@
       });
     }
 
-    // Pastrim emri subjekti – vetëm emri i kompanisë
     function cleanSubjectNameCandidate(str, allStopKeywords) {
       if (!str) return '';
       let candidate = str;
-
       let lower = candidate.toLowerCase();
       let cutIdx = -1;
-
       allStopKeywords.forEach(kw => {
         const idx = lower.indexOf(kw);
-        if (idx !== -1 && (cutIdx === -1 || idx < cutIdx)) {
-          cutIdx = idx;
-        }
+        if (idx !== -1 && (cutIdx === -1 || idx < cutIdx)) cutIdx = idx;
       });
-
-      if (cutIdx !== -1) {
-        candidate = candidate.slice(0, cutIdx);
-      }
-
+      if (cutIdx !== -1) candidate = candidate.slice(0, cutIdx);
       const dotIdx = candidate.indexOf('.');
-      if (dotIdx > 1 && (cutIdx === -1 || dotIdx < cutIdx)) {
-        candidate = candidate.slice(0, dotIdx);
-      }
-
+      if (dotIdx > 1 && (cutIdx === -1 || dotIdx < cutIdx)) candidate = candidate.slice(0, dotIdx);
       candidate = candidate.replace(/\s+/g, ' ').trim();
-      candidate = candidate.replace(/^\d+\s*\.?\s*/, ""); // heq 3. 4. në fillim
+      candidate = candidate.replace(/^\d+\s*\.?\s*/, "");
       candidate = candidate.replace(/[^a-zA-Z0-9ëËçÇÀ-ž&,\- ]/g, '').trim();
-
-      // heq numër të pastër në fund (p.sh. "Altisfer Golloshi 3")
       const parts = candidate.split(/\s+/);
       if (parts.length > 1) {
         const last = parts[parts.length - 1];
-        if (/^\d+$/.test(last)) {
-          parts.pop();
-          candidate = parts.join(' ');
-        }
+        if (/^\d+$/.test(last)) { parts.pop(); candidate = parts.join(' '); }
       }
-
       return candidate;
     }
 
-    // FUNKSION I RI: Nxjerr emrin e administratorit duke parë emrin PARA "10. Administratori/ët"
     function extractAdministratorSmart(text) {
       const marker = "10. Administratori";
       const idx = text.indexOf(marker);
       if (idx === -1) return "";
-
-      // Marrim pak tekst para marker-it (p.sh. 80 karaktere)
       let before = text.slice(Math.max(0, idx - 80), idx).trim();
-
-      // Ndarje në fjalë
       let words = before.split(/\s+/);
-
       if (words.length === 0) return "";
-
-      // Marrim maksimumi 4 fjalët e fundit, sepse aty normalisht është emri
       let candidateWords = words.slice(-4);
-
-      // Pastrojmë nga pikë, presje etj.
       candidateWords = candidateWords.map(w => w.replace(/[.,;:]+$/g, '')).filter(Boolean);
-
-      // Filtro fjalët që duken si "emra njerëzorë":
-      // - vetëm shkronja
-      // - fillojnë me shkronjë të madhe ose janë krejt me shkronja të mëdha
       let possible = candidateWords.filter(w => {
         if (!/^[\p{L}]+$/u.test(w)) return false;
         const first = w.charAt(0);
-        const isUpperFirst = first === first.toUpperCase();
-        const isAllUpper = w === w.toUpperCase();
-        return isUpperFirst || isAllUpper;
+        return first === first.toUpperCase() || w === w.toUpperCase();
       });
-
-      // Nëse s’gjejmë gjë, kthehemi te 2 fjalët e fundit (fallback)
-      if (possible.length === 0 && candidateWords.length >= 2) {
-        possible = candidateWords.slice(-2);
-      }
-
-      // Nëse përsëri bosh, kthe bosh
+      if (possible.length === 0 && candidateWords.length >= 2) possible = candidateWords.slice(-2);
       if (possible.length === 0) return "";
-
       return possible.join(" ").trim();
     }
 
-    // Funksioni kryesor i extract-it nga teksti
+    // ============================
+    // FUNKSION I RI: Nxjerr qytetin nga adresa e zyrës qendrore (rreshti 7)
+    // ============================
+    function extractCity(text) {
+      // Strategjia 1: gjej seksionin "Zyra qendrore" dhe shiko qytetin
+      const zyraMark = /zyra\s+qendrore[^:]*[:.]?\s*/i;
+      const zyraIdx = text.search(zyraMark);
+
+      if (zyraIdx !== -1) {
+        const afterZyra = text.slice(zyraIdx).replace(zyraMark, '');
+        const snippet = afterZyra.slice(0, 300).trim();
+        const words = snippet.split(/\s+/);
+
+        // Kalo fjalët, shpëto datat (dd/mm/yyyy), numrat, fjalë shumë të shkurtra
+        for (let i = 0; i < Math.min(words.length, 12); i++) {
+          const raw = words[i].replace(/[.,;:()\[\]]/g, '').trim();
+
+          // Skipo nëse është datë (p.sh. 11/02/2026 ose 19/11/2020)
+          if (/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$/.test(raw)) continue;
+
+          // Skipo nëse është numër i pastër
+          if (/^\d+$/.test(raw)) continue;
+
+          // Skipo fjalë shumë të shkurtra (1-2 karaktere)
+          if (raw.length < 3) continue;
+
+          // Skipo fjalë që janë vetëm shkronja të mëdha me gjatësi <= 3 (p.sh. "NR", "SH")
+          if (raw === raw.toUpperCase() && raw.length <= 3 && /^[A-ZËÇÀ-Ž]+$/.test(raw)) continue;
+
+          // Kontrollo nëse është qytet i njohur
+          const lw = raw.toLowerCase();
+          if (ALBANIAN_CITIES.includes(lw)) {
+            return normalizeCity(raw);
+          }
+        }
+      }
+
+      // Strategjia 2: kërko direkt në tekst sipas listës (rendit sipas gjatësisë - më specifike fillimisht)
+      const lowerText = text.toLowerCase();
+      const sortedCities = [...ALBANIAN_CITIES].sort((a, b) => b.length - a.length);
+      for (const city of sortedCities) {
+        // Sigurohu që fjala është e izoluar (jo pjesë e fjalës tjetër)
+        const regex = new RegExp('(?<![a-zA-ZëËçÇ])' + city + '(?![a-zA-ZëËçÇ])', 'i');
+        if (regex.test(lowerText)) {
+          return normalizeCity(city);
+        }
+      }
+
+      return '';
+    }
+
+    // Normalize emrin e qytetit: capitalize first letter
+    function normalizeCity(city) {
+      if (!city) return '';
+      // Normalizime specifike
+      const map = {
+        'tirane': 'Tiranë', 'tirana': 'Tiranë', 'tiranë': 'Tiranë',
+        'durres': 'Durrës', 'durresi': 'Durrës', 'durrës': 'Durrës',
+        'vlore': 'Vlorë', 'vlora': 'Vlorë', 'vlorë': 'Vlorë',
+        'shkoder': 'Shkodër', 'shkodra': 'Shkodër', 'shkodër': 'Shkodër',
+        'korce': 'Korçë', 'korca': 'Korçë', 'korçë': 'Korçë',
+        'gjirokastra': 'Gjirokastër', 'gjirokaster': 'Gjirokastër',
+        'sarande': 'Sarandë', 'sarandë': 'Sarandë',
+        'lezhe': 'Lezhë', 'lezhë': 'Lezhë',
+        'kavaje': 'Kavajë', 'kavajë': 'Kavajë',
+        'lushnje': 'Lushnjë', 'lushnjë': 'Lushnjë',
+        'fushe-kruje': 'Fushë-Krujë', 'fushe kruje': 'Fushë-Krujë',
+        'kruje': 'Krujë', 'krujë': 'Krujë',
+        'tropoje': 'Tropojë', 'tropojë': 'Tropojë',
+        'diber': 'Dibër', 'dibër': 'Dibër',
+        'permet': 'Përmet', 'përmet': 'Përmet',
+        'tepelene': 'Tepelenë', 'tepelenë': 'Tepelenë',
+        'delvine': 'Delvinë', 'delvinë': 'Delvinë',
+        'himare': 'Himarë', 'himarë': 'Himarë',
+        'vore': 'Vorë', 'vorë': 'Vorë',
+        'kamez': 'Kamëz', 'kamëz': 'Kamëz',
+        'bulqize': 'Bulqizë', 'bulqizë': 'Bulqizë',
+        'kukes': 'Kukës', 'kukës': 'Kukës',
+        'lac': 'Laç', 'laç': 'Laç',
+        'corovode': 'Çorovodë',
+      };
+      const lc = city.toLowerCase();
+      if (map[lc]) return map[lc];
+      // Generic capitalize
+      return city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
+    }
+
     function extractDataFromText(text) {
       const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l);
 
@@ -269,39 +357,28 @@
       const phoneMatch = text.match(phoneRegex);
       const phone = phoneMatch ? phoneMatch[0].replace(/\s+/g, ' ') : '';
 
-      // ============================
+      // Qyteti
+      const city = extractCity(text);
+
       // EMRI I SUBJEKTIT
-      // ============================
       let subjectName = '';
-
       const activityKeywordsForName = [
-        'objekti i aktivitetit',
-        'objekti aktivitetit',
-        'objekti kryesor i veprimtarise',
-        'objekti kryesor i veprimtaries',
-        'veprimtaria kryesore',
-        'veprimtaria',
-        'aktiviteti kryesor',
-        'aktiviteti'
+        'objekti i aktivitetit','objekti aktivitetit',
+        'objekti kryesor i veprimtarise','objekti kryesor i veprimtaries',
+        'veprimtaria kryesore','veprimtaria','aktiviteti kryesor','aktiviteti'
       ];
-
       const addressKeywords = [
         'kompleksi','rruga','lagj','lagjia','pallati','residence','residenca',
         'qendra','center','centër','zone','zona','kod postar',
         'tirane','tirana','durrës','durres','vlore','vlorë','shkoder','shkodër',
         'elbasan','fier','kavaje','kavajë'
       ];
-
       const allStopKeywordsForName = activityKeywordsForName.concat(addressKeywords);
 
-      // 1) Regex: "Emri i Subjektit ..."
       const subjRegex = /Emri i Subjektit\s+([^\n]+)/i;
       const subjMatch = text.match(subjRegex);
-      if (subjMatch && subjMatch[1]) {
-        subjectName = subjMatch[1].trim();
-      }
+      if (subjMatch && subjMatch[1]) subjectName = subjMatch[1].trim();
 
-      // 2) Me rreshta "emri i subjektit"
       if (!subjectName) {
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
@@ -310,9 +387,7 @@
           const keyIndex = lowerLine.indexOf(key);
           if (keyIndex !== -1) {
             let after = line.slice(keyIndex + key.length);
-            if (!after.trim() && i + 1 < lines.length) {
-              after = lines[i + 1].trim();
-            }
+            if (!after.trim() && i + 1 < lines.length) after = lines[i + 1].trim();
             after = after.replace(/^[:\- \t]+/, '');
             subjectName = after;
             break;
@@ -320,7 +395,6 @@
         }
       }
 
-      // 3) Fallback
       if (!subjectName) {
         const subjectKeywords = [
           'emri i subjektit','emri i shoqërisë','emri i shoqerise',
@@ -340,98 +414,55 @@
         }
       }
 
-      // 4) Fallback i fundit
       if (!subjectName) {
         let cand = '';
-        const upperLines = lines.filter(
-          l => l === l.toUpperCase() && l.length > 3 && l.length < 120
-        );
-        if (upperLines.length > 0) {
-          cand = upperLines[0].trim();
-        } else if (lines.length > 0) {
-          cand = lines[0].trim();
-        }
+        const upperLines = lines.filter(l => l === l.toUpperCase() && l.length > 3 && l.length < 120);
+        cand = upperLines.length > 0 ? upperLines[0].trim() : (lines.length > 0 ? lines[0].trim() : '');
         subjectName = cand;
       }
 
       subjectName = cleanSubjectNameCandidate(subjectName, allStopKeywordsForName);
 
-      // ============================
       // ADMINISTRATORI
-      // ============================
       const administrator = extractAdministratorSmart(text);
 
-      // ============================
-      // OBJEKTI / FUSHA E VEPRIMTARISË – 40 fjalët e para
-      // ============================
+      // OBJEKTI / FUSHA E VEPRIMTARISË
       let activityShort = '';
       const activityKeywords = [
-        'objekti i aktivitetit',
-        'objekti i aktivitetit',
-        'objekti i veprimtarise',
-        'objekti i veprimtarisë',
-        'fusha e veprimtarise',
-        'fusha e veprimtarisë'
+        'objekti i aktivitetit','objekti i veprimtarise','objekti i veprimtarisë',
+        'fusha e veprimtarise','fusha e veprimtarisë'
       ];
 
       let startIdx = -1;
       let usedKeyword = '';
-
       for (let i = 0; i < lines.length; i++) {
         const lower = lines[i].toLowerCase();
         const found = activityKeywords.find(kw => lower.includes(kw));
-        if (found) {
-          startIdx = i;
-          usedKeyword = found;
-          break;
-        }
+        if (found) { startIdx = i; usedKeyword = found; break; }
       }
 
       if (startIdx !== -1) {
         let desc = '';
-        for (let j = startIdx; j < lines.length && j <= startIdx + 6; j++) {
-          desc += ' ' + lines[j];
-        }
+        for (let j = startIdx; j < lines.length && j <= startIdx + 6; j++) desc += ' ' + lines[j];
         desc = desc.trim();
-
         let lowerDesc = desc.toLowerCase();
-
         if (usedKeyword) {
           const idxLabel = lowerDesc.indexOf(usedKeyword);
-          if (idxLabel !== -1) {
-            desc = desc.slice(idxLabel + usedKeyword.length);
-            lowerDesc = desc.toLowerCase();
-          }
+          if (idxLabel !== -1) { desc = desc.slice(idxLabel + usedKeyword.length); lowerDesc = desc.toLowerCase(); }
         }
-
         let idxPoshte = lowerDesc.indexOf('poshte:');
         if (idxPoshte === -1) idxPoshte = lowerDesc.indexOf('poshtë:');
-        if (idxPoshte !== -1) {
-          desc = desc.slice(idxPoshte + 'poshte:'.length);
-        }
-
+        if (idxPoshte !== -1) desc = desc.slice(idxPoshte + 'poshte:'.length);
         desc = desc.trim();
-
-        const words = desc
-          .split(/\s+/)
-          .map(w => w.trim())
-          .filter(w => w.length > 0);
-
+        const words = desc.split(/\s+/).map(w => w.trim()).filter(w => w.length > 0);
         activityShort = words.slice(0, 40).join(' ');
       }
 
-      return {
-        subjectName,
-        nipt,
-        administrator,
-        phone,
-        activitySentences: activityShort
-      };
+      return { subjectName, nipt, city, administrator, phone, activitySentences: activityShort };
     }
 
     function renderTable() {
       previewArea.innerHTML = '';
-
       if (extractedRows.length === 0) {
         previewArea.textContent = 'Ende nuk ka të dhëna të ekstraktuara.';
         downloadBtn.disabled = true;
@@ -443,40 +474,31 @@
       const tbody = document.createElement('tbody');
 
       const headerRow = document.createElement('tr');
-      [
-        'Nr.',
-        'Emri i subjektit',
-        'NIPT',
-        'Administratori',
-        'Numri i telefonit',
-        'Objekti / fusha e veprimtarisë'
-      ].forEach(h => {
-        const th = document.createElement('th');
-        th.textContent = h;
-        headerRow.appendChild(th);
-      });
+      ['Nr.', 'Emri i subjektit', 'NIPT', 'Qyteti', 'Administratori', 'Numri i telefonit', 'Objekti / fusha e veprimtarisë']
+        .forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          headerRow.appendChild(th);
+        });
       thead.appendChild(headerRow);
 
       extractedRows.forEach((row, idx) => {
         const tr = document.createElement('tr');
-
         const tdIdx = document.createElement('td');
         tdIdx.textContent = idx + 1;
         tr.appendChild(tdIdx);
 
-        [row.subjectName, row.nipt, row.administrator, row.phone, row.activitySentences].forEach(val => {
+        [row.subjectName, row.nipt, row.city, row.administrator, row.phone, row.activitySentences].forEach(val => {
           const td = document.createElement('td');
           td.textContent = val || '';
           tr.appendChild(td);
         });
-
         tbody.appendChild(tr);
       });
 
       table.appendChild(thead);
       table.appendChild(tbody);
       previewArea.appendChild(table);
-
       downloadBtn.disabled = false;
     }
 
@@ -486,19 +508,15 @@
         alert('Ju lutem, ngarkoni një ose disa file PDF.');
         return;
       }
-
       statusEl.textContent = `Duke lexuar ${files.length} PDF...`;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-
         try {
           const text = await readPdfAsText(file);
           rawTextEl.value = text;
-
           const row = extractDataFromText(text);
           extractedRows.push(row);
-
           statusEl.textContent = `U përpunuan ${i + 1} nga ${files.length} PDF...`;
         } catch (err) {
           console.error(err);
@@ -512,11 +530,11 @@
 
     downloadBtn.addEventListener('click', () => {
       if (extractedRows.length === 0) return;
-
       const data = extractedRows.map((row, idx) => ({
         'Nr.': idx + 1,
         'Emri i subjektit': row.subjectName,
         'NIPT': row.nipt,
+        'Qyteti': row.city,
         'Administratori': row.administrator,
         'Numri i telefonit': row.phone,
         'Objekti / fusha e veprimtarisë': row.activitySentences
@@ -525,7 +543,6 @@
       const ws = XLSX.utils.json_to_sheet(data);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Subjektet');
-
       XLSX.writeFile(wb, 'subjektet_nga_pdf.xlsx');
     });
 
